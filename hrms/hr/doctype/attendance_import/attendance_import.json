@@ -1,12 +1,15 @@
 {
  "actions": [],
  "allow_rename": 1,
+ "autoname": "naming_series:",
  "creation": "2025-10-10 13:07:12.376865",
  "doctype": "DocType",
  "engine": "InnoDB",
  "field_order": [
-  "upload_file",
-  "process_file"
+  "naming_series",
+  "process_file",
+  "column_break_vwtz",
+  "upload_file"
  ],
  "fields": [
   {
@@ -20,12 +23,22 @@
    "in_list_view": 1,
    "label": "Upload File",
    "reqd": 1
+  },
+  {
+   "fieldname": "naming_series",
+   "fieldtype": "Select",
+   "label": "Series",
+   "options": "HR-ATT-IMP-"
+  },
+  {
+   "fieldname": "column_break_vwtz",
+   "fieldtype": "Column Break"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-10-10 15:00:32.876826",
+ "modified": "2025-10-11 23:03:23.449116",
  "modified_by": "Administrator",
  "module": "HR",
  "name": "Attendance Import",
