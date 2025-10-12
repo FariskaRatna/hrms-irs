@@ -397,3 +397,29 @@ def update_attendance_in_checkins(log_names: list, attendance_id: str):
 		.set("attendance", attendance_id)
 		.where(EmployeeCheckin.name.isin(log_names))
 	).run()
+
+def update_attendance_from_checkin(doc, method):
+	employee = doc.employee
+	log_date = getdate(doc.time)
+
+	attendance_name = frappe.db.exists("Attendance", {
+		"employee": employee,
+		"attendance_date": log_date
+	})
+
+	if not attendance_name:
+		attendance_doc = frappe.new_doc("Attendance")
+		attendance_doc.employee = employee
+		attendance_doc.attendance_date = log_date
+		attendance_doc.status = "Present"
+		attendance_doc.save(ignore_permissions=True)
+		frappe.db.commit()
+	else:
+		attendance_doc = frappe.get_doc("Attendance", attendance_name)
+		if attendance_doc.status != "Present":
+			attendance_doc.status = "Present"
+			attendance_doc.save(ignore_permissions=True)
+			frappe.db.commit()
+
+def after_insert(doc, method=None):
+	update_attendance_from_checkin(doc, method)
