@@ -32,7 +32,7 @@ def process_file(docname):
             frappe.throw(f"Missing column: {col}")
 
     for _, row in df.iterrows():
-        emp = frappe.db.get_value("Employee", {"employee_name": row["name"]}, "name")
+        emp = frappe.db.get_value("Employee", {"initial_name": row["name"]}, "name")
         if not emp:
             frappe.msgprint(f"⚠️ Employee '{row['name']}' not found, skipped.")
             continue
