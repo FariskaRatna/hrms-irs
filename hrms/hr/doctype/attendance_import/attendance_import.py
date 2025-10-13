@@ -48,6 +48,16 @@ def process_file(docname):
         in_time = None
         out_time = None
 
+        shift_assignment = frappe.db.get_value(
+            "Shift Assignment",
+            {
+                "employee": emp,
+                "start_date": ["<=", date_part],
+                "end_date": [">=", date_part]
+            },
+            "shift_type"
+        )
+
         # Clock In
         if pd.notna(row["clock_in"]) and str(row["clock_in"]).strip() != "":
             try:
@@ -91,7 +101,8 @@ def process_file(docname):
                     "attendance_date": date_part,
                     "status": "Present",
                     "in_time": in_time,
-                    "out_time": out_time
+                    "out_time": out_time,
+                    "shift": shift_assignment or None
                 })
                 att_doc.insert(ignore_permissions=True)
                 frappe.msgprint(f"Attendance created for {row['name']} {date_part}")
