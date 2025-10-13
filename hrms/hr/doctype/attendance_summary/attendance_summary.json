@@ -1,0 +1,163 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "naming_series:",
+ "creation": "2025-10-11 21:25:22.867477",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "employee_details_section",
+  "naming_series",
+  "employee",
+  "employee_name",
+  "shift",
+  "column_break_errz",
+  "department",
+  "designation",
+  "attendance_summary_section",
+  "month",
+  "total_late_minutes",
+  "late_days",
+  "last_updated_on",
+  "over_tolerance",
+  "remarks",
+  "generate_recap",
+  "column_break_umwu",
+  "late_dates"
+ ],
+ "fields": [
+  {
+   "fieldname": "employee_details_section",
+   "fieldtype": "Section Break",
+   "label": "Employee Details"
+  },
+  {
+   "fieldname": "employee",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Employee",
+   "options": "Employee",
+   "reqd": 1
+  },
+  {
+   "fetch_from": "employee.employee_name",
+   "fieldname": "employee_name",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Employee Name",
+   "read_only": 1,
+   "reqd": 1
+  },
+  {
+   "fetch_from": "employee.default_shift",
+   "fieldname": "shift",
+   "fieldtype": "Data",
+   "label": "Shift",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_errz",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fetch_from": "employee.department",
+   "fieldname": "department",
+   "fieldtype": "Data",
+   "label": "Department",
+   "read_only": 1
+  },
+  {
+   "fetch_from": "employee.designation",
+   "fieldname": "designation",
+   "fieldtype": "Data",
+   "label": "Designation",
+   "read_only": 1
+  },
+  {
+   "fieldname": "attendance_summary_section",
+   "fieldtype": "Section Break",
+   "label": "Attendance Summary"
+  },
+  {
+   "fieldname": "month",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Month (e.g. 2025-10)",
+   "reqd": 1
+  },
+  {
+   "fieldname": "total_late_minutes",
+   "fieldtype": "Int",
+   "label": "Total Late (Minutes)"
+  },
+  {
+   "fieldname": "late_days",
+   "fieldtype": "Int",
+   "label": "Late Days"
+  },
+  {
+   "default": "0",
+   "fieldname": "over_tolerance",
+   "fieldtype": "Check",
+   "label": "Over Tolerance"
+  },
+  {
+   "fieldname": "column_break_umwu",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "late_dates",
+   "fieldtype": "Long Text",
+   "label": "Late Dates"
+  },
+  {
+   "fieldname": "last_updated_on",
+   "fieldtype": "Datetime",
+   "label": "Last Updated On"
+  },
+  {
+   "fieldname": "generate_recap",
+   "fieldtype": "Button",
+   "label": "Generate Recap"
+  },
+  {
+   "fieldname": "remarks",
+   "fieldtype": "Small Text",
+   "label": "Remarks"
+  },
+  {
+   "fieldname": "naming_series",
+   "fieldtype": "Select",
+   "label": "Series",
+   "no_copy": 1,
+   "options": "HR-ATT-SUM-",
+   "set_only_once": 1
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2025-10-11 22:43:42.450965",
+ "modified_by": "Administrator",
+ "module": "HR",
+ "name": "Attendance Summary",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}
