@@ -226,21 +226,60 @@ class ShiftType(Document):
 			timestamp = datetime.combine(date, start_time)
 			shift_details = get_employee_shift(employee, timestamp, True)
 
-			if shift_details and shift_details.shift_type.name == self.name:
-				attendance = mark_attendance(employee, date, "Absent", self.name)
+			if not (shift_details and shift_details.shift_type.name == self.name):
+				continue
+			
+			try:
+				shift_start_dt = shift_details.start_datetime
+				shift_end_dt = shift_details.end_datetime
+			except Exception:
+				shift_start_dt = datetime.combine(date, datetime.min.time())
+				shift_end_dt = datetime.combine(date, datetime.max.time())
 
-				if not attendance:
-					continue
+			checkin_filters = [
+				["employee", "=", employee],
+				["shift", "=", self.name],
+				["time", ">=", shift_start_dt],
+				["time", "<=", shift_end_dt],
+				["skip_auto_attendance", "=", 0],
+				["offshift", "=", 0],
+			]
 
-				frappe.get_doc(
-					{
-						"doctype": "Comment",
-						"comment_type": "Comment",
-						"reference_doctype": "Attendance",
-						"reference_name": attendance,
-						"content": frappe._("Employee was marked Absent due to missing Employee Checkins."),
-					}
-				).insert(ignore_permissions=True)
+			checkins = frappe.get_all("Employee Checkin", filters=checkin_filters, pluck="name", limit=1)
+
+			if not checkins:
+				continue
+
+			attendance = mark_attendance(employee, date, "Absent", self.name)
+
+			if not attendance:
+				continue
+
+			frappe.get_doc(
+				{
+					"doctype": "Comment",
+					"comment_type": "Comment",
+					"reference_doctype": "Attendance",
+					"reference_name": attendance,
+					"content": frappe._("Employee was marked Absent due to missing Employee Checkins."),
+				}
+			).insert(ignore_permissions=True)
+
+			# if shift_details and shift_details.shift_type.name == self.name:
+			# 	attendance = mark_attendance(employee, date, "Absent", self.name)
+
+			# 	if not attendance:
+			# 		continue
+
+			# 	frappe.get_doc(
+			# 		{
+			# 			"doctype": "Comment",
+			# 			"comment_type": "Comment",
+			# 			"reference_doctype": "Attendance",
+			# 			"reference_name": attendance,
+			# 			"content": frappe._("Employee was marked Absent due to missing Employee Checkins."),
+			# 		}
+			# 	).insert(ignore_permissions=True)
 
 	def get_dates_for_attendance(self, employee: str) -> list[str]:
 		start_date, end_date = self.get_start_and_end_dates(employee)
