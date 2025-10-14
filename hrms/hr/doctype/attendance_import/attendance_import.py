@@ -87,26 +87,48 @@ def process_file(docname):
                 }).insert(ignore_permissions=True)
             except Exception as e:
                 frappe.msgprint(f"⚠️ Error parsing clock_out for {row['name']}: {e}")
-        
-        if in_time or out_time:
-            existing_att = frappe.db.exists("Attendance", {
-                "employee": emp,
-                "attendance_date": date_part
-            })
 
-            if not existing_att:
-                att_doc = frappe.get_doc({
-                    "doctype": "Attendance",
-                    "employee": emp,
-                    "attendance_date": date_part,
-                    "status": "Present",
-                    "in_time": in_time,
-                    "out_time": out_time,
-                    "shift": shift_assignment or None
-                })
-                att_doc.insert(ignore_permissions=True)
-                frappe.msgprint(f"Attendance created for {row['name']} {date_part}")
-            else:
-                frappe.msgprint(f"Attendance already exists for {row['name']} {date_part}")
+        leave_exists = frappe.db.exists(
+            "Leave Application",
+            {
+                "employee:" emp,
+                "from_date": ["<=", date_part],
+                "to_date": [">=", date_part],
+                "docstatus": 1
+            }
+        )
+        
+        # if in_time or out_time:
+        #     existing_att = frappe.db.exists("Attendance", {
+        #         "employee": emp,
+        #         "attendance_date": date_part
+        #     })
+
+        if in_time and out_time:
+            status = "Present"
+        elif in_time and not out_time:
+            status = "Half Day" if leave_exists else "Absent"
+        else:
+            status = "Absent"
+        
+        existing_att = frappe.db.exists("Attendance", {
+            "employee": emp,
+            "attendance_date": date_part
+        })
+
+        if not existing_att:
+            att_doc = frappe.get_doc({
+                "doctype": "Attendance",
+                "employee": emp,
+                "attendance_date": date_part,
+                "status": "Present",
+                "in_time": in_time,
+                "out_time": out_time,
+                "shift": shift_assignment or None
+            })
+            att_doc.insert(ignore_permissions=True)
+            frappe.msgprint(f"Attendance created for {row['name']} {date_part}")
+        else:
+            frappe.msgprint(f"Attendance already exists for {row['name']} {date_part}")
 
     frappe.msgprint("✅ Attendance imported successfully!")
