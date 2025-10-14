@@ -90,7 +90,7 @@ def process_file(docname):
                     "time": out_time,
                     "log_type": "OUT",
                     "latitude": DEFAULT_LATITUDE,
-                    "longitude", DEFAULT_LONGITUDE
+                    "longitude": DEFAULT_LONGITUDE
                 }).insert(ignore_permissions=True)
             except Exception as e:
                 frappe.msgprint(f"⚠️ Error parsing clock_out for {row['Name']}: {e}")
