@@ -26,22 +26,22 @@ def process_file(docname):
 
     df = pd.read_excel(file_path)
 
-    required_columns = ["name", "date", "clock_in", "clock_out"]
+    required_columns = ["Name", "Date", "Clock In", "Clock Out"]
     for col in required_columns:
         if col not in df.columns:
             frappe.throw(f"Missing column: {col}")
 
     for _, row in df.iterrows():
-        emp = frappe.db.get_value("Employee", {"initial_name": row["name"]}, "name")
+        emp = frappe.db.get_value("Employee", {"initial_name": row["Name"]}, "Name")
         if not emp:
-            frappe.msgprint(f"⚠️ Employee '{row['name']}' not found, skipped.")
+            frappe.msgprint(f"⚠️ Employee '{row['Name']}' not found, skipped.")
             continue
 
         # Pastikan date valid
         try:
-            date_part = pd.to_datetime(row["date"]).date()
+            date_part = pd.to_datetime(row["Date"]).date()
         except Exception:
-            frappe.msgprint(f"Invalid date for {row['name']}, skipped")
+            frappe.msgprint(f"Invalid date for {row['Name']}, skipped")
             continue
         # date_part = pd.to_datetime(row["date"]).date() if pd.notna(row["date"]) else None
 
@@ -59,10 +59,10 @@ def process_file(docname):
         )
 
         # Clock In
-        if pd.notna(row["clock_in"]) and str(row["clock_in"]).strip() != "":
+        if pd.notna(row["Clock In"]) and str(row["Clock In"]).strip() != "":
             try:
                 # time_part = pd.to_datetime(str(row["clock_in"])).time()
-                in_time = pd.to_datetime(f"{date_part} {row['clock_in']}")
+                in_time = pd.to_datetime(f"{date_part} {row['Clock In']}")
                 # full_datetime = pd.to_datetime(f"{date_part} {time_part}")
                 frappe.get_doc({
                     "doctype": "Employee Checkin",
@@ -71,13 +71,13 @@ def process_file(docname):
                     "log_type": "IN"
                 }).insert(ignore_permissions=True)
             except Exception as e:
-                frappe.msgprint(f"⚠️ Error parsing clock_in for {row['name']}: {e}")
+                frappe.msgprint(f"⚠️ Error parsing clock_in for {row['Name']}: {e}")
 
         # Clock Out
-        if pd.notna(row["clock_out"]) and str(row["clock_out"]).strip() != "":
+        if pd.notna(row["Clock Out"]) and str(row["Clock Out"]).strip() != "":
             try:
                 # time_part = pd.to_datetime(str(row["clock_out"])).time()
-                out_time = pd.to_datetime(f"{date_part} {row['clock_out']}")
+                out_time = pd.to_datetime(f"{date_part} {row['Clock Out']}")
                 # full_datetime = pd.to_datetime(f"{date_part} {time_part}")
                 frappe.get_doc({
                     "doctype": "Employee Checkin",
@@ -86,12 +86,12 @@ def process_file(docname):
                     "log_type": "OUT"
                 }).insert(ignore_permissions=True)
             except Exception as e:
-                frappe.msgprint(f"⚠️ Error parsing clock_out for {row['name']}: {e}")
+                frappe.msgprint(f"⚠️ Error parsing clock_out for {row['Name']}: {e}")
 
         leave_exists = frappe.db.exists(
             "Leave Application",
             {
-                "employee:" emp,
+                "employee": emp,
                 "from_date": ["<=", date_part],
                 "to_date": [">=", date_part],
                 "docstatus": 1
@@ -127,8 +127,8 @@ def process_file(docname):
                 "shift": shift_assignment or None
             })
             att_doc.insert(ignore_permissions=True)
-            frappe.msgprint(f"Attendance created for {row['name']} {date_part}")
+            frappe.msgprint(f"Attendance created for {row['Name']} {date_part}")
         else:
-            frappe.msgprint(f"Attendance already exists for {row['name']} {date_part}")
+            frappe.msgprint(f"Attendance already exists for {row['Name']} {date_part}")
 
     frappe.msgprint("✅ Attendance imported successfully!")
