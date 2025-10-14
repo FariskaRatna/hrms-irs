@@ -31,6 +31,9 @@ def process_file(docname):
         if col not in df.columns:
             frappe.throw(f"Missing column: {col}")
 
+    DEFAULT_LATITUDE = -6,2239100
+    DEFAULT_LONGITUDE = 106,8290110
+
     for _, row in df.iterrows():
         emp = frappe.db.get_value("Employee", {"initial_name": row["Name"]}, "Name")
         if not emp:
@@ -68,7 +71,9 @@ def process_file(docname):
                     "doctype": "Employee Checkin",
                     "employee": emp,
                     "time": in_time,
-                    "log_type": "IN"
+                    "log_type": "IN",
+                    "latitude": DEFAULT_LATITUDE,
+                    "longitude": DEFAULT_LONGITUDE
                 }).insert(ignore_permissions=True)
             except Exception as e:
                 frappe.msgprint(f"⚠️ Error parsing clock_in for {row['Name']}: {e}")
@@ -83,7 +88,9 @@ def process_file(docname):
                     "doctype": "Employee Checkin",
                     "employee": emp,
                     "time": out_time,
-                    "log_type": "OUT"
+                    "log_type": "OUT",
+                    "latitude": DEFAULT_LATITUDE,
+                    "longitude", DEFAULT_LONGITUDE
                 }).insert(ignore_permissions=True)
             except Exception as e:
                 frappe.msgprint(f"⚠️ Error parsing clock_out for {row['Name']}: {e}")
