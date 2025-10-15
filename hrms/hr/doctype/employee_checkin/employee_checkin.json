@@ -10,6 +10,7 @@
   "employee_name",
   "log_type",
   "shift",
+  "photo",
   "column_break_4",
   "time",
   "device_id",
@@ -174,10 +175,15 @@
    "hidden": 1,
    "label": "Off-shift",
    "read_only": 1
+  },
+  {
+   "fieldname": "photo",
+   "fieldtype": "Attach Image",
+   "label": "Photo"
   }
  ],
  "links": [],
- "modified": "2025-10-15 09:24:33.523689",
+ "modified": "2025-10-15 15:59:33.533106",
  "modified_by": "Administrator",
  "module": "HR",
  "name": "Employee Checkin",
