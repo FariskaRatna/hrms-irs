@@ -5,6 +5,7 @@ import frappe
 from frappe.model.document import Document
 from frappe.utils import getdate
 from datetime import datetime
+from frappe.utils import get_first_day, get_last_day
 
 
 class AttendanceSummary(Document):
@@ -22,16 +23,48 @@ def generate_recap(docname):
 		year, month = int(year), int(month)
 	except:
 		frappe.throw("Format of month is wrong. It must be YYYY-MM")
+
+	# month_start = get_first_day(f"{year}-{month}-01").strftime("%Y-%m-%d")
+	# month_end = get_last_day(f"{year}-{month}-01").strftime("%Y-%m-%d")
+	from datetime import date
+
+
+	if month == 1:
+		start_period = date(year - 1, 12, 21)
+	else:
+		start_period = date(year, month - 1, 21)
 	
+	end_period = date(year, month, 20)
+	
+	frappe.msgprint(f"Start: {start_period}, End: {end_period}")
+
+	# attendances = frappe.get_all(
+	# 	"Attendance",
+	# 	filters={
+	# 		"employee": doc.employee,
+	# 		"status": ["in", ["Present", "Late"]],
+	# 		"docstatus": 1,
+	# 		"attendance_date": ["between", [start_period, end_period]]
+	# 	},
+	# 	fields=["attendance_date", "in_time", "out_time"]
+	# )
+
 	attendances = frappe.get_all(
 		"Attendance",
 		filters={
 			"employee": doc.employee,
 			"status": ["in", ["Present", "Late"]],
-			"docstatus": 1
+			"docstatus": 1,
+			"attendance_date": ["between", [start_period.strftime("%Y-%m-%d"), end_period.strftime("%Y-%m-%d")]]
 		},
 		fields=["attendance_date", "in_time", "out_time"]
 	)
+
+
+	frappe.msgprint(f"Attendance ditemukan: {len(attendances)} record")
+	for a in attendances:
+		frappe.msgprint(str(a.attendance_date))
+
 
 	day_records = []
 
@@ -42,6 +75,9 @@ def generate_recap(docname):
 
 		if not (checkin and checkout):
 			continue
+		
+		checkin = datetime.strptime(str(checkin), "%Y-%m-%d %H:%M:%S")
+		checkout = datetime.strptime(str(checkout), "%Y-%m-%d %H:%M:%S")
 		
 		shift_assignment = frappe.db.get_value(
 			"Shift Assignment",
@@ -94,6 +130,7 @@ def generate_recap(docname):
 	total_late_minutes = 0
 	late_days = 0
 	late_dates = []
+	threshold = 180	
 
 	for total_day, date in day_records:
 		cumulative += total_day

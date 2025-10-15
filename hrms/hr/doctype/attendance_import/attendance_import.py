@@ -24,15 +24,23 @@ def process_file(docname):
     filename = file_url.split("/")[-1]
     file_path = frappe.utils.get_files_path(filename)
 
-    df = pd.read_excel(file_path)
+    df = pd.read_excel(file_path, dtype={"Date": str})
+
+    def parse_date(x):
+        try:
+            return pd.to_datetime(x, dayfirst=True, errors='coerce')
+        except Exception:
+            return pd.NaT
+        
+    df["Date"] = df["Date"].apply(lambda x: parse_date(str(x).strip()) if pd.notna(x) else pd.NaT)
 
     required_columns = ["Name", "Date", "Clock In", "Clock Out"]
     for col in required_columns:
         if col not in df.columns:
             frappe.throw(f"Missing column: {col}")
 
-    DEFAULT_LATITUDE = -6,2239100
-    DEFAULT_LONGITUDE = 106,8290110
+    DEFAULT_LATITUDE = -6.2239100
+    DEFAULT_LONGITUDE = 106.8290110
 
     for _, row in df.iterrows():
         emp = frappe.db.get_value("Employee", {"initial_name": row["Name"]}, "Name")
@@ -42,7 +50,10 @@ def process_file(docname):
 
         # Pastikan date valid
         try:
-            date_part = pd.to_datetime(row["Date"]).date()
+            date_part = row["Date"].date()
+            # date_part = pd.to_datetime(row["Date"]).date()
+            # date_part = pd.to_datetime(row["Date"], dayfirst=True).date()
+
         except Exception:
             frappe.msgprint(f"Invalid date for {row['Name']}, skipped")
             continue
@@ -128,7 +139,7 @@ def process_file(docname):
                 "doctype": "Attendance",
                 "employee": emp,
                 "attendance_date": date_part,
-                "status": "Present",
+                "status": status,
                 "in_time": in_time,
                 "out_time": out_time,
                 "shift": shift_assignment or None
