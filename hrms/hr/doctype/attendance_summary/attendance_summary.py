@@ -111,18 +111,18 @@ def generate_recap(docname):
 
 		if checkin > normal_in:
 			late_in = (checkin - normal_in).seconds // 60
-		else:
-			late_in = 0
+			if late_in > 0:
+				day_records.append((late_in, f"{date} (IN)"))
 
 		if checkout < normal_out:
 			early_out = (normal_out - checkout).seconds // 60
-		else:
-			early_out = 0
+			if early_out > 0:
+				day_records.append((early_out, f"{date} (OUT)"))
 		
-		total_day = late_in + early_out
+		# total_day = late_in + early_out
 
-		if total_day > 0:
-			day_records.append((total_day, date))
+		# if total_day > 0:
+		# 	day_records.append((total_day, date))
 	
 	day_records.sort(key=lambda x: x[0])
 
@@ -136,11 +136,11 @@ def generate_recap(docname):
 		cumulative += total_day
 		total_late_minutes += total_day
 
-		if cumulative > 180:
+		if cumulative > threshold:
 			late_days += 1
-			late_dates.append(str(date))
+			late_dates.append(date)
 
-	over_tolerance = cumulative > 180
+	over_tolerance = cumulative > threshold
 
 	doc.total_late_minutes = total_late_minutes
 	doc.late_days = late_days
