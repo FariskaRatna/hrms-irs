@@ -1457,3 +1457,35 @@ def get_leave_approver(employee):
 
 def on_doctype_update():
 	frappe.db.add_index("Leave Application", ["employee", "from_date", "to_date"])
+
+def after_submit(doc, method=None):
+	employee = doc.employee
+	from_date = doc.from_date
+	to_date = doc.to_date
+	
+	current_date = from_date
+	while current_date <= to_date:
+		existing_att = frappe.db.exists("Attendance", {
+		"employee": employee,
+		"attendance_date": current_date
+		})
+
+		if existing_att:
+			frappe.db.delete("Attendance", {"name": existing_att})
+			frappe.msgprint(f"Deleted old attendance for {employee} on {current_date}")
+		
+		status = "Half Day" if getattr(doc, "half_day", 0) else "On Leave"
+
+		att = frappe.get_doc({
+			"doctype": "Attendance",
+			"employee": employee,
+			"attendance_date": current_date,
+			"status": status,
+			"leave_type": doc.leave_type,
+			"docstatus": 1
+		})
+		att.insert(ignore_permissions=True)
+		att.submit()
+		frappe.msgprint(f"Attendance updated for {employee} on {current_date} as {status}")
+
+		current_date = add_days(current_date, 1)

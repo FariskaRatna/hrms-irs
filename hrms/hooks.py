@@ -158,6 +158,9 @@ override_doctype_class = {
 # Hook on document methods and events
 
 doc_events = {
+	"Leave Application": {
+		"after_submit": "hrms.hr.doctype.leave_application.leave_application.after_submit"
+	},
 	"User": {
 		"validate": [
 			"erpnext.setup.doctype.employee.employee.validate_employee_role",
