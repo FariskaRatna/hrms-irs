@@ -371,5 +371,8 @@ company_data_to_be_ignored = [
 ]
 
 fixtures = [
-    {"dt": "Custom Field", "filters": [["dt", "=", "Employee"], ["fieldname", "=", "initial_name"]]}
+    {"dt": "Custom Field", "filters": [["dt", "=", "Employee"], ["fieldname", "=", "initial_name"]]},
+	{
+		"doctype": "Leave Type", "filters":[["name", "in", ["Cuti", "Sakit", "Izin", "Izin Terlambat", "Izin Setengah Hari"]]]
+	}
 ]
