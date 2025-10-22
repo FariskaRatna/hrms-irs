@@ -13,11 +13,14 @@
   "designation",
   "overtime_details_section",
   "date",
+  "day_type",
   "start_time",
   "end_time",
+  "total_hours",
   "column_break_xyeq",
   "description",
-  "status"
+  "status",
+  "amended_from"
  ],
  "fields": [
   {
@@ -93,13 +96,38 @@
    "fieldname": "status",
    "fieldtype": "Select",
    "label": "Status",
-   "options": "\nApproved\nPending\nRejected"
+   "options": "Draft\nApproved\nRejected"
+  },
+  {
+   "fieldname": "day_type",
+   "fieldtype": "Select",
+   "label": "Day Type",
+   "options": "\nWeekday\nWeekend",
+   "reqd": 1
+  },
+  {
+   "fieldname": "total_hours",
+   "fieldtype": "Float",
+   "label": "Total Hours",
+   "precision": "2",
+   "read_only": 1
+  },
+  {
+   "fieldname": "amended_from",
+   "fieldtype": "Link",
+   "label": "Amended From",
+   "no_copy": 1,
+   "options": "Overtime",
+   "print_hide": 1,
+   "read_only": 1,
+   "search_index": 1
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
+ "is_submittable": 1,
  "links": [],
- "modified": "2025-10-14 17:59:02.174589",
+ "modified": "2025-10-22 16:09:18.855359",
  "modified_by": "Administrator",
  "module": "HR",
  "name": "Overtime",
