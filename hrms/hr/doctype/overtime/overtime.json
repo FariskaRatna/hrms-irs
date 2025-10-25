@@ -96,7 +96,8 @@
    "fieldname": "status",
    "fieldtype": "Select",
    "label": "Status",
-   "options": "Draft\nApproved\nRejected"
+   "options": "Draft\nApproved\nRejected",
+   "permlevel": 1
   },
   {
    "fieldname": "day_type",
@@ -127,7 +128,7 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-10-22 16:09:18.855359",
+ "modified": "2025-10-23 11:50:33.691236",
  "modified_by": "Administrator",
  "module": "HR",
  "name": "Overtime",
