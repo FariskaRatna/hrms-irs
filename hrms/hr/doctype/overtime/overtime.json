@@ -1,11 +1,13 @@
 {
  "actions": [],
  "allow_rename": 1,
+ "autoname": "naming_series:",
  "creation": "2025-10-14 17:50:40.952694",
  "doctype": "DocType",
  "engine": "InnoDB",
  "field_order": [
   "employee_details_section",
+  "naming_series",
   "employee",
   "employee_name",
   "column_break_bgys",
@@ -122,13 +124,24 @@
    "print_hide": 1,
    "read_only": 1,
    "search_index": 1
+  },
+  {
+   "fieldname": "naming_series",
+   "fieldtype": "Select",
+   "label": "Series",
+   "options": "HR-OVT-",
+   "reqd": 1
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
+<<<<<<< HEAD
  "modified": "2025-10-23 11:50:33.691236",
+=======
+ "modified": "2025-10-24 14:40:58.833810",
+>>>>>>> e8e92a2a38c02aa381b2c1d796d109d5072dd732
  "modified_by": "Administrator",
  "module": "HR",
  "name": "Overtime",
