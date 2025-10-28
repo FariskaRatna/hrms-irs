@@ -50,21 +50,27 @@
    "fieldtype": "Select",
    "in_list_view": 1,
    "label": "Series",
+   "no_copy": 1,
    "options": "HR-BT-",
-   "reqd": 1
+   "print_hide": 1,
+   "reqd": 1,
+   "set_only_once": 1
   },
   {
    "fieldname": "employee",
    "fieldtype": "Link",
-   "in_list_view": 1,
+   "in_global_search": 1,
+   "in_standard_filter": 1,
    "label": "Employee",
    "options": "Employee",
-   "reqd": 1
+   "reqd": 1,
+   "search_index": 1
   },
   {
    "fetch_from": "employee.employee_name",
    "fieldname": "employee_name",
    "fieldtype": "Data",
+   "in_global_search": 1,
    "label": "Employee Name",
    "read_only": 1
   },
@@ -137,7 +143,7 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-10-17 17:12:49.880446",
+ "modified": "2025-10-27 16:01:11.879369",
  "modified_by": "Administrator",
  "module": "HR",
  "name": "Business Trip",
