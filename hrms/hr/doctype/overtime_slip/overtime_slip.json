@@ -9,14 +9,16 @@
   "employee_details_section",
   "naming_series",
   "employee",
-  "column_break_gtmo",
   "employee_name",
+  "column_break_gtmo",
   "department",
+  "designation",
   "section_break_u5mm",
   "date",
   "day_type",
   "total_hours",
   "column_break_vxly",
+  "reference_request",
   "total_amount",
   "status",
   "amended_from"
@@ -44,10 +46,12 @@
   {
    "fieldname": "naming_series",
    "fieldtype": "Select",
-   "in_list_view": 1,
    "label": "Series",
+   "no_copy": 1,
    "options": "HR-OVT-SLIP-",
-   "reqd": 1
+   "print_hide": 1,
+   "reqd": 1,
+   "set_only_once": 1
   },
   {
    "fieldname": "employee",
@@ -114,15 +118,28 @@
    "fieldname": "status",
    "fieldtype": "Select",
    "label": "Status",
-   "options": "\nApproved\nRejected",
+   "options": "Pending\nApproved",
    "permlevel": 1
+  },
+  {
+   "fieldname": "reference_request",
+   "fieldtype": "Link",
+   "label": "Overtime Request",
+   "options": "Overtime"
+  },
+  {
+   "fetch_from": "employee.designation",
+   "fieldname": "designation",
+   "fieldtype": "Data",
+   "label": "Designation",
+   "read_only": 1
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-10-25 21:27:26.666474",
+ "modified": "2025-10-25 22:40:52.541695",
  "modified_by": "Administrator",
  "module": "HR",
  "name": "Overtime Slip",
