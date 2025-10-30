@@ -2,48 +2,41 @@
  "actions": [],
  "allow_rename": 1,
  "autoname": "naming_series:",
- "creation": "2025-10-17 16:52:31.801568",
+ "creation": "2025-10-30 09:48:00.606576",
  "doctype": "DocType",
  "engine": "InnoDB",
  "field_order": [
-  "employee_details",
+  "section_break_8vra",
   "naming_series",
   "employee",
   "employee_name",
-  "column_break_jxrz",
+  "column_break_eahz",
   "department",
   "designation",
-  "section_break_jjpy",
-  "project",
-  "from_date",
-  "to_date",
-  "total_days",
-  "column_break_uqed",
-  "code",
-  "location",
-  "status",
-  "amended_from"
+  "loan_application_section",
+  "total_loan",
+  "installment",
+  "date_required",
+  "amended_from",
+  "column_break_torb",
+  "reason",
+  "status"
  ],
  "fields": [
   {
-   "fieldname": "section_break_jjpy",
+   "fieldname": "section_break_8vra",
    "fieldtype": "Section Break",
-   "label": "Business Trip Details"
+   "label": "Employee Details"
   },
   {
    "fieldname": "amended_from",
    "fieldtype": "Link",
    "label": "Amended From",
    "no_copy": 1,
-   "options": "Business Trip",
+   "options": "Loan Application",
    "print_hide": 1,
    "read_only": 1,
    "search_index": 1
-  },
-  {
-   "fieldname": "employee_details",
-   "fieldtype": "Section Break",
-   "label": "Employee Details"
   },
   {
    "fieldname": "naming_series",
@@ -51,7 +44,7 @@
    "in_list_view": 1,
    "label": "Series",
    "no_copy": 1,
-   "options": "HR-BT-",
+   "options": "HR-LOAN-",
    "print_hide": 1,
    "reqd": 1,
    "set_only_once": 1
@@ -59,23 +52,20 @@
   {
    "fieldname": "employee",
    "fieldtype": "Link",
-   "in_global_search": 1,
-   "in_standard_filter": 1,
+   "in_list_view": 1,
    "label": "Employee",
    "options": "Employee",
-   "reqd": 1,
-   "search_index": 1
+   "reqd": 1
   },
   {
    "fetch_from": "employee.employee_name",
    "fieldname": "employee_name",
    "fieldtype": "Data",
-   "in_global_search": 1,
    "label": "Employee Name",
    "read_only": 1
   },
   {
-   "fieldname": "column_break_jxrz",
+   "fieldname": "column_break_eahz",
    "fieldtype": "Column Break"
   },
   {
@@ -93,49 +83,45 @@
    "read_only": 1
   },
   {
-   "fieldname": "project",
-   "fieldtype": "Link",
-   "label": "Project",
-   "options": "Project Type",
+   "fieldname": "loan_application_section",
+   "fieldtype": "Section Break",
+   "label": "Loan Application"
+  },
+  {
+   "fieldname": "total_loan",
+   "fieldtype": "Currency",
+   "in_list_view": 1,
+   "label": "Total Loan",
+   "precision": "0",
    "reqd": 1
   },
   {
-   "fieldname": "from_date",
+   "fieldname": "installment",
+   "fieldtype": "Currency",
+   "in_list_view": 1,
+   "label": "Installment",
+   "precision": "0",
+   "reqd": 1
+  },
+  {
+   "fieldname": "date_required",
    "fieldtype": "Date",
-   "label": "From Date",
-   "reqd": 1
+   "label": "Date Required"
   },
   {
-   "fieldname": "to_date",
-   "fieldtype": "Date",
-   "label": "To Date",
-   "reqd": 1
-  },
-  {
-   "fieldname": "total_days",
-   "fieldtype": "Data",
-   "label": "Total Days",
-   "read_only": 1
-  },
-  {
-   "fieldname": "column_break_uqed",
+   "fieldname": "column_break_torb",
    "fieldtype": "Column Break"
   },
   {
-   "fieldname": "code",
-   "fieldtype": "Data",
-   "label": "Code Project"
-  },
-  {
-   "fieldname": "location",
-   "fieldtype": "Data",
-   "label": "Location"
+   "fieldname": "reason",
+   "fieldtype": "Small Text",
+   "label": "Reason"
   },
   {
    "fieldname": "status",
    "fieldtype": "Select",
    "label": "Status",
-   "options": "\nApproved\nRejected\nCancelled",
+   "options": "Draft\nApproved\nRejected",
    "permlevel": 1
   }
  ],
@@ -143,11 +129,10 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-10-27 16:01:11.879369",
+ "modified": "2025-10-30 10:02:15.392202",
  "modified_by": "Administrator",
  "module": "HR",
- "name": "Business Trip",
- "naming_rule": "By \"Naming Series\" field",
+ "name": "Loan Application",
  "owner": "Administrator",
  "permissions": [
   {
