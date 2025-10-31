@@ -8,8 +8,8 @@ from frappe.utils import nowdate, getdate
 
 class LoanApplication(Document):
 	def on_submit(self):
-		if self.status == "Approved"
-		self.update_employee_loan_application()
+		if self.status == "Approved":
+			self.update_employee_loan_application()
 		
 	def update_employee_loan_application(self):
 		employee = frappe.get_doc("Employee", self.employee)
