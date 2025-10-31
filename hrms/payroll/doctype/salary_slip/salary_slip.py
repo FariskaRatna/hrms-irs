@@ -2431,3 +2431,47 @@ def email_salary_slips(names) -> None:
 	for name in names:
 		salary_slip = frappe.get_doc("Salary Slip", name)
 		salary_slip.email_salary_slip()
+
+
+
+# Loan Deduction on Salary Slip
+def update_employee_loan_on_salary_submit(salary_slip, method):
+	employee = frappe.get_doc("Employee", salary_slip.employee)
+	today = getdate(salary_slip.start_date)
+
+	loans = frappe.get_all(
+		"Loan Application",
+		filters={
+			"employee": employee.name,
+			"status": "Approved",
+			"docstatus": 1,
+		}
+		fields = ["name", "deduction_start_date", "installment"]
+	)
+
+	loan_deduction = 0
+
+	for loan in loans:
+		if getdate(loan.deduction_start_date) <= today:
+			loan_deduction += loan.installment
+
+		if loan_deduction:
+			found = False
+			for d in salary_slip.get("deductions"):
+				if d.salary_component == "Loan Deduction":
+					d.amount += loan_deduction
+					found = True
+					break
+
+			if not found:
+				salary_slip.append("deductions", {
+					"salary_component": "Loan Deduction",
+					"amount": loan_deduction
+				})
+
+			employee.loan_balance = (employee.loan_balance or 0) - loan_deduction
+			employee.save(ignore_permissions=True)
+
+def on_submit(self):
+    super().on_submit()
+    update_employee_loan_on_salary_submit(self, "on_submit")

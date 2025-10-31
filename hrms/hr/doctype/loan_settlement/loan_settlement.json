@@ -1,11 +1,26 @@
 {
  "actions": [],
  "allow_rename": 1,
+ "autoname": "naming_series:",
  "creation": "2025-10-30 10:46:06.717795",
  "doctype": "DocType",
  "engine": "InnoDB",
  "field_order": [
   "section_break_lj2v",
+  "naming_series",
+  "employee",
+  "employee_name",
+  "column_break_pwoc",
+  "department",
+  "designation",
+  "settlement_section",
+  "settlement_date",
+  "amount",
+  "loan_application",
+  "column_break_pjij",
+  "loan_balance",
+  "status",
+  "transaction_proof",
   "amended_from"
  ],
  "fields": [
@@ -22,16 +37,110 @@
    "print_hide": 1,
    "read_only": 1,
    "search_index": 1
+  },
+  {
+   "fieldname": "naming_series",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Series",
+   "no_copy": 1,
+   "options": "HR-LOAN-SET-",
+   "print_hide": 1,
+   "reqd": 1,
+   "set_only_once": 1
+  },
+  {
+   "fieldname": "employee",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Employee",
+   "options": "Employee",
+   "reqd": 1
+  },
+  {
+   "fetch_from": "employee.employee_name",
+   "fieldname": "employee_name",
+   "fieldtype": "Data",
+   "label": "Employee Name",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_pwoc",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fetch_from": "employee.department",
+   "fieldname": "department",
+   "fieldtype": "Data",
+   "label": "Department",
+   "read_only": 1
+  },
+  {
+   "fetch_from": "employee.designation",
+   "fieldname": "designation",
+   "fieldtype": "Data",
+   "label": "Designation",
+   "read_only": 1
+  },
+  {
+   "fieldname": "settlement_section",
+   "fieldtype": "Section Break",
+   "label": "Settlement"
+  },
+  {
+   "fieldname": "settlement_date",
+   "fieldtype": "Date",
+   "in_list_view": 1,
+   "label": "Settlement Date",
+   "reqd": 1
+  },
+  {
+   "fieldname": "amount",
+   "fieldtype": "Currency",
+   "label": "Amount",
+   "precision": "0",
+   "reqd": 1
+  },
+  {
+   "fieldname": "column_break_pjij",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "label": "Status",
+   "options": "Draft\nApproved",
+   "permlevel": 1
+  },
+  {
+   "fetch_from": "employee.loan_balance",
+   "fieldname": "loan_balance",
+   "fieldtype": "Data",
+   "label": "Loan Balance",
+   "read_only": 1
+  },
+  {
+   "fieldname": "loan_application",
+   "fieldtype": "Link",
+   "label": "Loan Application",
+   "options": "Loan Application",
+   "reqd": 1
+  },
+  {
+   "fieldname": "transaction_proof",
+   "fieldtype": "Attach",
+   "label": "Transaction Proof"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-10-30 10:46:06.717795",
+ "modified": "2025-10-31 17:37:27.563887",
  "modified_by": "Administrator",
  "module": "HR",
  "name": "Loan Settlement",
+ "naming_rule": "By \"Naming Series\" field",
  "owner": "Administrator",
  "permissions": [
   {
