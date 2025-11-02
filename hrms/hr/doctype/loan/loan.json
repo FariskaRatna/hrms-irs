@@ -24,7 +24,9 @@
   "balance_amount",
   "repayment_status",
   "status",
-  "amended_from"
+  "amended_from",
+  "repayment_tracking_section",
+  "repayment_tracking"
  ],
  "fields": [
   {
@@ -149,13 +151,25 @@
    "fieldtype": "Select",
    "label": "Status",
    "options": "Active\nClosed\nCancelled"
+  },
+  {
+   "fieldname": "repayment_tracking_section",
+   "fieldtype": "Section Break",
+   "label": "Repayment Tracking"
+  },
+  {
+   "allow_on_submit": 1,
+   "fieldname": "repayment_tracking",
+   "fieldtype": "Table",
+   "label": "Repayment Tracking",
+   "options": "Loan Repayment Tracking"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-11-02 19:17:20.639623",
+ "modified": "2025-11-02 20:29:44.946990",
  "modified_by": "Administrator",
  "module": "HR",
  "name": "Loan",

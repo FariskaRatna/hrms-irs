@@ -3,6 +3,8 @@
 
 import frappe
 from frappe.model.document import Document
+import pandas as pd
+from frappe.utils.file_manager import save_file
 
 
 class Loan(Document):
@@ -38,3 +40,27 @@ def clear_employee_loan(employee):
 		employee_loan.installment = 0
 		employee_loan.loan_balance = 0
 		employee_loan.save(ignore_permissions=True)
+
+@frappe.whitelist()
+def download_repayment_excel(loan_name):
+	loan = frappe.get_doc("Loan", loan_name)
+	if not loan.repayment_tracking:
+		frappe.throw("No repayment records found")
+
+	data = []
+	for r in loan.repayment_tracking:
+		data.append({
+			"Payment Date": r.payment_date,
+			"Amount Paid": r.amount_paid,
+			"Balance After Payment": r.balance_after,
+			"Reference": r.salary_slip or "-",
+			"Remarks": r.remarks,
+		})
+		
+	df = pd.DataFrame(data)
+	file_name = f"Repayment_History_{loan.name}.xlsx"
+	file_path = frappe.utils.get_site_path("public", "files", file_name)
+	df.to_excel(file_path, index=False)
+
+	file_url = f"/files/{file_name}"
+	return file_url
