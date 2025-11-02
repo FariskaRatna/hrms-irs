@@ -2453,11 +2453,21 @@ def update_employee_loan_on_salary_submit(salary_slip, method):
 
 	for loan in loans:
 		if getdate(loan.deduction_start_date) <= today:
-			loan_deduction += loan.installment
+			loan_doc = frappe.get_doc("Loan", loan.name)
 
-			loan_doc = frappe.get_doc("loan", loan.name)
+
+			deduction = min(loan_doc.installment, loan_doc.balance_amount)
+			loan_deduction += deduction
+
+			loan_doc.balance_amount -= deduction
 			loan_doc.paid_installments += 1
-			loan_doc.balance_amount -= loan_doc.installment
+
+			repayment = loan_doc.append("repayment_tracking", {})
+			repayment.payment_date = salary_slip.posting_date
+			repayment.amount_paid = deduction
+			repayment.balance_after = loan_doc.balance_amount
+			repayment.reference = salary_slip.name
+			repayment.remarks = "Deduction on Salary Slip"
 
 			if loan_doc.paid_installments >= loan_doc.total_installments or loan_doc.balance_amount <= 0:
 				loan_doc.repayment_status = "Paid"

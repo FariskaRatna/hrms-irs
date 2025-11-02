@@ -34,6 +34,13 @@ class LoanSettlement(Document):
             frappe.msgprint(f"Loan {loan.name} has been fully settled.")
         else:
             frappe.msgprint(f"Loan {loan.name} has been partially settled. Remaining balance: {loan.balance_amount}")
+
+        repayment = loan.append("repayment_tracking", {})
+        repayment.payment_date = self.settlement_date
+        repayment.amount_paid = self.amount
+        repayment.balance_after = loan.balance_amount
+        repayment.reference = self.name
+        repayment.remarks = "Loan Settlement Payment"
         
         loan.save(ignore_permissions=True)
 
