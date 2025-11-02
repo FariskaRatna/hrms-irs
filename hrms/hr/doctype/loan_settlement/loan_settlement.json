@@ -16,7 +16,7 @@
   "settlement_section",
   "settlement_date",
   "amount",
-  "loan_application",
+  "loan",
   "column_break_pjij",
   "loan_balance",
   "status",
@@ -120,23 +120,23 @@
    "read_only": 1
   },
   {
-   "fieldname": "loan_application",
-   "fieldtype": "Link",
-   "label": "Loan Application",
-   "options": "Loan Application",
-   "reqd": 1
-  },
-  {
    "fieldname": "transaction_proof",
    "fieldtype": "Attach",
    "label": "Transaction Proof"
+  },
+  {
+   "fieldname": "loan",
+   "fieldtype": "Link",
+   "label": "Loan",
+   "options": "Loan",
+   "reqd": 1
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-10-31 17:37:27.563887",
+ "modified": "2025-11-02 12:20:25.585711",
  "modified_by": "Administrator",
  "module": "HR",
  "name": "Loan Settlement",

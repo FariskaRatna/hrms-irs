@@ -6,28 +6,39 @@ from frappe.model.document import Document
 
 class LoanSettlement(Document):
     def validate(self):
-        # Ambil data Employee dan Loan Application
-        if not self.loan_application:
-            frappe.throw("Please select a Loan Application")
+        if not self.loan:
+            frappe.throw("Please select a Loan")
 
-        loan = frappe.get_doc("Loan Application", self.loan_application)
+        loan = frappe.get_doc("Loan", self.loan)
         employee = frappe.get_doc("Employee", self.employee)
 
-        # Ambil saldo awal
-        self.total_balance = (employee.loan_balance or 0) - (self.amount or 0)
+        new_balance = (loan.balance_amount or 0) - (self.amount or 0)
 
-        if self.total_balance < 0:
+        if new_balance < 0:
             frappe.throw("Payment amount exceeds remaining loan balance")
 
-    def on_submit(self):
-        # Update saldo di Employee
-        employee = frappe.get_doc("Employee", self.employee)
-        employee.loan_balance = (employee.loan_balance or 0) - (self.amount or 0)
-        employee.save(ignore_permissions=True)
+        self.remaining_balance = new_balance
 
-        # Update Loan Application (opsional)
-        loan = frappe.get_doc("Loan Application", self.loan_application)
-        if employee.loan_balance <= 0:
-            loan.status = "Settled"
+    def on_submit(self):
+        loan = frappe.get_doc("Loan", self.loan)
+        employee = frappe.get_doc("Employee", self.employee)
+
+        loan.balance_amount = (loan.balance_amount or 0) - (self.amount or 0)
+
+        if loan.installment and self.amount >= loan.installment:
+            loan.paid_installments += int(self.amount / loan.installment)
+
+        if loan.balance_amount <= 0:
+            loan.repayment_status = "Paid"
+            loan.status = "Closed"
             frappe.msgprint(f"Loan {loan.name} has been fully settled.")
+        else:
+            frappe.msgprint(f"Loan {loan.name} has been partially settled. Remaining balance: {loan.balance_amount}")
+        
         loan.save(ignore_permissions=True)
+
+        # Update saldo di Employee
+        employee.loan_balance = (employee.loan_balance or 0) - (self.amount or 0)
+        if employee.loan_balance < 0:
+            employee.loan_balance = 0
+        employee.save(ignore_permissions=True)

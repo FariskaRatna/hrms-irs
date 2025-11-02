@@ -161,6 +161,11 @@ doc_events = {
 	"Leave Application": {
 		"after_submit": "hrms.hr.doctype.leave_application.leave_application.after_submit"
 	},
+	"Loan": {
+		"on_cancel": "hrms.hr.doctype.loan.loan.on_cancel",
+		"on_trash": "hrms.hr.doctype.loan.loan.on_trash",
+		"on_update_after_submit": "hrms.hr.doctype.loan.loan.on_update_after_submit",
+	},
 	"User": {
 		"validate": [
 			"erpnext.setup.doctype.employee.employee.validate_employee_role",
@@ -201,7 +206,7 @@ doc_events = {
 			"hrms.payroll.doctype.salary_withholding.salary_withholding.update_salary_withholding_payment_status",
 		],
 	},
-	"Loan": {"validate": "hrms.hr.utils.validate_loan_repay_from_salary"},
+	# "Loan": {"validate": "hrms.hr.utils.validate_loan_repay_from_salary"},
 	"Employee": {
 		"validate": "hrms.overrides.employee_master.validate_onboarding_process",
 		"on_update": [

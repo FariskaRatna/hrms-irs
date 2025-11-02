@@ -2440,13 +2440,13 @@ def update_employee_loan_on_salary_submit(salary_slip, method):
 	today = getdate(salary_slip.start_date)
 
 	loans = frappe.get_all(
-		"Loan Application",
+		"Loan",
 		filters={
 			"employee": employee.name,
-			"status": "Approved",
-			"docstatus": 1,
-		}
-		fields = ["name", "deduction_start_date", "installment"]
+			"status": "Active",
+			"repayment_status": "Unpaid"
+		},
+		fields = ["name", "deduction_start_date", "installment", "paid_installments", "total_installments", "balance_amount"]
 	)
 
 	loan_deduction = 0
@@ -2454,6 +2454,16 @@ def update_employee_loan_on_salary_submit(salary_slip, method):
 	for loan in loans:
 		if getdate(loan.deduction_start_date) <= today:
 			loan_deduction += loan.installment
+
+			loan_doc = frappe.get_doc("loan", loan.name)
+			loan_doc.paid_installments += 1
+			loan_doc.balance_amount -= loan_doc.installment
+
+			if loan_doc.paid_installments >= loan_doc.total_installments or loan_doc.balance_amount <= 0:
+				loan_doc.repayment_status = "Paid"
+				loan_doc.status = "Closed"
+
+			loan_doc.save(ignore_permissions=True)
 
 		if loan_deduction:
 			found = False
