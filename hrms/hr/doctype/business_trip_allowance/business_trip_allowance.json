@@ -15,6 +15,7 @@
   "designation",
   "allowance_details",
   "business_trip",
+  "business_trip_allowance_type",
   "departure_date",
   "return_date",
   "column_break_jjox",
@@ -126,13 +127,19 @@
    "fieldname": "total_days",
    "fieldtype": "Data",
    "label": "Total Days"
+  },
+  {
+   "fieldname": "business_trip_allowance_type",
+   "fieldtype": "Link",
+   "label": "Business Trip Allowance Type",
+   "options": "Business Trip Allowance Type"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-11-03 11:40:35.937034",
+ "modified": "2025-11-03 16:01:54.237393",
  "modified_by": "Administrator",
  "module": "HR",
  "name": "Business Trip Allowance",

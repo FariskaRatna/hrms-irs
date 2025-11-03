@@ -1,0 +1,94 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "field:business_trip_name",
+ "creation": "2025-11-03 14:14:34.053961",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "business_trip_name",
+  "allowance_type",
+  "destination",
+  "currency",
+  "day_stype",
+  "column_break_rwfz",
+  "travel_cost",
+  "description"
+ ],
+ "fields": [
+  {
+   "fieldname": "allowance_type",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Allowance Type",
+   "options": "\nStaff\nManager\nDireksi",
+   "reqd": 1
+  },
+  {
+   "fieldname": "destination",
+   "fieldtype": "Select",
+   "label": "Destination",
+   "options": "\nDalam Negeri\nAsia\nJepang\nArab Saudi\nEropa\nAmerika"
+  },
+  {
+   "fieldname": "column_break_rwfz",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "travel_cost",
+   "fieldtype": "Currency",
+   "label": "Travel Cost",
+   "precision": "0"
+  },
+  {
+   "fieldname": "description",
+   "fieldtype": "Small Text",
+   "label": "Description"
+  },
+  {
+   "fieldname": "currency",
+   "fieldtype": "Link",
+   "label": "Currency",
+   "options": "Currency"
+  },
+  {
+   "fieldname": "day_stype",
+   "fieldtype": "Select",
+   "label": "Day Type",
+   "options": "\nWeekday\nWeekend"
+  },
+  {
+   "fieldname": "business_trip_name",
+   "fieldtype": "Data",
+   "label": "Business Trip Name",
+   "reqd": 1,
+   "unique": 1
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2025-11-03 16:22:09.205546",
+ "modified_by": "Administrator",
+ "module": "HR",
+ "name": "Business Trip Allowance Type",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}
