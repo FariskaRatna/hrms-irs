@@ -20,7 +20,7 @@
   "total_days",
   "column_break_uqed",
   "code",
-  "location",
+  "destination",
   "status",
   "amended_from"
  ],
@@ -127,23 +127,24 @@
    "label": "Code Project"
   },
   {
-   "fieldname": "location",
-   "fieldtype": "Data",
-   "label": "Location"
-  },
-  {
    "fieldname": "status",
    "fieldtype": "Select",
    "label": "Status",
    "options": "\nApproved\nRejected\nCancelled",
    "permlevel": 1
+  },
+  {
+   "fieldname": "destination",
+   "fieldtype": "Select",
+   "label": "Destination",
+   "options": "\nDalam Negeri\nAsia\nJepang\nArab Saudi\nEropa\nAmerika"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-10-27 16:01:11.879369",
+ "modified": "2025-11-03 16:09:22.451068",
  "modified_by": "Administrator",
  "module": "HR",
  "name": "Business Trip",
