@@ -18,9 +18,12 @@
   "business_trip_allowance_type",
   "departure_date",
   "return_date",
+  "weekday_count",
   "column_break_jjox",
+  "weekend_count",
   "total_days",
   "allowance_amount",
+  "total_allowance",
   "status",
   "amended_from"
  ],
@@ -98,9 +101,10 @@
   },
   {
    "allow_on_submit": 1,
+   "fetch_from": "business_trip_allowance_type.travel_cost",
    "fieldname": "allowance_amount",
    "fieldtype": "Currency",
-   "label": "Allowance Amount",
+   "label": "Allowance Amount Per Day",
    "precision": "0"
   },
   {
@@ -133,13 +137,29 @@
    "fieldtype": "Link",
    "label": "Business Trip Allowance Type",
    "options": "Business Trip Allowance Type"
+  },
+  {
+   "fieldname": "weekday_count",
+   "fieldtype": "Int",
+   "label": "Weekday Count"
+  },
+  {
+   "fieldname": "weekend_count",
+   "fieldtype": "Int",
+   "label": "Weekend Count"
+  },
+  {
+   "fieldname": "total_allowance",
+   "fieldtype": "Currency",
+   "label": "Total Allowance",
+   "precision": "0"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-11-03 16:01:54.237393",
+ "modified": "2025-11-03 16:58:51.304779",
  "modified_by": "Administrator",
  "module": "HR",
  "name": "Business Trip Allowance",
