@@ -14,9 +14,11 @@
   "department",
   "designation",
   "allowance_details",
-  "busniness_trip",
+  "business_trip",
   "departure_date",
+  "return_date",
   "column_break_jjox",
+  "total_days",
   "allowance_amount",
   "status",
   "amended_from"
@@ -85,14 +87,6 @@
    "label": "Allowance Details"
   },
   {
-   "fieldname": "busniness_trip",
-   "fieldtype": "Link",
-   "in_list_view": 1,
-   "label": "Business Trip Application",
-   "options": "Business Trip",
-   "reqd": 1
-  },
-  {
    "fieldname": "departure_date",
    "fieldtype": "Date",
    "label": "Departure Date"
@@ -114,16 +108,35 @@
    "label": "Status",
    "options": "Draft\nApproved\nRejected\nCancelled",
    "permlevel": 1
+  },
+  {
+   "fieldname": "return_date",
+   "fieldtype": "Date",
+   "label": "Return Date"
+  },
+  {
+   "fieldname": "business_trip",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Business Trip Application",
+   "options": "Business Trip",
+   "reqd": 1
+  },
+  {
+   "fieldname": "total_days",
+   "fieldtype": "Data",
+   "label": "Total Days"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-11-03 10:49:49.922229",
+ "modified": "2025-11-03 11:40:35.937034",
  "modified_by": "Administrator",
  "module": "HR",
  "name": "Business Trip Allowance",
+ "naming_rule": "By \"Naming Series\" field",
  "owner": "Administrator",
  "permissions": [
   {
