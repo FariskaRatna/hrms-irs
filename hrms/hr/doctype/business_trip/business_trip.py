@@ -28,7 +28,8 @@ class BusinessTrip(Document):
 		bt_doc = frappe.new_doc("Business Trip Allowance")
 		bt_doc.employee = self.employee
 		bt_doc.business_trip = self.name
-		bt_doc.business_trip_allowance_type = self.business_trip_type
+		# bt_doc.business_trip_allowance_type = self.business_trip_type
+		bt_doc.destination = self.destination
 		bt_doc.departure_date = self.from_date
 		bt_doc.return_date = self.to_date
 		bt_doc.total_days = self.total_days

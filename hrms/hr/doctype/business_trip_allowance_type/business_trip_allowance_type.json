@@ -7,23 +7,15 @@
  "engine": "InnoDB",
  "field_order": [
   "business_trip_name",
-  "allowance_type",
+  "position",
   "destination",
   "currency",
-  "day_stype",
+  "day_type",
   "column_break_rwfz",
   "travel_cost",
   "description"
  ],
  "fields": [
-  {
-   "fieldname": "allowance_type",
-   "fieldtype": "Select",
-   "in_list_view": 1,
-   "label": "Allowance Type",
-   "options": "\nStaff\nManager\nDireksi",
-   "reqd": 1
-  },
   {
    "fieldname": "destination",
    "fieldtype": "Select",
@@ -52,23 +44,31 @@
    "options": "Currency"
   },
   {
-   "fieldname": "day_stype",
-   "fieldtype": "Select",
-   "label": "Day Type",
-   "options": "\nWeekday\nWeekend"
-  },
-  {
    "fieldname": "business_trip_name",
    "fieldtype": "Data",
    "label": "Business Trip Name",
    "reqd": 1,
    "unique": 1
+  },
+  {
+   "fieldname": "day_type",
+   "fieldtype": "Select",
+   "label": "Day Type",
+   "options": "\nWeekday\nWeekend"
+  },
+  {
+   "fieldname": "position",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Allowance Type",
+   "options": "\nStaff\nManager\nDireksi",
+   "reqd": 1
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-11-03 16:22:09.205546",
+ "modified": "2025-11-04 12:09:44.249623",
  "modified_by": "Administrator",
  "module": "HR",
  "name": "Business Trip Allowance Type",

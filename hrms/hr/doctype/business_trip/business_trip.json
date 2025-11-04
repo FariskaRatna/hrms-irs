@@ -19,7 +19,6 @@
   "to_date",
   "total_days",
   "column_break_uqed",
-  "business_trip_type",
   "code",
   "destination",
   "status",
@@ -128,10 +127,11 @@
    "label": "Code Project"
   },
   {
+   "allow_on_submit": 1,
    "fieldname": "status",
    "fieldtype": "Select",
    "label": "Status",
-   "options": "\nApproved\nRejected\nCancelled",
+   "options": "Draft\nApproved\nRejected\nCancelled",
    "permlevel": 1
   },
   {
@@ -139,20 +139,13 @@
    "fieldtype": "Select",
    "label": "Destination",
    "options": "\nDalam Negeri\nAsia\nJepang\nArab Saudi\nEropa\nAmerika"
-  },
-  {
-   "fieldname": "business_trip_type",
-   "fieldtype": "Link",
-   "label": "Business Trip Type",
-   "options": "Business Trip Allowance Type",
-   "reqd": 1
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-11-03 16:56:52.002402",
+ "modified": "2025-11-04 12:46:16.979284",
  "modified_by": "Administrator",
  "module": "HR",
  "name": "Business Trip",

@@ -15,14 +15,15 @@
   "designation",
   "allowance_details",
   "business_trip",
-  "business_trip_allowance_type",
+  "destination",
   "departure_date",
   "return_date",
   "weekday_count",
-  "column_break_jjox",
   "weekend_count",
+  "column_break_jjox",
   "total_days",
-  "allowance_amount",
+  "allowance_weekday",
+  "allowance_weekend",
   "total_allowance",
   "status",
   "amended_from"
@@ -80,12 +81,6 @@
    "read_only": 1
   },
   {
-   "fetch_from": "employee.designation",
-   "fieldname": "designation",
-   "fieldtype": "Data",
-   "label": "Designation"
-  },
-  {
    "fieldname": "allowance_details",
    "fieldtype": "Section Break",
    "label": "Allowance Details"
@@ -101,13 +96,6 @@
   },
   {
    "allow_on_submit": 1,
-   "fetch_from": "business_trip_allowance_type.travel_cost",
-   "fieldname": "allowance_amount",
-   "fieldtype": "Currency",
-   "label": "Allowance Amount Per Day",
-   "precision": "0"
-  },
-  {
    "fieldname": "status",
    "fieldtype": "Select",
    "label": "Status",
@@ -133,33 +121,56 @@
    "label": "Total Days"
   },
   {
-   "fieldname": "business_trip_allowance_type",
-   "fieldtype": "Link",
-   "label": "Business Trip Allowance Type",
-   "options": "Business Trip Allowance Type"
-  },
-  {
    "fieldname": "weekday_count",
    "fieldtype": "Int",
-   "label": "Weekday Count"
+   "label": "Weekday Count",
+   "read_only": 1
   },
   {
    "fieldname": "weekend_count",
    "fieldtype": "Int",
-   "label": "Weekend Count"
+   "label": "Weekend Count",
+   "read_only": 1
   },
   {
    "fieldname": "total_allowance",
    "fieldtype": "Currency",
    "label": "Total Allowance",
-   "precision": "0"
+   "precision": "0",
+   "read_only": 1
+  },
+  {
+   "fetch_from": "business_trip_allowance_type.travel_cost",
+   "fieldname": "allowance_weekday",
+   "fieldtype": "Currency",
+   "label": "Allowance for Weekday",
+   "precision": "0",
+   "read_only": 1
+  },
+  {
+   "fieldname": "allowance_weekend",
+   "fieldtype": "Currency",
+   "label": "Allowance for Weekend",
+   "read_only": 1
+  },
+  {
+   "fieldname": "destination",
+   "fieldtype": "Select",
+   "label": "Destination",
+   "options": "\nDalam Negeri\nAsia\nJepang\nArab Saudi\nEropa\nAmerika"
+  },
+  {
+   "fetch_from": "employee.designation",
+   "fieldname": "designation",
+   "fieldtype": "Data",
+   "label": "Designation"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-11-03 16:58:51.304779",
+ "modified": "2025-11-04 12:42:55.574052",
  "modified_by": "Administrator",
  "module": "HR",
  "name": "Business Trip Allowance",
