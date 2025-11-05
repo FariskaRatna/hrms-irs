@@ -3,11 +3,15 @@
 
 import frappe
 from frappe.model.document import Document
+from frappe.utils import add_months, get_first_day, get_last_day, getdate
 
 
 class OvertimeSlip(Document):
+	MAX_MONTHLY_OVERTIME = 72
+
 	def before_save(self):
 		self.create_overtime_record()
+		self.check_overtime_hours()
 	
 	def create_overtime_record(self):
 		calculates = frappe.get_all(
@@ -36,3 +40,35 @@ class OvertimeSlip(Document):
 
 		self.total_hours = total_hours
 		self.total_amount = total_amount
+
+	def check_overtime_hours(self):
+		if self.total_hours > self.MAX_MONTHLY_OVERTIME:
+			excesses = self.total_hours - self.MAX_MONTHLY_OVERTIME
+
+			frappe.msgprint(f"Total Overtime Hours is more than {self.MAX_MONTHLY_OVERTIME}. "
+			f"{excesses} will be accumulated on the next month.")
+
+			self.total_hours = self.MAX_MONTHLY_OVERTIME
+
+			from_date = getdate(self.from_date)
+			next_from_date = None
+			next_to_date = None
+
+			if from_date.day >= 21:
+				next_from_date = add_months(from_date, 1).replace(day=21)
+				next_to_date = add_months(from_date, 2).replace(day=20)
+			else:
+				next_from_date = from_date.replace(day=21)
+				next_to_date = add_months(from_date, 1).replace(day=20)
+
+			next_slip = frappe.new_doc("Overtime Slip")
+			next_slip.employee = self.employee
+			next_slip.from_date = next_from_date
+			next_slip.to_date = next_to_date
+			next_slip.total_hours = excesses
+			next_slip.total_amount = 0
+			next_slip.status = "Draft"
+			next_slip.insert(ignore_permissions=True)
+
+			frappe.msgprint(f"Overtime {excesses} hours automatically move on the next month.")
+
