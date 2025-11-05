@@ -1,0 +1,70 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2025-11-05 15:47:32.460204",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "overtime_calculation",
+  "date",
+  "day_type",
+  "column_break_bjfj",
+  "total_hours",
+  "amount"
+ ],
+ "fields": [
+  {
+   "fieldname": "overtime_calculation",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Overtime Calculation",
+   "options": "Overtime Calculation"
+  },
+  {
+   "fetch_from": "overtime_calculation.date",
+   "fieldname": "date",
+   "fieldtype": "Date",
+   "in_list_view": 1,
+   "label": "Date"
+  },
+  {
+   "fieldname": "day_type",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Day Type",
+   "options": "\nWeekday\nWeekend"
+  },
+  {
+   "fieldname": "column_break_bjfj",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "total_hours",
+   "fieldtype": "Float",
+   "in_list_view": 1,
+   "label": "Total Hours",
+   "precision": "2"
+  },
+  {
+   "fieldname": "amount",
+   "fieldtype": "Currency",
+   "in_list_view": 1,
+   "label": "Amount"
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "istable": 1,
+ "links": [],
+ "modified": "2025-11-05 16:27:31.388091",
+ "modified_by": "Administrator",
+ "module": "HR",
+ "name": "Overtime Calculation Detail",
+ "owner": "Administrator",
+ "permissions": [],
+ "row_format": "Dynamic",
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}
