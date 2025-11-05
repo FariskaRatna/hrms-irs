@@ -7,35 +7,32 @@ from frappe.model.document import Document
 
 class OvertimeSlip(Document):
 	def before_save(self):
-		self.calculate_overtime_pay()
+		self.create_overtime_record()
 	
-	def calculate_overtime_pay(self):
-		employee = frappe.get_doc("Employee", self.employee)
-
-		assignment = frappe.get_all(
-			"Salary Structure Assignment",
-			filters={"employee": self.employee, "docstatus": 1},
-			fields = ["base", "salary_structure"],
-			limit = 1
+	def create_overtime_record(self):
+		calculates = frappe.get_all(
+			"Overtime Calculation",
+			filters={
+				"employee": self.employee,
+				"date": ["between", [self.from_date, self.to_date]],
+				"docstatus": 1,
+			},
+			fields=["name", "date", "day_type", "total_hours", "total_amount"]
 		)
-		# base_salary = getattr(employee, "basic_salary", None) or getattr(employee, "base", 0) or 0
-		base_salary = assignment[0].base if assignment else 0
 
-		hourly_rate = base_salary / 173 if base_salary else 0
-		total_hours = self.total_hours or 0
-		total_coef = 0
+		self.calculates = []
+		total_hours = 0
+		total_amount = 0
 
-		if self.day_type == "Weekday":
-			if total_hours > 0:
-				total_coef += 1.5
-			if total_hours > 1:
-				total_coef += (total_hours - 1) * 2
-		elif self.day_type == "Weekend":
-			if total_hours <= 8:
-				total_coef += total_hours * 2
-			elif total_hours == 9:
-				total_coef += (8 *2) + 3
-			elif total_hours > 9:
-				total_coef += (8 * 2) + 3 + (total_hours - 9) * 4
+		for c in calculates:
+			row = self.append("overtime_summary", {})
+			row.overtime_calculation = c.name
+			row.date = c.date
+			row.day_type = c.day_type
+			row.total_hours = c.total_hours
+			row.amount = c.total_amount
+			total_hours += c.total_hours or 0
+			total_amount += c.total_amount or 0
 
-		self.total_amount = total_coef * hourly_rate if total_coef > 0 else 0
+		self.total_hours = total_hours
+		self.total_amount = total_amount

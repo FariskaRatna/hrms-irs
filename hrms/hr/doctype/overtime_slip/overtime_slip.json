@@ -2,31 +2,33 @@
  "actions": [],
  "allow_rename": 1,
  "autoname": "naming_series:",
- "creation": "2025-10-25 21:03:26.793804",
+ "creation": "2025-11-05 11:40:43.164879",
  "doctype": "DocType",
  "engine": "InnoDB",
  "field_order": [
-  "employee_details_section",
+  "section_break_8dcm",
   "naming_series",
   "employee",
   "employee_name",
-  "column_break_gtmo",
+  "column_break_atfu",
   "department",
   "designation",
-  "section_break_u5mm",
-  "date",
-  "day_type",
+  "section_break_uyuc",
+  "amended_from",
+  "from_date",
+  "to_date",
+  "column_break_sqoc",
   "total_hours",
-  "column_break_vxly",
-  "reference_request",
   "total_amount",
   "status",
-  "amended_from"
+  "section_break_gfey",
+  "overtime_summary"
  ],
  "fields": [
   {
-   "fieldname": "section_break_u5mm",
-   "fieldtype": "Section Break"
+   "fieldname": "section_break_8dcm",
+   "fieldtype": "Section Break",
+   "label": "Employee Details"
   },
   {
    "fieldname": "amended_from",
@@ -39,13 +41,9 @@
    "search_index": 1
   },
   {
-   "fieldname": "employee_details_section",
-   "fieldtype": "Section Break",
-   "label": "Employee Details"
-  },
-  {
    "fieldname": "naming_series",
    "fieldtype": "Select",
+   "in_list_view": 1,
    "label": "Series",
    "no_copy": 1,
    "options": "HR-OVT-SLIP-",
@@ -56,58 +54,59 @@
   {
    "fieldname": "employee",
    "fieldtype": "Link",
-   "in_global_search": 1,
-   "in_standard_filter": 1,
+   "in_list_view": 1,
    "label": "Employee",
    "options": "Employee",
-   "reqd": 1,
-   "search_index": 1
-  },
-  {
-   "fieldname": "column_break_gtmo",
-   "fieldtype": "Column Break"
+   "reqd": 1
   },
   {
    "fetch_from": "employee.employee_name",
    "fieldname": "employee_name",
    "fieldtype": "Data",
-   "in_global_search": 1,
    "label": "Employee Name",
    "read_only": 1
+  },
+  {
+   "fieldname": "column_break_atfu",
+   "fieldtype": "Column Break"
   },
   {
    "fetch_from": "employee.department",
    "fieldname": "department",
    "fieldtype": "Data",
-   "in_global_search": 1,
    "label": "Department",
    "read_only": 1
   },
   {
-   "fieldname": "date",
-   "fieldtype": "Date",
-   "in_list_view": 1,
-   "label": "Date",
-   "reqd": 1
+   "fetch_from": "employee.designation",
+   "fieldname": "designation",
+   "fieldtype": "Data",
+   "label": "Designation",
+   "read_only": 1
   },
   {
-   "fieldname": "day_type",
-   "fieldtype": "Select",
-   "in_list_view": 1,
-   "label": "Day Type",
-   "options": "\nWeekday\nWeekend",
-   "reqd": 1
+   "fieldname": "section_break_uyuc",
+   "fieldtype": "Section Break",
+   "label": "Overtime Details"
+  },
+  {
+   "fieldname": "from_date",
+   "fieldtype": "Date",
+   "label": "From Date"
+  },
+  {
+   "fieldname": "to_date",
+   "fieldtype": "Date",
+   "label": "To Date"
+  },
+  {
+   "fieldname": "column_break_sqoc",
+   "fieldtype": "Column Break"
   },
   {
    "fieldname": "total_hours",
    "fieldtype": "Float",
-   "label": "Total Hours",
-   "precision": "2",
-   "reqd": 1
-  },
-  {
-   "fieldname": "column_break_vxly",
-   "fieldtype": "Column Break"
+   "label": "Total Hours"
   },
   {
    "fieldname": "total_amount",
@@ -118,28 +117,25 @@
    "fieldname": "status",
    "fieldtype": "Select",
    "label": "Status",
-   "options": "Pending\nApproved",
-   "permlevel": 1
+   "options": "Draft\nApproved\nRejected\nCancelled"
   },
   {
-   "fieldname": "reference_request",
-   "fieldtype": "Link",
-   "label": "Overtime Request",
-   "options": "Overtime"
+   "fieldname": "section_break_gfey",
+   "fieldtype": "Section Break",
+   "label": "Summary"
   },
   {
-   "fetch_from": "employee.designation",
-   "fieldname": "designation",
-   "fieldtype": "Data",
-   "label": "Designation",
-   "read_only": 1
+   "fieldname": "overtime_summary",
+   "fieldtype": "Table",
+   "label": "Overtime Summary",
+   "options": "Overtime Calculation Detail"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-10-25 22:40:52.541695",
+ "modified": "2025-11-05 16:23:16.711247",
  "modified_by": "Administrator",
  "module": "HR",
  "name": "Overtime Slip",
