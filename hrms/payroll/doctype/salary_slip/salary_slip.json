@@ -43,6 +43,7 @@
   "column_break_geio",
   "absent_days",
   "payment_days",
+  "total_late_days",
   "help_section",
   "payment_days_calculation_help",
   "earnings_and_deductions_tab",
@@ -54,6 +55,7 @@
   "base_hour_rate",
   "earning_deduction_sb",
   "earnings",
+  "total_overtime_amount",
   "column_break_k1jz",
   "deductions",
   "totals",
@@ -740,13 +742,25 @@
    "no_copy": 1,
    "print_hide": 1,
    "read_only": 1
+  },
+  {
+   "fieldname": "total_overtime_amount",
+   "fieldtype": "Currency",
+   "label": "Total Overtime Amount",
+   "read_only": 1
+  },
+  {
+   "fieldname": "total_late_days",
+   "fieldtype": "Int",
+   "label": "Total Late Days",
+   "read_only": 1
   }
  ],
  "icon": "fa fa-file-text",
  "idx": 9,
  "is_submittable": 1,
  "links": [],
- "modified": "2024-07-01 21:25:36.651583",
+ "modified": "2025-11-06 12:40:57.010009",
  "modified_by": "Administrator",
  "module": "Payroll",
  "name": "Salary Slip",
@@ -783,6 +797,7 @@
    "role": "Employee"
   }
  ],
+ "row_format": "Dynamic",
  "search_fields": "employee_name",
  "show_name_in_global_search": 1,
  "sort_field": "modified",

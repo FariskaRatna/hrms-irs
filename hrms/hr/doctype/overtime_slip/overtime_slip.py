@@ -45,8 +45,7 @@ class OvertimeSlip(Document):
 		if self.total_hours > self.MAX_MONTHLY_OVERTIME:
 			excesses = self.total_hours - self.MAX_MONTHLY_OVERTIME
 
-			frappe.msgprint(f"Total Overtime Hours is more than {self.MAX_MONTHLY_OVERTIME}. "
-			f"{excesses} will be accumulated on the next month.")
+			frappe.msgprint(f"Total Overtime Hours is more than {self.MAX_MONTHLY_OVERTIME}. ")
 
 			self.total_hours = self.MAX_MONTHLY_OVERTIME
 
@@ -71,4 +70,20 @@ class OvertimeSlip(Document):
 			next_slip.insert(ignore_permissions=True)
 
 			frappe.msgprint(f"Overtime {excesses} hours automatically move on the next month.")
+
+@frappe.whitelist()
+def get_total_overtime(employee, start_date, end_date):
+    """Ambil total lembur pegawai untuk rentang tanggal tertentu"""
+    res = frappe.db.sql("""
+        SELECT SUM(total_amount)
+        FROM `tabOvertime Slip`
+        WHERE employee = %s
+        AND docstatus = 1
+        AND (
+            (from_date BETWEEN %s AND %s)
+            OR (to_date BETWEEN %s AND %s)
+        )
+    """, (employee, start_date, end_date, start_date, end_date))
+
+    return float(res[0][0]) if res and res[0][0] else 0.0
 
