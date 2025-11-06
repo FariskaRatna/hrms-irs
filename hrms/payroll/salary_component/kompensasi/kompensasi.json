@@ -1,0 +1,39 @@
+{
+ "accounts": [
+  {
+   "account": "5120.001 - Biaya Gaji Staff & Karyawan Tetap - MLD",
+   "company": "McLaren (Demo)"
+  }
+ ],
+ "amount": 0.0,
+ "amount_based_on_formula": 1,
+ "create_separate_payment_entry_against_benefit_claim": 0,
+ "creation": "2025-11-06 12:24:19.456122",
+ "deduct_full_tax_on_selected_payroll_date": 0,
+ "depends_on_payment_days": 0,
+ "disabled": 0,
+ "do_not_include_in_accounts": 0,
+ "do_not_include_in_total": 0,
+ "docstatus": 0,
+ "doctype": "Salary Component",
+ "exempted_from_income_tax": 0,
+ "formula": "base",
+ "idx": 0,
+ "is_flexible_benefit": 0,
+ "is_income_tax_component": 0,
+ "is_tax_applicable": 0,
+ "max_benefit_amount": 0.0,
+ "modified": "2025-11-06 12:24:19.456122",
+ "modified_by": "Administrator",
+ "name": "Kompensasi",
+ "only_tax_impact": 0,
+ "owner": "Administrator",
+ "pay_against_benefit_claim": 0,
+ "remove_if_zero_valued": 1,
+ "round_to_the_nearest_integer": 0,
+ "salary_component": "Kompensasi",
+ "salary_component_abbr": "K",
+ "statistical_component": 0,
+ "type": "Earning",
+ "variable_based_on_taxable_salary": 0
+}
