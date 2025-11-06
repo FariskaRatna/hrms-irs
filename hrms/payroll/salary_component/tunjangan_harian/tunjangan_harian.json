@@ -1,10 +1,5 @@
 {
- "accounts": [
-  {
-   "account": "5120.002 - Biaya Gaji Karyawan Harian - MLD",
-   "company": "McLaren (Demo)"
-  }
- ],
+ "accounts": [],
  "amount": 0.0,
  "amount_based_on_formula": 1,
  "condition": "",

@@ -1,10 +1,5 @@
 {
- "accounts": [
-  {
-   "account": "5120.001 - Biaya Gaji Staff & Karyawan Tetap - MLD",
-   "company": "McLaren (Demo)"
-  }
- ],
+ "accounts": [],
  "amount": 0.0,
  "amount_based_on_formula": 1,
  "create_separate_payment_entry_against_benefit_claim": 0,
