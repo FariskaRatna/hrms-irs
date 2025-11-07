@@ -1,0 +1,159 @@
+{
+ "charts": [],
+ "content": "[{\"id\":\"1t8F2fq84e\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">HR for Employee</span>\",\"col\":12}},{\"id\":\"D5XtTTb4XT\",\"type\":\"custom_block\",\"data\":{\"custom_block_name\":\"Announcement\",\"col\":12}},{\"id\":\"3YUQSPHzfy\",\"type\":\"card\",\"data\":{\"card_name\":\"Overtime\",\"col\":4}},{\"id\":\"B7zOHF0tZE\",\"type\":\"card\",\"data\":{\"card_name\":\"Business Trip\",\"col\":4}},{\"id\":\"yI1rS3Z55G\",\"type\":\"card\",\"data\":{\"card_name\":\"Loan\",\"col\":4}}]",
+ "creation": "2025-11-06 16:22:17.073000",
+ "custom_blocks": [
+  {
+   "custom_block_name": "Announcement",
+   "label": "Announcement"
+  }
+ ],
+ "docstatus": 0,
+ "doctype": "Workspace",
+ "for_user": "",
+ "hide_custom": 0,
+ "icon": "dashboard",
+ "idx": 0,
+ "indicator_color": "green",
+ "is_hidden": 0,
+ "label": "HR for Employee",
+ "links": [
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Overtime",
+   "link_count": 3,
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Card Break"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Overtime Application",
+   "link_count": 0,
+   "link_to": "Overtime",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Overtime Slip",
+   "link_count": 0,
+   "link_to": "Overtime Slip",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Overtime Calculation",
+   "link_count": 0,
+   "link_to": "Overtime Calculation",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Business Trip",
+   "link_count": 3,
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Card Break"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Business Trip Application",
+   "link_count": 0,
+   "link_to": "Business Trip",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Business Trip Allowance",
+   "link_count": 0,
+   "link_to": "Business Trip Allowance",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Business Trip Type",
+   "link_count": 0,
+   "link_to": "Business Trip Allowance Type",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Loan",
+   "link_count": 3,
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Card Break"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Loan Application",
+   "link_count": 0,
+   "link_to": "Loan Application",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Loan Settlement",
+   "link_count": 0,
+   "link_to": "Loan Settlement",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Loan Summary",
+   "link_count": 0,
+   "link_to": "Loan",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  }
+ ],
+ "modified": "2025-11-06 16:36:45.842128",
+ "modified_by": "Administrator",
+ "module": "HR",
+ "name": "HR for Employee",
+ "number_cards": [],
+ "owner": "Administrator",
+ "parent_page": "",
+ "public": 1,
+ "quick_lists": [],
+ "roles": [
+  {
+   "role": "Employee"
+  },
+  {
+   "role": "Employee Self Service"
+  }
+ ],
+ "sequence_id": 39.0,
+ "shortcuts": [],
+ "title": "HR for Employee"
+}
