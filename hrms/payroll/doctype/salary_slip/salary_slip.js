@@ -388,3 +388,45 @@ frappe.ui.form.on("Salary Detail", {
 		}
 	},
 });
+
+frappe.ui.form.on("Salary Slip", {
+    refresh(frm) {
+        if (frm.doc.docstatus === 0 && frm.doc.employee) {
+            frm.add_custom_button(__('Fetch Loan Installment'), function () {
+                frappe.call({
+                    method: "hrms.payroll.doctype.salary_slip.salary_slip.fetch_loan_installment",
+                    args: {
+                        employee: frm.doc.employee
+                    },
+                    callback: function (r) {
+                        if (r.message && r.message.total_installment) {
+                            let total_installment = r.message.total_installment;
+                            frm.set_value("installment", total_installment);
+
+                            let found = false;
+                            (frm.doc.deductions || []).forEach(row => {
+                                if (row.salary_component === "Loan Repayment") {
+                                    row.amount = total_installment;
+                                    found = true;
+                                }
+                            });
+                            if (!found) {
+                                frm.add_child("deductions", {
+                                    salary_component: "Loan Repayment",
+                                    amount: total_installment
+                                });
+                            }
+
+                            frm.refresh_field("deductions");
+                            frappe.msgprint("Loan installment fetched successfully.");
+                        } else {
+                            frappe.msgprint("No active loan found for this employee.");
+                        }
+                    }
+                });
+            });
+        }
+    }
+});
+
+
