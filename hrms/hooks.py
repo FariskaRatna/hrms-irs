@@ -162,6 +162,9 @@ doc_events = {
 	"Leave Application": {
 		"after_submit": "hrms.hr.doctype.leave_application.leave_application.after_submit"
 	},
+	"Salary Slip": {
+        "on_submit": "hrms.payroll.doctype.salary_slip.salary_slip.update_loan_repayment_from_salary"
+    },
 	"Loan": {
 		"on_cancel": "hrms.hr.doctype.loan.loan.on_cancel",
 		"on_trash": "hrms.hr.doctype.loan.loan.on_trash",

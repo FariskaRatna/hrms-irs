@@ -2435,63 +2435,123 @@ def email_salary_slips(names) -> None:
 
 
 # Loan Deduction on Salary Slip
-def update_employee_loan_on_salary_submit(salary_slip, method):
-	employee = frappe.get_doc("Employee", salary_slip.employee)
-	today = getdate(salary_slip.start_date)
+# def update_employee_loan_on_salary_submit(salary_slip, method):
+# 	employee = frappe.get_doc("Employee", salary_slip.employee)
+# 	today = getdate(salary_slip.start_date)
 
-	loans = frappe.get_all(
-		"Loan",
-		filters={
-			"employee": employee.name,
-			"status": "Active",
-			"repayment_status": "Unpaid"
-		},
-		fields = ["name", "deduction_start_date", "installment", "paid_installments", "total_installments", "balance_amount"]
-	)
+# 	loans = frappe.get_all(
+# 		"Loan",
+# 		filters={
+# 			"employee": employee.name,
+# 			"status": "Active",
+# 			"repayment_status": "Unpaid"
+# 		},
+# 		fields = ["name", "deduction_start_date", "installment", "paid_installments", "total_installments", "balance_amount"]
+# 	)
 
-	loan_deduction = 0
+# 	loan_deduction = 0
 
-	for loan in loans:
-		if getdate(loan.deduction_start_date) <= today:
-			loan_doc = frappe.get_doc("Loan", loan.name)
+# 	for loan in loans:
+# 		if getdate(loan.deduction_start_date) <= today:
+# 			loan_doc = frappe.get_doc("Loan", loan.name)
 
 
-			deduction = min(loan_doc.installment, loan_doc.balance_amount)
-			loan_deduction += deduction
+# 			deduction = min(loan_doc.installment, loan_doc.balance_amount)
+# 			loan_deduction += deduction
 
-			loan_doc.balance_amount -= deduction
-			loan_doc.paid_installments += 1
+# 			loan_doc.balance_amount -= deduction
+# 			loan_doc.paid_installments += 1
 
-			repayment = loan_doc.append("repayment_tracking", {})
-			repayment.payment_date = salary_slip.posting_date
-			repayment.amount_paid = deduction
-			repayment.balance_after = loan_doc.balance_amount
-			repayment.reference = salary_slip.name
-			repayment.remarks = "Deduction on Salary Slip"
+# 			repayment = loan_doc.append("repayment_tracking", {})
+# 			repayment.payment_date = salary_slip.posting_date
+# 			repayment.amount_paid = deduction
+# 			repayment.balance_after = loan_doc.balance_amount
+# 			repayment.reference = salary_slip.name
+# 			repayment.remarks = "Deduction on Salary Slip"
 
-			if loan_doc.paid_installments >= loan_doc.total_installments or loan_doc.balance_amount <= 0:
-				loan_doc.repayment_status = "Paid"
-				loan_doc.status = "Closed"
+# 			if loan_doc.paid_installments >= loan_doc.total_installments or loan_doc.balance_amount <= 0:
+# 				loan_doc.repayment_status = "Paid"
+# 				loan_doc.status = "Closed"
 
-			loan_doc.save(ignore_permissions=True)
+# 			loan_doc.save(ignore_permissions=True)
 
-		if loan_deduction:
-			found = False
-			for d in salary_slip.get("deductions"):
-				if d.salary_component == "Loan Deduction":
-					d.amount += loan_deduction
-					found = True
-					break
+# 		if loan_deduction:
+# 			found = False
+# 			for d in salary_slip.get("deductions"):
+# 				if d.salary_component == "Loan Deduction":
+# 					d.amount += loan_deduction
+# 					found = True
+# 					break
 
-			if not found:
-				salary_slip.append("deductions", {
-					"salary_component": "Loan Deduction",
-					"amount": loan_deduction
-				})
+# 			if not found:
+# 				salary_slip.append("deductions", {
+# 					"salary_component": "Loan Deduction",
+# 					"amount": loan_deduction
+# 				})
 
-			employee.loan_balance = (employee.loan_balance or 0) - loan_deduction
-			employee.save(ignore_permissions=True)
+# 			employee.loan_balance = (employee.loan_balance or 0) - loan_deduction
+# 			employee.save(ignore_permissions=True)
 
-def on_submit(self):
-    super().on_submit()
-    update_employee_loan_on_salary_submit(self, "on_submit")
+# def on_submit(self):
+#     super().on_submit()
+#     update_employee_loan_on_salary_submit(self, "on_submit")
+
+@frappe.whitelist()
+def fetch_loan_installment(employee):
+    """Fetch active loan installment for the employee"""
+    loans = frappe.get_all(
+        "Loan",
+        filters={
+            "employee": employee,
+            "status": "Active",
+            "repayment_status": "Unpaid"
+        },
+        fields=["name", "installment", "balance_amount"]
+    )
+
+    if not loans:
+        return {"total_installment": 0}
+
+    total_installment = 0
+    for loan in loans:
+        # Ambil jumlah potongan minimal antara installment dan sisa saldo
+        total_installment += min(loan.installment, loan.balance_amount)
+
+    return {"total_installment": total_installment}
+
+import frappe
+from frappe.utils import getdate
+
+def update_loan_repayment_from_salary(salary_slip, method):
+    employee = salary_slip.employee
+    posting_date = getdate(salary_slip.posting_date)
+
+    loans = frappe.get_all(
+        "Loan",
+        filters={"employee": employee, "status": "Active", "repayment_status": "Unpaid"},
+        fields=["name", "installment", "balance_amount", "paid_installments", "total_installments"]
+    )
+
+    for loan in loans:
+        loan_doc = frappe.get_doc("Loan", loan.name)
+        deduction = min(loan_doc.installment, loan_doc.balance_amount)
+
+        # kurangi saldo & update installment
+        loan_doc.balance_amount -= deduction
+        loan_doc.paid_installments += 1
+
+        # catat ke repayment tracking
+        repayment = loan_doc.append("repayment_tracking", {})
+        repayment.payment_date = posting_date
+        repayment.amount_paid = deduction
+        repayment.balance_after = loan_doc.balance_amount
+        repayment.reference = salary_slip.name
+        repayment.remarks = "Auto deduction from Salary Slip"
+
+        # tutup loan jika sudah lunas
+        if loan_doc.balance_amount <= 0 or loan_doc.paid_installments >= loan_doc.total_installments:
+            loan_doc.repayment_status = "Paid"
+            loan_doc.status = "Closed"
+
+        loan_doc.save(ignore_permissions=True)
+

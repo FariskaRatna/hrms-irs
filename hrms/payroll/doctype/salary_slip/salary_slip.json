@@ -58,6 +58,7 @@
   "total_overtime_amount",
   "column_break_k1jz",
   "deductions",
+  "installment",
   "totals",
   "gross_pay",
   "base_gross_pay",
@@ -754,13 +755,20 @@
    "fieldtype": "Int",
    "label": "Total Late Days",
    "read_only": 1
+  },
+  {
+   "fieldname": "installment",
+   "fieldtype": "Currency",
+   "label": "Installment",
+   "precision": "0",
+   "read_only": 1
   }
  ],
  "icon": "fa fa-file-text",
  "idx": 9,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-11-06 12:40:57.010009",
+ "modified": "2025-11-09 21:53:21.111378",
  "modified_by": "Administrator",
  "module": "Payroll",
  "name": "Salary Slip",
