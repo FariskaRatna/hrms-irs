@@ -71,19 +71,19 @@ class OvertimeSlip(Document):
 
 			frappe.msgprint(f"Overtime {excesses} hours automatically move on the next month.")
 
-@frappe.whitelist()
-def get_total_overtime(employee, start_date, end_date):
-    """Ambil total lembur pegawai untuk rentang tanggal tertentu"""
-    res = frappe.db.sql("""
-        SELECT SUM(total_amount)
-        FROM `tabOvertime Slip`
-        WHERE employee = %s
-        AND docstatus = 1
-        AND (
-            (from_date BETWEEN %s AND %s)
-            OR (to_date BETWEEN %s AND %s)
-        )
-    """, (employee, start_date, end_date, start_date, end_date))
+# @frappe.whitelist()
+# def get_total_overtime(employee, start_date, end_date):
+#     """Ambil total lembur pegawai untuk rentang tanggal tertentu"""
+#     res = frappe.db.sql("""
+#         SELECT SUM(total_amount)
+#         FROM `tabOvertime Slip`
+#         WHERE employee = %s
+#         AND docstatus = 1
+#         AND (
+#             (from_date BETWEEN %s AND %s)
+#             OR (to_date BETWEEN %s AND %s)
+#         )
+#     """, (employee, start_date, end_date, start_date, end_date))
 
-    return float(res[0][0]) if res and res[0][0] else 0.0
+#     return float(res[0][0]) if res and res[0][0] else 0.0
 

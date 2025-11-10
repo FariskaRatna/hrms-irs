@@ -391,13 +391,12 @@ frappe.ui.form.on("Salary Detail", {
 
 frappe.ui.form.on("Salary Slip", {
     refresh(frm) {
+        // === Tombol Fetch Loan Installment ===
         if (frm.doc.docstatus === 0 && frm.doc.employee) {
             frm.add_custom_button(__('Fetch Loan Installment'), function () {
                 frappe.call({
                     method: "hrms.payroll.doctype.salary_slip.salary_slip.fetch_loan_installment",
-                    args: {
-                        employee: frm.doc.employee
-                    },
+                    args: { employee: frm.doc.employee },
                     callback: function (r) {
                         if (r.message && r.message.total_installment) {
                             let total_installment = r.message.total_installment;
@@ -426,7 +425,48 @@ frappe.ui.form.on("Salary Slip", {
                 });
             });
         }
+
+        // === Tombol Fetch Overtime ===
+        if (frm.doc.docstatus === 0 && frm.doc.employee) {
+            frm.add_custom_button("Fetch Overtime", function() {
+                if (!frm.doc.start_date || !frm.doc.end_date) {
+                    frappe.msgprint("Isi Employee, Start Date, dan End Date dulu ya.");
+                    return;
+                }
+
+                frappe.call({
+                    method: "hrms.payroll.doctype.salary_slip.salary_slip.get_total_overtime",
+                    args: {
+                        employee: frm.doc.employee,
+                        start_date: frm.doc.start_date,
+                        end_date: frm.doc.end_date
+                    },
+                    callback: function(r) {
+                        if (r.message) {
+                            let amount = r.message;
+                            frm.set_value("total_overtime_amount", amount);
+
+                            let overtime_row = frm.doc.earnings.find(e => e.salary_component === "Overtime");
+                            if (!overtime_row) {
+                                overtime_row = frm.add_child("earnings", {
+                                    salary_component: "Overtime",
+                                    amount: amount
+                                });
+                            } else {
+                                overtime_row.amount = amount;
+                            }
+
+                            frm.refresh_field("earnings");
+                            frm.trigger("calculate_totals");
+
+                            frappe.msgprint(`Total Overtime Rp ${amount.toLocaleString()} berhasil diambil.`);
+                        } else {
+                            frappe.msgprint("Tidak ada overtime pada periode ini.");
+                        }
+                    }
+                });
+            });
+        }
     }
 });
-
 
