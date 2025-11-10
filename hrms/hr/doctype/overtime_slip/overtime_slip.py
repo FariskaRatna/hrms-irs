@@ -24,17 +24,20 @@ class OvertimeSlip(Document):
 			fields=["name", "date", "day_type", "total_hours", "total_amount"]
 		)
 
-		self.calculates = []
+		# self.calculates = []
+		existing = {d.overtime_calculation for d in self.overtime_summary}
 		total_hours = 0
 		total_amount = 0
 
 		for c in calculates:
-			row = self.append("overtime_summary", {})
-			row.overtime_calculation = c.name
-			row.date = c.date
-			row.day_type = c.day_type
-			row.total_hours = c.total_hours
-			row.amount = c.total_amount
+			if c.name not in existing:
+				row = self.append("overtime_summary", {})
+				row.overtime_calculation = c.name
+				row.date = c.date
+				row.day_type = c.day_type
+				row.total_hours = c.total_hours
+				row.amount = c.total_amount
+				
 			total_hours += c.total_hours or 0
 			total_amount += c.total_amount or 0
 
