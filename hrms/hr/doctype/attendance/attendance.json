@@ -21,6 +21,8 @@
   "department",
   "attendance_request",
   "half_day_status",
+  "attendance_reason",
+  "daily_allowance_deducted",
   "details_section",
   "shift",
   "in_time",
@@ -219,13 +221,27 @@
    "fieldtype": "Check",
    "hidden": 1,
    "label": "modify_half_day_status"
+  },
+  {
+   "allow_on_submit": 1,
+   "default": "0",
+   "fieldname": "daily_allowance_deducted",
+   "fieldtype": "Check",
+   "label": "Daily Allowance Deducted"
+  },
+  {
+   "allow_on_submit": 1,
+   "fieldname": "attendance_reason",
+   "fieldtype": "Select",
+   "label": "Attendance Reason",
+   "options": "\nCuti\nHadir\nIzin\nSakit dengan Surat Dokter\nSakit tanpa Surat Dokter\nSetengah Hari (kurang dari 2 kali)\nSetengah Hari (lebih dari 2 kali)\nTidak Hadir\nTidak Clock Out dan Tanpa Izin"
   }
  ],
  "icon": "fa fa-ok",
  "idx": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-04-21 12:33:14.446458",
+ "modified": "2025-11-10 20:11:34.270766",
  "modified_by": "Administrator",
  "module": "HR",
  "name": "Attendance",

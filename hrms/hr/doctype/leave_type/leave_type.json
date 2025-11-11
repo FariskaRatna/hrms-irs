@@ -12,7 +12,6 @@
   "max_leaves_allowed",
   "applicable_after",
   "max_continuous_days_allowed",
-  "doctor_note",
   "column_break_3",
   "is_carry_forward",
   "is_lwp",
@@ -231,17 +230,12 @@
    "fieldtype": "Int",
    "label": "Non-Encashable Leaves",
    "non_negative": 1
-  },
-  {
-   "fieldname": "doctor_note",
-   "fieldtype": "Attach Image",
-   "label": "Doctor's Note (For Sick Leave)"
   }
  ],
  "icon": "fa fa-flag",
  "idx": 1,
  "links": [],
- "modified": "2025-10-28 12:59:58.387937",
+ "modified": "2025-11-10 16:53:44.195642",
  "modified_by": "Administrator",
  "module": "HR",
  "name": "Leave Type",
