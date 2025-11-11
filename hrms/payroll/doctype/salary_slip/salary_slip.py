@@ -2571,50 +2571,82 @@ def get_total_overtime(employee, start_date, end_date):
 
     return float(res[0][0]) if res and res[0][0] else 0.0
 
-def adjust_payment_days(salary_slip, method):
+import frappe
+from frappe.utils import getdate
+
+def adjust_payment_days(salary_slip, method=None):
     if not salary_slip.employee or not salary_slip.start_date or not salary_slip.end_date:
         return
 
-    start_date = getdate(salary_slip.start_date)
-    end_date = getdate(salary_slip.end_date)
-
+    # === Ambil daftar kehadiran ===
     attendances = frappe.get_all(
         "Attendance",
         filters={
             "employee": salary_slip.employee,
-            "attendance_date": ["between", [start_date, end_date]],
+            "attendance_date": ["between", [salary_slip.start_date, salary_slip.end_date]],
             "docstatus": 1
         },
         fields=["attendance_date", "status", "daily_allowance_deducted"]
     )
 
-    total_days = date_diff(end_date, start_date) + 1
+    total_days = (getdate(salary_slip.end_date) - getdate(salary_slip.start_date)).days + 1
+
+    # === Cari hari libur dari Holiday List ===
+    holiday_list = frappe.db.get_value("Employee", salary_slip.employee, "holiday_list")
+    holidays = []
+    if holiday_list:
+        holidays = frappe.get_all(
+            "Holiday",
+            filters={
+                "parent": holiday_list,
+                "holiday_date": ["between", [salary_slip.start_date, salary_slip.end_date]]
+            },
+            pluck="holiday_date"
+        )
+
+    total_holidays = len(holidays)
+
+    # === Hitung kehadiran ===
     working_days = 0
     absent_days = 0
 
     for att in attendances:
-        if att.status in ["Absent", "On Leave"]:
-            absent_days += 1
-        else:
+        if att.status in ["Present", "Late", "Half Day"]:
+            working_days += 1
+        elif att.status in ["Absent", "On Leave"]:
             if att.daily_allowance_deducted:
                 absent_days += 1
-            else:
-                working_days += 1
 
-    salary_slip.total_working_days = total_days
-    salary_slip.payment_days = working_days
+    effective_working_days = total_days - total_holidays
+    payment_days = effective_working_days - absent_days
+
+    # === Simpan ke Salary Slip ===
+    salary_slip.total_working_days = effective_working_days
     salary_slip.absent_days = absent_days
+    salary_slip.payment_days = payment_days
 
-    frappe.logger().info(
-        f"[DEBUG] {salary_slip.employee} -> total_days={total_days}, working_days={working_days}, absent_days={absent_days}"
-    )
+    # === Penyesuaian berdasarkan jabatan ===
+    designation = frappe.db.get_value("Employee", salary_slip.employee, "designation")
+
+    if designation == "Staff":
+        base_rate = 100000
+    elif designation == "Manager":
+        base_rate = 175000
+    else:
+        base_rate = 0
+
+    for earning in salary_slip.earnings:
+        if earning.salary_component == "Tunjangan Harian":
+            earning.amount = base_rate * payment_days
+
+
 
 def update_total_late_days(salary_slip, method):
 	if not salary_slip.employee or not salary_slip.end_date:
 		salary_slip.total_late_days = 0
 		return
 
-	month_str = salary_slip.end_date.strftime("%Y-%m")
+	month_str = getdate(salary_slip.end_date).strftime("%Y-%m")
 
 	late_days = frappe.db.get_value(
 		"Attendance Summary",
