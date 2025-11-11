@@ -470,3 +470,42 @@ frappe.ui.form.on("Salary Slip", {
     }
 });
 
+// frappe.ui.form.on("Salary Slip", {
+//     refresh(frm) {
+//         if (frm.doc.employee && frm.doc.start_date && frm.doc.end_date) {
+//             const month = frappe.datetime.str_to_obj(frm.doc.start_date).getMonth() + 1;
+
+//             frappe.call({
+//                 method: "frappe.client.get_value",
+//                 args: {
+//                     doctype: "Attendance Summary",
+//                     filters: {
+//                         employee: frm.doc.employee,
+//                         month: month
+//                     },
+//                     fieldname: ["late_days"]
+//                 },
+//                 callback: function(r) {
+//                     if (r && r.message) {
+//                         frm.set_value("total_late_days", r.message.late_days || 0);
+//                     } else {
+//                         frm.set_value("total_late_days", 0);
+//                     }
+//                 }
+//             });
+//         } else {
+//             frm.set_value("total_late_days", 0);
+//         }
+//     },
+
+//     // Biar otomatis update kalau employee atau tanggal berubaha
+//     employee(frm) {
+//         frm.trigger("refresh");
+//     },
+//     start_date(frm) {
+//         frm.trigger("refresh");
+//     },
+//     end_date(frm) {
+//         frm.trigger("refresh");
+//     }
+// });

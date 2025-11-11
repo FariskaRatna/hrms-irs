@@ -2571,3 +2571,60 @@ def get_total_overtime(employee, start_date, end_date):
 
     return float(res[0][0]) if res and res[0][0] else 0.0
 
+def adjust_payment_days(salary_slip, method):
+    if not salary_slip.employee or not salary_slip.start_date or not salary_slip.end_date:
+        return
+
+    start_date = getdate(salary_slip.start_date)
+    end_date = getdate(salary_slip.end_date)
+
+    attendances = frappe.get_all(
+        "Attendance",
+        filters={
+            "employee": salary_slip.employee,
+            "attendance_date": ["between", [start_date, end_date]],
+            "docstatus": 1
+        },
+        fields=["attendance_date", "status", "daily_allowance_deducted"]
+    )
+
+    total_days = date_diff(end_date, start_date) + 1
+    working_days = 0
+    absent_days = 0
+
+    for att in attendances:
+        if att.status in ["Absent", "On Leave"]:
+            absent_days += 1
+        else:
+            if att.daily_allowance_deducted:
+                absent_days += 1
+            else:
+                working_days += 1
+
+    salary_slip.total_working_days = total_days
+    salary_slip.payment_days = working_days
+    salary_slip.absent_days = absent_days
+
+    frappe.logger().info(
+        f"[DEBUG] {salary_slip.employee} -> total_days={total_days}, working_days={working_days}, absent_days={absent_days}"
+    )
+
+def update_total_late_days(salary_slip, method):
+	if not salary_slip.employee or not salary_slip.end_date:
+		salary_slip.total_late_days = 0
+		return
+
+	month_str = salary_slip.end_date.strftime("%Y-%m")
+
+	late_days = frappe.db.get_value(
+		"Attendance Summary",
+		{
+			"employee": salary_slip.employee,
+			"month": ["like", f"{month_str}%"]
+		},
+		"late_days"
+	)
+
+
+	salary_slip.total_late_days = late_days or 0
+

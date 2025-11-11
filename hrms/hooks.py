@@ -160,10 +160,15 @@ override_doctype_class = {
 
 doc_events = {
 	"Leave Application": {
-		"after_submit": "hrms.hr.doctype.leave_application.leave_application.after_submit"
+		"after_submit": "hrms.hr.doctype.leave_application.leave_application.after_submit",
+		"on_submit": "hrms.hr.doctype.leave_application.leave_application.create_attendance_from_leave",
 	},
 	"Salary Slip": {
-        "on_submit": "hrms.payroll.doctype.salary_slip.salary_slip.update_loan_repayment_from_salary"
+		"before_save": [
+			"hrms.payroll.doctype.salary_slip.salary_slip.adjust_payment_days",
+			"hrms.payroll.doctype.salary_slip.salary_slip.update_total_late_days",
+		],
+        "on_submit": "hrms.payroll.doctype.salary_slip.salary_slip.update_loan_repayment_from_salary",
     },
 	"Loan": {
 		"on_cancel": "hrms.hr.doctype.loan.loan.on_cancel",
