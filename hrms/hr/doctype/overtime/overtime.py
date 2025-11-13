@@ -48,7 +48,7 @@ class Overtime(Document):
 		calculation.reference_request = self.name
 		calculation.status = "Pending"
 		calculation.insert(ignore_permissions=True)
-		frappe.msgprint(f"Overtime calculation for {self.employee} successfully created.")
+		frappe.msgprint(f"Overtime calculation for {self.employee_name} successfully created.")
 	
 	def is_weekend(self):
 		if not self.date:

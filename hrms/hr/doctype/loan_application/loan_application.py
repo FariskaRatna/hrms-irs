@@ -64,4 +64,4 @@ class LoanApplication(Document):
 		loan_doc.status = "Active"
 
 		loan_doc.insert(ignore_permissions=True)
-		frappe.msgprint(f"Loan record {loan_doc.name} created for Employee {self.employee}.")
+		frappe.msgprint(f"Loan record {loan_doc.name} created for Employee {self.employee_name}.")
