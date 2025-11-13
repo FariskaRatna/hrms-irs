@@ -19,7 +19,6 @@
   "to_date",
   "total_days",
   "column_break_uqed",
-  "code",
   "destination",
   "status",
   "amended_from"
@@ -122,11 +121,6 @@
    "fieldtype": "Column Break"
   },
   {
-   "fieldname": "code",
-   "fieldtype": "Data",
-   "label": "Code Project"
-  },
-  {
    "allow_on_submit": 1,
    "fieldname": "status",
    "fieldtype": "Select",
@@ -138,14 +132,14 @@
    "fieldname": "destination",
    "fieldtype": "Select",
    "label": "Destination",
-   "options": "\nDalam Negeri\nAsia\nJepang\nArab Saudi\nEropa\nAmerika"
+   "options": "\nJabodetabek\nLuar Kota\nAsia\nJepang\nArab Saudi\nEropa\nAmerika"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-11-07 15:00:13.147774",
+ "modified": "2025-11-13 10:45:56.802390",
  "modified_by": "Administrator",
  "module": "HR",
  "name": "Business Trip",

@@ -115,14 +115,15 @@
   {
    "fetch_from": "employee.loan_balance",
    "fieldname": "loan_balance",
-   "fieldtype": "Data",
+   "fieldtype": "Currency",
    "label": "Loan Balance",
    "read_only": 1
   },
   {
    "fieldname": "transaction_proof",
    "fieldtype": "Attach",
-   "label": "Transaction Proof"
+   "label": "Transaction Proof",
+   "reqd": 1
   },
   {
    "fieldname": "loan",
@@ -136,7 +137,7 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-11-02 12:20:25.585711",
+ "modified": "2025-11-13 10:48:23.880315",
  "modified_by": "Administrator",
  "module": "HR",
  "name": "Loan Settlement",
