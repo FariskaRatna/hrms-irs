@@ -753,8 +753,7 @@
   {
    "fieldname": "total_late_days",
    "fieldtype": "Int",
-   "label": "Total Late Days",
-   "read_only": 1
+   "label": "Total Late Days"
   },
   {
    "fieldname": "installment",
@@ -768,7 +767,7 @@
  "idx": 9,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-11-09 21:53:21.111378",
+ "modified": "2025-11-11 13:37:01.821093",
  "modified_by": "Administrator",
  "module": "Payroll",
  "name": "Salary Slip",

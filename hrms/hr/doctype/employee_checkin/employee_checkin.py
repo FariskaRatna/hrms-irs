@@ -423,3 +423,61 @@ def update_attendance_in_checkins(log_names: list, attendance_id: str):
 
 # def after_insert(doc, method=None):
 # 	update_attendance_from_checkin(doc, method)
+
+@frappe.whitelist()
+def sync_unlinked_attendances():
+    import frappe
+    from frappe.utils import getdate
+    from hrms.hr.doctype.employee_checkin.employee_checkin import mark_attendance_and_link_log
+
+    checkins = frappe.get_all(
+        "Employee Checkin",
+        filters={"attendance": ["is", "not set"], "docstatus": ["in", [0, 1]]},
+        fields=["name", "employee", "time", "docstatus"]
+    )
+
+    if not checkins:
+        return "Semua check-in sudah terhubung ke Attendance."
+
+    created, skipped = 0, 0
+    processed_dates = set()
+
+    for chk in checkins:
+        try:
+            attendance_date = getdate(chk["time"])
+            unique_key = f"{chk['employee']}_{attendance_date}"
+
+            if unique_key in processed_dates:
+                skipped += 1
+                continue
+
+            existing_att = frappe.db.exists(
+                "Attendance",
+                {"employee": chk["employee"], "attendance_date": attendance_date}
+            )
+            if existing_att:
+                skipped += 1
+                processed_dates.add(unique_key)
+                continue
+
+            att = frappe.new_doc("Attendance")
+            att.employee = chk["employee"]
+            att.attendance_date = attendance_date
+            att.status = "Present"
+            att.company = frappe.db.get_value("Employee", chk["employee"], "company")
+            att.insert(ignore_permissions=True) 
+
+            frappe.db.set_value("Employee Checkin", chk["name"], "attendance", att.name)
+            processed_dates.add(unique_key)
+            created += 1
+
+        except Exception:
+            skipped += 1
+            frappe.log_error(
+                title=f"Error syncing {chk['name']}",
+                message=frappe.get_traceback()
+            )
+
+    frappe.db.commit()
+
+    return f"{created} Attendance draft berhasil dibuat"
