@@ -17,18 +17,44 @@ class AttendanceImport(Document):
 def process_file(docname):
     doc = frappe.get_doc("Attendance Import", docname)
 
-    if not getattr(doc, "upload_file", None):
-        frappe.throw("⚠️ Please upload an Excel file before processing.")
+    if not doc.upload_file_finger and not doc.upload_file_face:
+        frappe.throw("Please input both file fingerprint and face recognition before processing!")
 
-    file_url = doc.upload_file
-    if not isinstance(file_url, str):
-        frappe.throw("⚠️ Invalid file URL. Please re-upload your file.")
+    def get_file_path(file_url):
+        filename = file_url.split("/")[-1]
+        file_path = frappe.utils.get_files_path(filename)
+        return file_path
 
-    filename = file_url.split("/")[-1]
-    file_path = frappe.utils.get_files_path(filename)
+    finger_path = get_file_path(doc.upload_file_finger) if doc.upload_file_finger else None
+    face_path = get_file_path(doc.upload_file_face) if doc.upload_file_face else None
 
-    # Baca file Excel
-    df = pd.read_excel(file_path, dtype={"Date": str})
+    df_finger = pd.read_excel(finger_path, dtype=str) if finger_path else pd.DataFrame()
+    df_facce = pd.read_excel(face_path, dtype=str) if face_path else pd.DataFrame()
+
+    def parse_data_finger(d):
+        try:
+            return pd.to_datetime(d, format="%d/%m/%Y", errors="coerce").date()
+        except Exception:
+            return None
+
+    def parse_data_face(d):
+        try:
+            return pd.to_datetime(d, format="%d-%m-%Y", errors="coerce").date()
+        except Exception:
+            return None
+
+    def parse_time(y):
+        try:
+            y = str(y).strip()
+            if not y or y.lower() == "nan":
+                return None
+            if len(y.split(":")) == 2:
+                return datetime.strptime(y, "%H:%M").time()
+            elif len(y.split(":")) == 3:
+                return datetime.strptime(y, "%H:%M:%S").time()
+        except Exception:
+            return None
+        return None
 
     # Parsing tanggal
     def parse_date(x):

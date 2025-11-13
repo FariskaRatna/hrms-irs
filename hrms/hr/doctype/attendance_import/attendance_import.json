@@ -7,9 +7,9 @@
  "engine": "InnoDB",
  "field_order": [
   "naming_series",
-  "process_file",
-  "column_break_vwtz",
-  "upload_file"
+  "upload_file_finger",
+  "upload_file_face",
+  "process_file"
  ],
  "fields": [
   {
@@ -18,27 +18,31 @@
    "label": "Process File"
   },
   {
-   "fieldname": "upload_file",
+   "fieldname": "naming_series",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Series",
+   "options": "HR-ATT-IMP-",
+   "read_only": 1
+  },
+  {
+   "fieldname": "upload_file_finger",
    "fieldtype": "Attach",
    "in_list_view": 1,
-   "label": "Upload File",
+   "label": "Upload File Fingerprint",
    "reqd": 1
   },
   {
-   "fieldname": "naming_series",
-   "fieldtype": "Select",
-   "label": "Series",
-   "options": "HR-ATT-IMP-"
-  },
-  {
-   "fieldname": "column_break_vwtz",
-   "fieldtype": "Column Break"
+   "fieldname": "upload_file_face",
+   "fieldtype": "Attach",
+   "in_list_view": 1,
+   "label": "Upload File Face Recognition"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-10-11 23:03:23.449116",
+ "modified": "2025-11-13 17:13:17.573226",
  "modified_by": "Administrator",
  "module": "HR",
  "name": "Attendance Import",
