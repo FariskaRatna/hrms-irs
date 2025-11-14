@@ -1,6 +1,7 @@
 # Copyright (c) 2025, Frappe Technologies Pvt. Ltd. and contributors
 # For license information, please see license.txt
 
+import re
 from frappe.model.document import Document
 import frappe
 import pandas as pd
@@ -49,7 +50,8 @@ def process_file(docname):
 
     def parse_date_face(d):
         try:
-            return pd.to_datetime(str(d).strip(), format="%Y-%m-%d", errors="coerce")
+            # return pd.to_datetime(str(d).strip(), format="%Y-%m-%d", errors="coerce")
+            return pd.to_datetime(str(d).strip(), errors="coerce").date()
         except Exception:
             return pd.NaT
 
@@ -64,10 +66,13 @@ def process_file(docname):
                 return datetime.strptime(y, "%H:%M:%S").time()
         except Exception:
             return None
-        return None
+        return None  
+
 
     if not df_finger.empty:
         df_finger.rename(columns=lambda x: x.strip(), inplace=True)
+        df_finger["Name"] = df_finger["Name"].astype(str).str.strip()
+        df_finger["Name"] = df_finger["Name"].str.replace(r"\s+", " ", regex=True)
         required_cols = {"Name", "Date", "Clock In", "Clock Out"}
         if not required_cols.issubset(df_finger.columns):
             frappe.throw("Fingerprint file must contain columns: Name, Date, Clock In, Clock Out")
@@ -76,17 +81,15 @@ def process_file(docname):
         df_finger["Date"] = df_finger["Date"].apply(parse_date_finger)
         df_finger = df_finger[df_finger["Date"].notna()]
         df_finger["Date"] = df_finger["Date"].apply(lambda d: d if isinstance(d, date) else d.date() if pd.notna(d) else None)
-        df_finger = df_finger.astype({"Date": "object"})  # penting: hindari dtype datetime64
-        
-        # df_finger = df_finger[
-        #     (df_finger["Date"] >= start_date) & (df_finger["Date"] <= end_date)
-        # ]
+
         df_finger["Clock In"] = df_finger["Clock In"].apply(parse_time)
         df_finger["Clock Out"] = df_finger["Clock Out"].apply(parse_time)
 
 
     if not df_face.empty:
         df_face.rename(columns=lambda x: x.strip(), inplace=True)
+        df_face["Name"] = df_face["Name"].astype(str).str.strip()
+        df_face["Name"] = df_face["Name"].str.replace(r"\s+", " ", regex=True)
         required_cols = {"Name", "Date", "First-In", "Last-Out"}
         if not required_cols.issubset(df_face.columns):
             frappe.throw("Face recognition file must contain columns: Name, Date, First-In, Last-Out")
@@ -94,29 +97,46 @@ def process_file(docname):
         df_face["Date"] = df_face["Date"].apply(parse_date_face)
         df_face = df_face[df_face["Date"].notna()]
         df_face["Date"] = df_face["Date"].apply(lambda d: d if isinstance(d, date) else d.date() if pd.notna(d) else None)
-        df_face = df_face.astype({"Date": "object"})  # hindari dtype datetime64
 
-        # df_face = df_face[
-        #     (df_face["Date"] >= start_date) & (df_face["Date"] <= end_date)
-        # ]
+
         df_face["First-In"] = df_face["First-In"].apply(parse_time)
         df_face["Last-Out"] = df_face["Last-Out"].apply(parse_time)
 
 
-    employees = frappe.db.get_all("Employee", fields=["name", "employee_name", "initial_name"])
-    employee_names = [e.employee_name for e in employees] + [e.initial_name for e in employees if e.initial_name]
+    employees = frappe.db.get_all("Employee", fields=[
+        "name",
+        "employee_name",
+        "initial_name_finger",
+        "initial_name_face"
+    ])
 
-    def find_employee(name):
-        matches = get_close_matches(str(name).strip(), employee_names, n=1, cutoff=0.8)
-        if matches:
-            emp = next((e for e in employees if e.employee_name == matches[0] or e.initial_name == matches[0]), None)
-            return emp.name if emp else None
-        return None
+
+    def find_employee(name, source="finger"):
+        if not name:
+            return None
+
+        name = str(name).strip()
+        field = "initial_name_finger" if source == "finger" else "initial_name_face"
+        emp = frappe.db.get_value("Employee", {field: name}, "name")
+
+        if not emp:
+            emp = frappe.db.get_value(
+                "Employee",
+                {field: ["like", f"%{name}%"]},
+                "name"
+            )
+        return emp
 
     DEFAULT_LATITUDE = -6.2239100
     DEFAULT_LONGITUDE = 106.8290110
 
     def create_checkin_if_not_exists(emp, timestamp, log_type):
+        if not timestamp:
+            return
+
+        if timestamp.tzinfo is not None:
+            timestamp = timestamp.replace(tzinfo=frappe.utils.get_time_zone())
+
         exists = frappe.db.exists("Employee Checkin", {
             "employee": emp,
             "time": timestamp,
@@ -129,7 +149,8 @@ def process_file(docname):
                 "time": timestamp,
                 "log_type": log_type,
                 "latitude": DEFAULT_LATITUDE,
-                "longitude": DEFAULT_LONGITUDE
+                "longitude": DEFAULT_LONGITUDE,
+                "skip_auto_attendance": 1
             }).insert(ignore_permissions=True)
         else:
             frappe.msgprint(f"Skipped duplicate checkin for {emp} at {timestamp}")
@@ -137,7 +158,8 @@ def process_file(docname):
     created_attendance = set()
 
     for _, row in df_finger.iterrows():
-        emp = find_employee(row["Name"])
+        # emp = find_employee(row["Name"])
+        emp = find_employee(row["Name"], source="finger")
         if not emp:
             frappe.msgprint(f"Employee '{row['Name']}' not found, skipped.")
             continue
@@ -145,7 +167,7 @@ def process_file(docname):
         try:
             weekday = row["Date"].weekday()
             if weekday in [5, 6]:
-                frappe.msgprint(f"⛔ Skipped weekend for {row['Name']} on {row['Date']}")
+                frappe.msgprint(f"Skipped weekend for {row['Name']} on {row['Date']}")
                 continue
         except Exception:
             pass
@@ -163,24 +185,36 @@ def process_file(docname):
 
         in_time, out_time = row["Clock In"], row["Clock Out"]
 
-        if (not in_time or not out_time) and not df_face.empty:
-            face_row = df_face[(df_face["Date"] == date_part)]
-            if not face_row.empty:
-                candidates = face_row["Name"].tolist()
-                matched = get_close_matches(row["Name"], candidates, n=1, cutoff=0.8)
-                if matched:
-                    match_row = face_row[face_row["Name"] == matched[0]].iloc[0]
-                    if not in_time and pd.notna(match_row["First-In"]):
-                        in_time = match_row["First-In"]
-                        frappe.msgprint(f"Filled missing Clock In for {row['Name']} from Face data")
-                    if not out_time and pd.notna(match_row["Last-Out"]):
-                        out_time = match_row["Last-Out"]
-                        frappe.msgprint(f"Filled missing Clock Out for {row['Name']} from Face data")
+        if (in_time is None or out_time is None) and not df_face.empty:
+            emp_face = find_employee(row["Name"], source="finger")
+            if not emp_face:
+                frappe.msgprint(f"Employee {row['Name']} not found (finger), cannot fallback to face.")
+                continue
             
+            emp_face_initial = frappe.db.get_value("Employee", emp_face, "initial_name_face")
+
+            face_rows = df_face[df_face["Date"] == date_part]
+
+            match_row = face_rows[face_rows["Name"] == emp_face_initial]
+
+            if not match_row.empty:
+                match_row = match_row.iloc[0]
+
+                if in_time is None and pd.notna(match_row["First-In"]):
+                    in_time = match_row["First-In"]
+                    # frappe.msgprint(f"Filled Clock In for {row['Name']} from face")
+
+                if out_time is None and pd.notna(match_row["Last-Out"]):
+                    out_time = match_row["Last-Out"]
+                    # frappe.msgprint(f"Filled Clock Out for {row['Name']} from face")
+            else:
+                frappe.msgprint(f"No face match for {emp_face_initial} on {date_part}")
+
+
         in_datetime = datetime.combine(date_part, in_time) if in_time else None
         out_datetime = datetime.combine(date_part, out_time) if out_time else None
 
-        # Ambil shift
+        # Ambil shift]\
         shift_assignment = frappe.db.get_value(
             "Shift Assignment",
             {
