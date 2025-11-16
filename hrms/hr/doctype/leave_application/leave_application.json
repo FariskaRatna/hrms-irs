@@ -255,7 +255,7 @@
    "fieldname": "leave_category",
    "fieldtype": "Select",
    "label": "Leave Category",
-   "options": "Izin\nSakit\nCuti\nSetengah Hari"
+   "options": "\nIzin\nSakit\nCuti\nSetengah Hari\nDinas"
   },
   {
    "fieldname": "doctor_note",
@@ -268,7 +268,7 @@
  "is_submittable": 1,
  "links": [],
  "max_attachments": 3,
- "modified": "2025-11-10 17:27:46.282931",
+ "modified": "2025-11-16 15:36:06.781889",
  "modified_by": "Administrator",
  "module": "HR",
  "name": "Leave Application",
