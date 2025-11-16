@@ -5,7 +5,7 @@
 import frappe
 from frappe import _
 from frappe.model.document import Document
-from frappe.utils import cint, get_datetime
+from frappe.utils import cint, get_datetime, getdate
 
 from hrms.hr.doctype.shift_assignment.shift_assignment import get_actual_start_end_datetime_of_shift
 from hrms.hr.utils import (
@@ -30,6 +30,28 @@ class EmployeeCheckin(Document):
 		self.fetch_shift()
 		self.set_geolocation()
 		self.validate_distance_from_shift_location()
+		self.validate_dinas_permission()
+
+	def validate_dinas_permission(self):
+		check_date = getdate(self.time)
+
+		if not self.flags.in_import and not self.flags.in_bulk_insert:
+			dinas_leave = frappe.db.exists(
+				"Leave Application",
+				{
+					"employee": self.employee,
+					"from_date": ["<=", check_date],
+					"to_date": [">=", check_date],
+					"leave_category": "Dinas",
+					# "status": "Approved"
+					"status": ["not in", ["Rejected", "Cancelled"]],
+				}
+			)
+
+			if not dinas_leave:
+				frappe.throw(
+					"You don't have active Dinas Leave for this date. You cannot create an employee checkin."
+				)
 
 	def validate_duplicate_log(self):
 		doc = frappe.db.exists(

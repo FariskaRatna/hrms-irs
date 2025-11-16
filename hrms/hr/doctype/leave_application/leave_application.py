@@ -88,17 +88,39 @@ class LeaveApplication(Document, PWANotificationsMixin):
 		if frappe.db.get_value("Leave Type", self.leave_type, "is_optional_leave"):
 			self.validate_optional_leave()
 		self.validate_applicable_after()
+		
+
+	def delete_employee_checkins(self):
+		employee = self.employee
+		start = self.from_date
+		end = self.to_date
+
+		end_datetime = f"{end} 23:59:59"
+
+		checkins = frappe.get_all(
+			"Employee Checkin",
+			filters={
+				"employee": employee,
+				"time": ["between", [start, end_datetime]],
+			},
+			pluck="name"
+		)
+		
+		for ch in checkins:
+			frappe.delete_doc("Employee Checkin", ch, force=1)
+
 
 	def on_update(self):
 		if self.status == "Open" and self.docstatus < 1:
 			# notify leave approver about creation
 			if frappe.db.get_single_value("HR Settings", "send_leave_notification"):
 				self.notify_leave_approver()
-
 		share_doc_with_approver(self, self.leave_approver)
 		self.publish_update()
 		self.notify_approval_status()
 
+		if self.status in ["Rejected", "Cancelled"] and self.leave_category == "Dinas":
+			self.delete_employee_checkins()
 	def on_submit(self):
 		if self.status in ["Open", "Cancelled"]:
 			frappe.throw(_("Only Leave Applications with status 'Approved' and 'Rejected' can be submitted"))
