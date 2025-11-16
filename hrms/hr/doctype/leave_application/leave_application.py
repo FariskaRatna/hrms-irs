@@ -1601,3 +1601,12 @@ def create_attendance_from_leave(doc, method):
             }).insert(ignore_permissions=True)
 
         current_date += timedelta(days=1)
+
+def has_permission(doc, ptype, user):
+	if doc.status == "Approved":
+		employee_user_id = frappe.d.get_value("Employee", doc.employee, "user_id")
+
+		if employee_user_id == user:
+			return ptype == "read"
+
+	return True
