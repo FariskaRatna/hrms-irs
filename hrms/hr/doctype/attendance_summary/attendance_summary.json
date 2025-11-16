@@ -23,7 +23,9 @@
   "remarks",
   "generate_recap",
   "column_break_umwu",
-  "late_dates"
+  "late_dates",
+  "attendance_late_details_section",
+  "late_details"
  ],
  "fields": [
   {
@@ -132,15 +134,27 @@
    "no_copy": 1,
    "options": "HR-ATT-SUM-",
    "set_only_once": 1
+  },
+  {
+   "fieldname": "attendance_late_details_section",
+   "fieldtype": "Section Break",
+   "label": "Attendance Late Details"
+  },
+  {
+   "fieldname": "late_details",
+   "fieldtype": "Table",
+   "label": "Attendance Late",
+   "options": "Attendance Late"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-10-11 22:43:42.450965",
+ "modified": "2025-11-14 16:35:28.139559",
  "modified_by": "Administrator",
  "module": "HR",
  "name": "Attendance Summary",
+ "naming_rule": "By \"Naming Series\" field",
  "owner": "Administrator",
  "permissions": [
   {

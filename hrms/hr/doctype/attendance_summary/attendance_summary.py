@@ -140,6 +140,14 @@ def generate_recap(docname):
 			late_days += 1
 			late_dates.append(date)
 
+			row = doc.append("late_details", {})
+			raw_date, log_type = date.split(" ")
+
+			row.date = raw_date
+			row.log_type = log_type.strip("()")
+			row.minutes = total_day
+
+
 	over_tolerance = cumulative > threshold
 
 	doc.total_late_minutes = total_late_minutes
@@ -152,6 +160,7 @@ def generate_recap(docname):
 		if over_tolerance
 		else 'Masih dalam batas toleransi'
 	)
+
 	doc.save()
 
 	frappe.msgprint(f"Recap for {doc.employee_name} - {doc.month} generated")
