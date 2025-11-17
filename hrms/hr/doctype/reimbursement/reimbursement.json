@@ -19,10 +19,13 @@
   "diagnosis",
   "column_break_yscg",
   "amount",
-  "posting_date",
   "document_photo",
-  "status",
-  "amended_from"
+  "amended_from",
+  "section_break_xprp",
+  "hrd_user",
+  "posting_date",
+  "column_break_kqch",
+  "status"
  ],
  "fields": [
   {
@@ -114,7 +117,7 @@
    "fieldname": "status",
    "fieldtype": "Select",
    "label": "Status",
-   "options": "\nApproved\nRejected\nCancelled",
+   "options": "Draft\nApproved\nRejected\nCancelled",
    "permlevel": 1
   },
   {
@@ -133,16 +136,32 @@
    "label": "Amount",
    "precision": "0",
    "reqd": 1
+  },
+  {
+   "fieldname": "section_break_xprp",
+   "fieldtype": "Section Break",
+   "label": "Approval"
+  },
+  {
+   "fieldname": "hrd_user",
+   "fieldtype": "Link",
+   "label": "HR Manager",
+   "options": "User"
+  },
+  {
+   "fieldname": "column_break_kqch",
+   "fieldtype": "Column Break"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-11-13 10:46:48.879943",
+ "modified": "2025-11-17 17:00:36.300476",
  "modified_by": "Administrator",
  "module": "HR",
  "name": "Reimbursement",
+ "naming_rule": "By \"Naming Series\" field",
  "owner": "Administrator",
  "permissions": [
   {
