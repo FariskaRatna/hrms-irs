@@ -1,0 +1,29 @@
+{
+ "attach_print": 0,
+ "channel": "Email",
+ "condition": "doc.status == \"Pending\"",
+ "creation": "2025-11-17 13:28:51.608808",
+ "days_in_advance": 0,
+ "docstatus": 0,
+ "doctype": "Notification",
+ "document_type": "Overtime",
+ "enabled": 1,
+ "event": "Save",
+ "idx": 0,
+ "is_standard": 1,
+ "message": "<h3>New Overtime Request</h3>\n\n<p>\nEmployee <strong>{{ doc.employee }}</strong> submitted a new overtime request: <strong>{{ doc.name }}</strong>.\nPlease review and approve.\n</p>\n\n<h4>Details</h4>\n\n<ul>\n    <li>Date: {{ doc.date }}</li>\n    <li>Total Hours: {{ doc.total_hours }}</li>\n</ul>\n",
+ "message_type": "Markdown",
+ "modified": "2025-11-17 13:39:22.806240",
+ "modified_by": "Administrator",
+ "module": "HR",
+ "name": "Overtime Request to PM",
+ "owner": "Administrator",
+ "recipients": [
+  {
+   "receiver_by_document_field": "pm_user"
+  }
+ ],
+ "send_system_notification": 0,
+ "send_to_all_assignees": 0,
+ "subject": "New Overtime Application from {{ doc.employee_name }}"
+}

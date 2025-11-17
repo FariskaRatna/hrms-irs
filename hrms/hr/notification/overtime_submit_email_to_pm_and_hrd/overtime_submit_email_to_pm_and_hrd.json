@@ -1,0 +1,45 @@
+{
+ "attach_print": 0,
+ "channel": "Email",
+ "condition": "doc.status == \"Pending\"",
+ "creation": "2025-11-17 11:58:31.528794",
+ "days_in_advance": 0,
+ "docstatus": 0,
+ "doctype": "Notification",
+ "document_type": "Overtime",
+ "enabled": 1,
+ "event": "Value Change",
+ "idx": 0,
+ "is_standard": 1,
+ "message": "<h3>Overtime Request Update</h3>\r\n\r\n<p>\r\nThe overtime request <strong>{{ doc.name }}</strong> has been updated.\r\nPlease review the information below.\r\n</p>\r\n\r\n{% if comments %}\r\n<div style=\"margin: 10px 0; padding: 10px; background: #f7f7f7; border-left: 3px solid #ccc;\">\r\n    <strong>Last Comment:</strong><br>\r\n    \"{{ comments[-1].comment }}\"<br>\r\n    <em>- {{ comments[-1].by }}</em>\r\n</div>\r\n{% endif %}\r\n\r\n<h4>Details</h4>\r\n<ul>\r\n    <li><strong>Employee:</strong> {{ doc.employee }}</li>\r\n    <li><strong>Date:</strong> {{ doc.overtime_date }}</li>\r\n    <li><strong>Total Hours:</strong> {{ doc.total_hours }}</li>\r\n    <li><strong>Status:</strong> {{ doc.status }}</li>\r\n</ul>\r\n\r\n<p>\r\nIf you need further action, please open the document in the system.\r\n</p>\r\n",
+ "message_type": "Markdown",
+ "modified": "2025-11-17 11:58:31.528794",
+ "modified_by": "Administrator",
+ "module": "HR",
+ "name": "Overtime Submit Email to PM and HRD",
+ "owner": "Administrator",
+ "recipients": [
+  {
+   "condition": "doc.status == \"Pending\"",
+   "receiver_by_document_field": "",
+   "receiver_by_role": "Projects Manager"
+  },
+  {
+   "condition": "doc.status == \"Approved\"",
+   "receiver_by_document_field": "owner",
+   "receiver_by_role": ""
+  },
+  {
+   "condition": "doc.status == \"Approved\"",
+   "receiver_by_role": "HR Manager"
+  },
+  {
+   "condition": "doc.docstatus == 1",
+   "receiver_by_document_field": "owner"
+  }
+ ],
+ "send_system_notification": 0,
+ "send_to_all_assignees": 0,
+ "subject": "New Overtime Application {{ doc.employee_name }}",
+ "value_changed": "status"
+}
