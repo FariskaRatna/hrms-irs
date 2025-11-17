@@ -28,4 +28,13 @@ frappe.ui.form.on("Loan Application", {
             });
         }
 	},
+
+    employee(frm) {
+        if (!frm.doc.employee) return;
+
+        frappe.db.get_value("Employee", frm.doc.employee, ["hrd_user"])
+            .then(r => {
+                frm.set_value("hrd_user", r.message.hrd_user);
+            });
+    }
 });

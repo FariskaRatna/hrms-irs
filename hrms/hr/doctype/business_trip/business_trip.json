@@ -20,8 +20,14 @@
   "total_days",
   "column_break_uqed",
   "destination",
-  "status",
-  "amended_from"
+  "description",
+  "amended_from",
+  "approval_section",
+  "pm_user",
+  "hrd_user",
+  "column_break_fhtz",
+  "posting_date",
+  "status"
  ],
  "fields": [
   {
@@ -133,13 +139,44 @@
    "fieldtype": "Select",
    "label": "Destination",
    "options": "\nJabodetabek\nLuar Kota\nAsia\nJepang\nArab Saudi\nEropa\nAmerika"
+  },
+  {
+   "fieldname": "description",
+   "fieldtype": "Small Text",
+   "label": "Description"
+  },
+  {
+   "fieldname": "approval_section",
+   "fieldtype": "Section Break",
+   "label": "Approval"
+  },
+  {
+   "fieldname": "hrd_user",
+   "fieldtype": "Link",
+   "label": "HR Manager",
+   "options": "User"
+  },
+  {
+   "fieldname": "column_break_fhtz",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "posting_date",
+   "fieldtype": "Date",
+   "label": "Posting Date"
+  },
+  {
+   "fieldname": "pm_user",
+   "fieldtype": "Link",
+   "label": "Project Managaer",
+   "options": "User"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-11-13 10:45:56.802390",
+ "modified": "2025-11-17 15:08:46.441489",
  "modified_by": "Administrator",
  "module": "HR",
  "name": "Business Trip",

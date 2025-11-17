@@ -17,11 +17,14 @@
   "total_loan",
   "installment",
   "date_required",
-  "posting_date",
   "amended_from",
   "column_break_torb",
   "reason",
   "deduction_start_date",
+  "approval_section",
+  "hrd_user",
+  "posting_date",
+  "column_break_fbpw",
   "status"
  ],
  "fields": [
@@ -137,13 +140,28 @@
    "label": "Deduction Start Date",
    "permlevel": 1,
    "read_only": 1
+  },
+  {
+   "fieldname": "approval_section",
+   "fieldtype": "Section Break",
+   "label": "Approval"
+  },
+  {
+   "fieldname": "hrd_user",
+   "fieldtype": "Link",
+   "label": "HR Manager",
+   "options": "User"
+  },
+  {
+   "fieldname": "column_break_fbpw",
+   "fieldtype": "Column Break"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-11-02 19:05:06.858786",
+ "modified": "2025-11-17 15:54:54.457016",
  "modified_by": "Administrator",
  "module": "HR",
  "name": "Loan Application",
