@@ -74,6 +74,7 @@
    "fieldtype": "Column Break"
   },
   {
+   "default": "Leave",
    "fieldname": "leave_type",
    "fieldtype": "Link",
    "ignore_user_permissions": 1,
@@ -268,7 +269,7 @@
  "is_submittable": 1,
  "links": [],
  "max_attachments": 3,
- "modified": "2025-11-16 15:36:06.781889",
+ "modified": "2025-11-17 16:30:24.209794",
  "modified_by": "Administrator",
  "module": "HR",
  "name": "Leave Application",
