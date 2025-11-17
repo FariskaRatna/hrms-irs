@@ -24,6 +24,34 @@ frappe.ui.form.on("Employee Checkin", {
 		}
 	},
 
+	onload: function(frm) {
+		if (!frm.is_new()) return;
+
+		frappe.call({
+			method: "frappe.client.get_list",
+			args: {
+				doctype: "Leave Application",
+				filters: {
+					employee: frm.doc.employee,
+					leave_category: "Dinas",
+					status: ["not in", ["Rejected", "Cancelled"]],
+					from_date: ["<=", frappe.datetime.get_today()],
+					to_date: [">=", frappe.datetime.get_today()],
+				},
+				limit: 1
+			},
+			callback: function(r) {
+				if (!r.message || r.message.length === 0) {
+					frappe.msgprint("You don't have active Dinas Leave for this date. You cannot create an Employee Checkin.");
+					frappe.set_route("List", "Employee Checkin");
+					setTimeout(() => {
+						frm.refresh();
+					}, 10);
+				}
+			}
+		});
+	},
+
 	fetch_geolocation: (frm) => {
 		hrms.fetch_geolocation(frm);
 	},
@@ -57,3 +85,34 @@ frappe.ui.form.on("Employee Checkin", {
 		});
 	},
 });
+
+
+// frappe.ui.form.on("Employee Checkin", {
+// 	onload: function(frm) {
+// 		if (!frm.is_new()) return;
+
+// 		frappe.call({
+// 			method: "frappe.client.get_list",
+// 			args: {
+// 				doctype: "Leave Application",
+// 				filters: {
+// 					employee: frm.doc.employee,
+// 					leave_category: "Dinas",
+// 					status: ["not in", ["Rejected", "Cancelled"]],
+// 					from_date: ["<=", frappe.datetime.get_today()],
+// 					to_date: [">=", frappe.datetime.get_today()],
+// 				},
+// 				limit: 1
+// 			},
+// 			callback: function(r) {
+// 				if (!r.message || r.message.length === 0) {
+// 					frappe.msgprint("You don't have active Dinas Leave for this date. You cannot create an Employee Checkin.");
+// 					frappe.set_route("List", "Employee Checkin");
+// 					setTimeout(() => {
+// 						frm.refresh();
+// 					}, 10);
+// 				}
+// 			}
+// 		});
+// 	}
+// });

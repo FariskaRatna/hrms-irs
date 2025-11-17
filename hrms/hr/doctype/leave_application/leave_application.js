@@ -293,6 +293,33 @@ frappe.ui.form.on("Leave Application", {
 	},
 });
 
+frappe.ui.form.on("Leave Application", {
+	refresh(frm) {
+		if (frm.doc.status === "Approved") {
+			frappe.call({
+				method: "frappe.client.get_value",
+				args: {
+					doctype: "Employee",
+					filters: { name: frm.doc.employee },
+					fieldname: "user_id",
+				},
+				callback(r) {
+					if (!r.message) return;
+
+					const employee_user = r.message.user_id;
+					const current_user = frappe.session.user;
+
+					if (employee_user === current_user) {
+						frm.set_read_only();
+						frm.disable_save();
+						frm.refresh_fields();
+					}
+				}
+			});
+		}
+	}
+});
+
 frappe.tour["Leave Application"] = [
 	{
 		fieldname: "employee",
