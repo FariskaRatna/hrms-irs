@@ -28,6 +28,8 @@ app_include_js = [
 ]
 app_include_css = "hrms.bundle.css"
 
+boot_session = "hrms.boot.global_boot.load_global_js"
+
 # website
 
 # include js, css files in header of web template
@@ -54,6 +56,7 @@ doctype_js = {
 	"Journal Entry": "public/js/erpnext/journal_entry.js",
 	"Delivery Trip": "public/js/erpnext/delivery_trip.js",
 	"Bank Transaction": "public/js/erpnext/bank_transaction.js",
+	"*": "public/js/global_readonly.js",
 }
 # doctype_list_js = {"doctype" : "public/js/doctype_list.js"}
 # doctype_tree_js = {"doctype" : "public/js/doctype_tree.js"}
@@ -159,6 +162,9 @@ override_doctype_class = {
 # Hook on document methods and events
 
 doc_events = {
+	"*": {
+		"validate": "hrms.events.global_lock.prevent_edit_after_approved"
+	},
 	"Leave Application": {
 		"after_submit": "hrms.hr.doctype.leave_application.leave_application.after_submit",
 		"on_submit": "hrms.hr.doctype.leave_application.leave_application.create_attendance_from_leave",
