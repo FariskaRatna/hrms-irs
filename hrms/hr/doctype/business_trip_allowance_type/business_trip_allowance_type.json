@@ -20,7 +20,7 @@
    "fieldname": "destination",
    "fieldtype": "Select",
    "label": "Destination",
-   "options": "\nDalam Negeri\nAsia\nJepang\nArab Saudi\nEropa\nAmerika"
+   "options": "\nJabodetabek\nLuar Kota\nAsia\nJepang\nArab Saudi\nEropa\nAmerika"
   },
   {
    "fieldname": "column_break_rwfz",
@@ -68,7 +68,7 @@
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-11-04 12:09:44.249623",
+ "modified": "2025-11-17 16:33:48.630177",
  "modified_by": "Administrator",
  "module": "HR",
  "name": "Business Trip Allowance Type",
