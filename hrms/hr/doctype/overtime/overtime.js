@@ -29,5 +29,15 @@ frappe.ui.form.on("Overtime", {
             // frm.page.clear_actions_menu();
 
         }
+    },
+
+    employee(frm) {
+        if (!frm.doc.employee) return;
+
+        frappe.db.get_value("Employee", frm.doc.employee, ["project_manager", "hrd_user"])
+            .then(r => {
+                frm.set_value("pm_user", r.message.project_manager);
+                frm.set_value("hrd_user", r.message.hrd_user);
+            });
     }
 });
