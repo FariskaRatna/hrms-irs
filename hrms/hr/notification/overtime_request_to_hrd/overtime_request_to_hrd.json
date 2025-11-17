@@ -13,7 +13,7 @@
  "is_standard": 1,
  "message": "<h3>Overtime Approved by PM</h3>\n\n<p>\nThe overtime request <strong>{{ doc.name }}</strong> has been approved by the Project Manager.\nHR is now required to review and process it.\n</p>\n\n<h4>Details</h4>\n\n<ul>\n    <li>Employee: {{ doc.employee }}</li>\n    <li>Date: {{ doc.date }}</li>\n    <li>Total Hours: {{ doc.total_hours }}</li>\n</ul>\n",
  "message_type": "Markdown",
- "modified": "2025-11-17 13:58:15.680202",
+ "modified": "2025-11-17 15:38:15.282750",
  "modified_by": "Administrator",
  "module": "HR",
  "name": "Overtime Request to HRD",
@@ -28,5 +28,5 @@
  ],
  "send_system_notification": 0,
  "send_to_all_assignees": 0,
- "subject": "Overtime Application from {{ doc.employee_name }} has been Approved"
+ "subject": "Overtime Application {{ doc.name }} from {{ doc.employee_name }} has been Approved"
 }

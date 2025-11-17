@@ -1,0 +1,32 @@
+{
+ "attach_print": 0,
+ "channel": "Email",
+ "condition": "doc.status==\"Approved\"",
+ "creation": "2025-11-17 15:40:51.229296",
+ "days_in_advance": 0,
+ "docstatus": 0,
+ "doctype": "Notification",
+ "document_type": "Business Trip",
+ "enabled": 1,
+ "event": "Save",
+ "idx": 0,
+ "is_standard": 1,
+ "message": "<h3>Business Trip {{ doc.name }} Approved by PM</h3>\n\n<p>\nThe business trip request <strong>{{ doc.name }}</strong> has been approved by the Project Manager.\nHR is now required to review and process it.\n</p>\n\n<h4>Details</h4>\n\n<ul>\n    <li>Employee: {{ doc.employee }}</li>\n    <li>Departure Date: {{ doc.from_date }}</li>\n    <li>Return Date: {{ doc.to_date }}</li>\n    <li>Total Days: {{ doc.total_days }}</li>\n    <li>Destination: {{ doc.destination }}</li>\n</ul>\n\n<p>\n    <div style=\"text-align:center; margin-top:20px;\">\n        <a href=\"{{ frappe.utils.get_url('/app/business-trip/' ~ doc.name) }}\"\n           style=\"\n                padding: 12px 20px;\n                background: #1d6df7;\n                color: #fff;\n                border-radius: 8px;\n                text-decoration: none;\n                font-size: 14px;\n                font-weight: 600;\n                display: inline-block;\n           \">\n            View Request \u2192\n        </a>\n    </div>\n\n</p>\n\n",
+ "message_type": "Markdown",
+ "modified": "2025-11-17 15:40:51.229296",
+ "modified_by": "Administrator",
+ "module": "HR",
+ "name": "Business Trip Request to HRD (Approved)",
+ "owner": "Administrator",
+ "recipients": [
+  {
+   "receiver_by_document_field": "owner"
+  },
+  {
+   "receiver_by_document_field": "hrd_user"
+  }
+ ],
+ "send_system_notification": 0,
+ "send_to_all_assignees": 0,
+ "subject": "Business Trip Request {{ doc.name }} from {{ doc.employee_name }} has been Approved"
+}

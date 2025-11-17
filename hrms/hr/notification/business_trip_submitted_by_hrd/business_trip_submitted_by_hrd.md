@@ -1,14 +1,14 @@
-<h3>New Overtime Request</h3>
+<h3>Your Business Trip Request Has Been Submitted</h3>
 
 <p>
-Employee <strong>{{ doc.employee }}</strong> submitted a new overtime request: 
-<strong>{{ doc.name }}</strong>.
-Please review and approve.
+Your business trip request <strong>{{ doc.name }}</strong> has been fully submitted by HR.
+Please wait for payroll processing.
 </p>
 
-<h4>Details</h4>
+<h4>Summary</h4>
 
 <ul>
+    <li>Employee: {{ doc.employee }}</li>
     <li>Departure Date: {{ doc.from_date }}</li>
     <li>Return Date: {{ doc.to_date }}</li>
     <li>Total Days: {{ doc.total_days }}</li>
@@ -17,7 +17,7 @@ Please review and approve.
 
 <p>
     <div style="text-align:center; margin-top:20px;">
-        <a href="{{ frappe.utils.get_url('/app/overtime/' ~ doc.name) }}"
+        <a href="{{ frappe.utils.get_url('/app/business-trip/' ~ doc.name) }}"
            style="
                 padding: 12px 20px;
                 background: #1d6df7;
@@ -33,3 +33,4 @@ Please review and approve.
     </div>
 
 </p>
+

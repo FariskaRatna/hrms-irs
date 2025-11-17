@@ -1,7 +1,7 @@
-<h3>New Overtime Request</h3>
+<h3>New Loan Request</h3>
 
 <p>
-Employee <strong>{{ doc.employee }}</strong> submitted a new overtime request: 
+Employee <strong>{{ doc.employee }}</strong> submitted a new loan request: 
 <strong>{{ doc.name }}</strong>.
 Please review and approve.
 </p>
@@ -9,15 +9,15 @@ Please review and approve.
 <h4>Details</h4>
 
 <ul>
-    <li>Departure Date: {{ doc.from_date }}</li>
-    <li>Return Date: {{ doc.to_date }}</li>
-    <li>Total Days: {{ doc.total_days }}</li>
-    <li>Destination: {{ doc.destination }}</li>
+    <li>Total Loan: {{ doc.total_loan }}</li>
+    <li>Installment Amount: {{ doc.installment }}</li>
+    <li>Deduction Start Date: {{ doc.deduction_start_date }}</li>
+    <li>Reason: {{ doc.reason }}</li>
 </ul>
 
 <p>
     <div style="text-align:center; margin-top:20px;">
-        <a href="{{ frappe.utils.get_url('/app/overtime/' ~ doc.name) }}"
+        <a href="{{ frappe.utils.get_url('/app/loan-application/' ~ doc.name) }}"
            style="
                 padding: 12px 20px;
                 background: #1d6df7;
