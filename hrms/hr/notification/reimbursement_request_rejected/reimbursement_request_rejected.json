@@ -1,0 +1,29 @@
+{
+ "attach_print": 0,
+ "channel": "Email",
+ "condition": "doc.status==\"Rejected\"",
+ "creation": "2025-11-18 11:14:02.161571",
+ "days_in_advance": 0,
+ "docstatus": 0,
+ "doctype": "Notification",
+ "document_type": "Reimbursement",
+ "enabled": 1,
+ "event": "Save",
+ "idx": 0,
+ "is_standard": 1,
+ "message": "<h3>Reimbursement Application {{ doc.name }} Rejected by HR Manager</h3>\n\n<p>\nThe reimbursement request <strong>{{ doc.name }}</strong> has been rejected by the HR Manager.\nHR is now required to review and process it.\n</p>\n\n<h4>Details</h4>\n\n<ul>\n    <li>Employee: {{ doc.employee_name }}</li>\n    <li>Total Reimbursement: {{ doc.amount }}</li>\n    <li>Date: {{ doc.outpatient_date }}</li>\n    <li>Diagnosis: {{ doc.diagnosis }}</li>\n</ul>\n\n<p>\n    <div style=\"text-align:center; margin-top:20px;\">\n        <a href=\"{{ frappe.utils.get_url('/app/reimbursement/' ~ doc.name) }}\"\n           style=\"\n                padding: 12px 20px;\n                background: #1d6df7;\n                color: #fff;\n                border-radius: 8px;\n                text-decoration: none;\n                font-size: 14px;\n                font-weight: 600;\n                display: inline-block;\n           \">\n            View Request \u2192\n        </a>\n    </div>\n\n</p>\n",
+ "message_type": "Markdown",
+ "modified": "2025-11-18 11:14:02.161571",
+ "modified_by": "Administrator",
+ "module": "HR",
+ "name": "Reimbursement Request Rejected",
+ "owner": "Administrator",
+ "recipients": [
+  {
+   "receiver_by_document_field": "owner"
+  }
+ ],
+ "send_system_notification": 0,
+ "send_to_all_assignees": 0,
+ "subject": "Reimbursement Application {{ doc.name }} from {{ doc.employee_name }} has been Rejected"
+}
