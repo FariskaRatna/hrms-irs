@@ -12,6 +12,19 @@ class BusinessTripAllowance(Document):
 		if self.business_trip:
 			self.calculate_allowance()
 
+	def is_holiday(self, date):
+		holiday_list = frappe.db.get_value("Employee", self.employee, "holiday_list")
+		if not holiday_list:
+			return False
+
+		return frappe.db.exists(
+			"Holiday",
+			{
+				"parent": holiday_list,
+				"holiday_date": date
+			}
+		)
+
 	def calculate_allowance(self):
 		departure_date = getdate(self.departure_date)
 		return_date = getdate(self.return_date) 
@@ -19,7 +32,9 @@ class BusinessTripAllowance(Document):
 
 		date = departure_date
 		while date <= return_date:
-			if date.weekday() < 5:
+			if self.is_holiday(date):
+				weekend_count += 1
+			elif date.weekday() < 5:
 				weekday_count += 1
 			else:
 				weekend_count += 1

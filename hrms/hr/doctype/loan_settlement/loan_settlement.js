@@ -15,7 +15,7 @@ frappe.ui.form.on("Loan Settlement", {
             set_loan_filter(frm);
         } else {
             frm.set_query('loan', () => {
-                return { filters: { name: "" } }; // kosongkan loan
+                return { filters: { name: "" } };
             });
         }
 
