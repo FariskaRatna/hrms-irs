@@ -1,0 +1,29 @@
+{
+ "attach_print": 0,
+ "channel": "Email",
+ "condition": "doc.status==\"Draft\"",
+ "creation": "2025-11-18 11:29:01.605900",
+ "days_in_advance": 0,
+ "docstatus": 0,
+ "doctype": "Notification",
+ "document_type": "Loan Settlement",
+ "enabled": 1,
+ "event": "Save",
+ "idx": 0,
+ "is_standard": 1,
+ "message": "<h3>New Loan Settlement Request</h3>\n\n<p>\nEmployee <strong>{{ doc.employee }}</strong> submitted a new loan settlement request: \n<strong>{{ doc.name }}</strong>.\nPlease review and approve.\n</p>\n\n<h4>Details</h4>\n\n<ul>\n    <li>Employee: {{ doc.employee_name }}</li>\n    <li>Loan: {{ doc.loan }}</li>\n    <li>Loan Balance: {{ doc.loan_balance }}</li>\n    <li>Amount of Settlement: {{ doc.amount }}</li>\n</ul>\n\n<p>\n    <div style=\"text-align:center; margin-top:20px;\">\n        <a href=\"{{ frappe.utils.get_url('/app/loan-settlement/' ~ doc.name) }}\"\n           style=\"\n                padding: 12px 20px;\n                background: #1d6df7;\n                color: #fff;\n                border-radius: 8px;\n                text-decoration: none;\n                font-size: 14px;\n                font-weight: 600;\n                display: inline-block;\n           \">\n            View Request \u2192\n        </a>\n    </div>\n\n</p>\n",
+ "message_type": "Markdown",
+ "modified": "2025-11-18 11:29:01.605900",
+ "modified_by": "Administrator",
+ "module": "HR",
+ "name": "Loan Settlement Request to HRD",
+ "owner": "Administrator",
+ "recipients": [
+  {
+   "receiver_by_document_field": "hrd_user"
+  }
+ ],
+ "send_system_notification": 0,
+ "send_to_all_assignees": 0,
+ "subject": "New Loan Settlement Application {{ doc.name }} from {{ doc.employee_name }}"
+}
