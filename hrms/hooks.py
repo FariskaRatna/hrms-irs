@@ -24,11 +24,12 @@ add_to_apps_screen = [
 # app_include_css = "/assets/hrms/css/hrms.css"
 app_include_js = [
 	"hrms.bundle.js",
+	"/asstes/hrms/js/global_readonly.js",
 	# "/assets/hrms/js/hr_dashboard.js",
 ]
 app_include_css = "hrms.bundle.css"
 
-boot_session = "hrms.boot.global_boot.load_global_js"
+# boot_session = "hrms.boot.global_boot.load_global_js"
 
 # website
 
@@ -56,7 +57,7 @@ doctype_js = {
 	"Journal Entry": "public/js/erpnext/journal_entry.js",
 	"Delivery Trip": "public/js/erpnext/delivery_trip.js",
 	"Bank Transaction": "public/js/erpnext/bank_transaction.js",
-	"*": "public/js/global_readonly.js",
+	# "*": "public/js/global_readonly.js",
 }
 # doctype_list_js = {"doctype" : "public/js/doctype_list.js"}
 # doctype_tree_js = {"doctype" : "public/js/doctype_tree.js"}
