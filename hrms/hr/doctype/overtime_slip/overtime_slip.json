@@ -48,6 +48,7 @@
    "no_copy": 1,
    "options": "HR-OVT-SLIP-",
    "print_hide": 1,
+   "read_only": 1,
    "reqd": 1,
    "set_only_once": 1
   },
@@ -135,7 +136,7 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-11-05 16:23:16.711247",
+ "modified": "2025-11-19 10:13:59.775739",
  "modified_by": "Administrator",
  "module": "HR",
  "name": "Overtime Slip",

@@ -133,10 +133,12 @@
   {
    "fieldname": "naming_series",
    "fieldtype": "Select",
+   "in_list_view": 1,
    "label": "Series",
    "no_copy": 1,
    "options": "HR-OVT-",
    "print_hide": 1,
+   "read_only": 1,
    "reqd": 1,
    "search_index": 1,
    "set_only_once": 1
@@ -172,7 +174,7 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-11-17 13:10:57.925492",
+ "modified": "2025-11-19 10:13:51.746772",
  "modified_by": "Administrator",
  "module": "HR",
  "name": "Overtime",

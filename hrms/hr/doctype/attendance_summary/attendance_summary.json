@@ -130,9 +130,13 @@
   {
    "fieldname": "naming_series",
    "fieldtype": "Select",
+   "in_list_view": 1,
    "label": "Series",
    "no_copy": 1,
    "options": "HR-ATT-SUM-",
+   "print_hide": 1,
+   "read_only": 1,
+   "reqd": 1,
    "set_only_once": 1
   },
   {
@@ -150,7 +154,7 @@
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-11-14 16:35:28.139559",
+ "modified": "2025-11-19 10:15:35.267020",
  "modified_by": "Administrator",
  "module": "HR",
  "name": "Attendance Summary",

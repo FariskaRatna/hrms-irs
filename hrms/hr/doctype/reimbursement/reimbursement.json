@@ -38,8 +38,11 @@
    "fieldtype": "Select",
    "in_list_view": 1,
    "label": "Series",
-   "options": "FHRGA-REIM-",
-   "reqd": 1
+   "no_copy": 1,
+   "options": "HR-REIM-",
+   "read_only": 1,
+   "reqd": 1,
+   "set_only_once": 1
   },
   {
    "fieldname": "employee",
@@ -157,7 +160,7 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-11-17 17:00:36.300476",
+ "modified": "2025-11-19 10:07:56.904575",
  "modified_by": "Administrator",
  "module": "HR",
  "name": "Reimbursement",

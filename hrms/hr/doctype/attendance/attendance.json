@@ -48,6 +48,7 @@
    "oldfieldname": "naming_series",
    "oldfieldtype": "Select",
    "options": "HR-ATT-.YYYY.-",
+   "read_only": 1,
    "reqd": 1,
    "set_only_once": 1
   },
@@ -241,7 +242,7 @@
  "idx": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-11-10 20:11:34.270766",
+ "modified": "2025-11-19 10:15:47.880992",
  "modified_by": "Administrator",
  "module": "HR",
  "name": "Attendance",
