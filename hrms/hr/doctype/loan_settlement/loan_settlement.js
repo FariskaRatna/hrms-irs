@@ -7,6 +7,31 @@ frappe.ui.form.on("Loan Settlement", {
         if (frm.doc.employee) {
             set_loan_filter(frm);
         }
+
+        if (!frm.is_new() && frm.doc.docstatus === 0) {
+            frm.page.set_primary_action(__("Submit"), function () {
+                frappe.confirm(
+                    `Permanently submit Loan Settlement for ${frm.doc.employee_name || frm.doc.employee}?`,
+                    function () {
+                        frappe.call({
+                            method: "frappe.client.submit",
+                            args: {
+                                doc: frm.doc
+                            },
+                            callback (r) {
+                                if (!r.exc) {
+                                    frappe.show_alert({ message: __("Loan Settlement submitted"), indicator: "green" });
+                                    frm.reload_doc();
+                                }
+                            }
+                        });
+                    },
+                    function () {
+                        frappe.show_alert({ message: __("Loan Settlement cancelled"), indicator: "red" });
+                    }
+                );
+            });
+        }
     },
 
     employee: function(frm) {
