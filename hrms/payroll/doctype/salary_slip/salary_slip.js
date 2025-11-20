@@ -218,6 +218,31 @@ frappe.ui.form.on("Salary Slip", {
 		frm.fields_dict["earnings"].grid.set_column_disp(salary_detail_fields, false);
 		frm.fields_dict["deductions"].grid.set_column_disp(salary_detail_fields, false);
 		frm.trigger("set_dynamic_labels");
+
+		if (!frm.is_new() && frm.doc.dosctatus === 0) {
+			frm.page.set_primary_action(__("Submit"), function() {
+				frappe.confirm(
+					`Permanently submit Salary Slip ${frm.doc.name} for ${frm.doc.employee_name || frm.doc.employee}?`,
+					function () {
+						frappe.call({
+							method: "frappe.client.submit",
+							args: {
+								doc: frm.doc
+							},
+							callback: function(r) {
+								if (!r.exc) {
+									frappe.show_alert({ message: __("Salary Slip submitted"), indicator: "green" });
+									frm.reload_doc();
+								} 
+							}
+						});
+					},
+					function () {
+						frappe.show_alert({ message: __("Salary Slip cancelled"), indicator: "red" });
+					}
+				);
+			});
+		}
 	},
 
 	salary_slip_based_on_timesheet: function (frm) {

@@ -171,6 +171,31 @@ frappe.ui.form.on("Salary Structure", {
 			frm.fields_dict.deductions.grid.update_docfield_property(field, "read_only", 1);
 		});
 		frm.trigger("set_earning_deduction_component");
+
+		if (!frm.is_new() && frm.doc.docstatus === 0) {
+			frm.page.set_primary_action(__("Submit"), function () {
+				frappe.confirm(
+					`Permanently submit Salary Structure ${frm.doc.name}?`,
+					function () {
+						frappe.call({
+							method: "frappe.client.submit",
+							args: {
+								doc: frm.doc
+							},
+							callback: function (r) {
+								if (!r.exc) {
+									frappe.show_alert({ message: __("Salary Structure submitted"), indicator: "green" });
+									frm.reload_doc();
+								}
+							}
+						});
+					},
+					function () {
+						frappe.show_alert({ message: __("Salary Structure cancelled"), indicator: "red" });
+					}
+				);
+			});
+		}
 	},
 
 	salary_slip_based_on_timesheet: function (frm) {
