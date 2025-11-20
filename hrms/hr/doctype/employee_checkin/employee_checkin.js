@@ -27,6 +27,14 @@ frappe.ui.form.on("Employee Checkin", {
 	onload: function(frm) {
 		if (!frm.is_new()) return;
 
+		const allowed_roles = ["Administrator", "System Manager", "HR Manager"];
+
+		for (let role of allowed_roles) {
+			if (frappe.user.has_role(role)) {
+				return;
+			}
+		}
+
 		frappe.call({
 			method: "frappe.client.get_list",
 			args: {
