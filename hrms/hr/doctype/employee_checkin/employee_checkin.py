@@ -5,7 +5,7 @@
 import frappe
 from frappe import _
 from frappe.model.document import Document
-from frappe.utils import cint, get_datetime, getdate
+from frappe.utils import cint, get_datetime, getdate, add_months, nowdate, formatdate
 
 from hrms.hr.doctype.shift_assignment.shift_assignment import get_actual_start_end_datetime_of_shift
 from hrms.hr.utils import (
@@ -30,28 +30,51 @@ class EmployeeCheckin(Document):
 		self.fetch_shift()
 		self.set_geolocation()
 		self.validate_distance_from_shift_location()
-		self.validate_dinas_permission()
+		self.validate_after_choose_dinas()
+		# self.validate_dinas_permission()
 
-	def validate_dinas_permission(self):
-		check_date = getdate(self.time)
+	def validate_after_choose_dinas(self):
+		if not self.related_dinas_leave:
+			frappe.throw("Please choose Leave Application  for Dinas first.")
 
-		if not self.flags.in_import and not self.flags.in_bulk_insert:
-			dinas_leave = frappe.db.exists(
-				"Leave Application",
-				{
-					"employee": self.employee,
-					"from_date": ["<=", check_date],
-					"to_date": [">=", check_date],
-					"leave_category": "Dinas",
-					# "status": "Approved"
-					"status": ["not in", ["Rejected", "Cancelled"]],
-				}
+		two_months_ago = getdate(add_months(nowdate(), -2))
+		leave = frappe.get_doc("Leave Application", self.related_dinas_leave)
+
+		if getdate(leave.modified) < two_months_ago:
+			frappe.throw("This Leave Application is more than 2 months ago and do not valid for employee checkin.")
+
+		checkin_date = getdate(self.time)
+		from_date = getdate(leave.from_date)
+		to_date = getdate(leave.to_date)
+
+		if not (from_date <= checkin_date <= to_date):
+			frappe.throw(
+				f"Checkin Date ({formatdate(checkin_date)}) should be on the range "
+				f"Leave Dinas: {formatdate(from_date)} → {formatdate(to_date)}."
 			)
 
-			if not dinas_leave:
-				frappe.throw(
-					"You don't have active Dinas Leave for this date. You cannot create an employee checkin."
-				)
+	# employee don't have access to create employee checkin without leave application before
+
+	# def validate_dinas_permission(self):
+	# 	check_date = getdate(self.time)
+
+	# 	if not self.flags.in_import and not self.flags.in_bulk_insert:
+	# 		dinas_leave = frappe.db.exists(
+	# 			"Leave Application",
+	# 			{
+	# 				"employee": self.employee,
+	# 				"from_date": ["<=", check_date],
+	# 				"to_date": [">=", check_date],
+	# 				"leave_category": "Dinas",
+	# 				# "status": "Approved"
+	# 				"status": ["not in", ["Rejected", "Cancelled"]],
+	# 			}
+	# 		)
+
+	# 		if not dinas_leave:
+	# 			frappe.throw(
+	# 				"You don't have active Dinas Leave for this date. You cannot create an employee checkin."
+	# 			)
 
 	def validate_duplicate_log(self):
 		doc = frappe.db.exists(
@@ -503,3 +526,30 @@ def sync_unlinked_attendances():
     frappe.db.commit()
 
     return f"{created} Attendance draft berhasil dibuat"
+
+@frappe.whitelist()
+def get_dinas_for_checkin(doctype, txt, searchfield, start, page_len, filters):
+    employee = filters.get("employee")
+    time = filters.get("time")
+
+    if not employee or not time:
+        return []
+
+    two_months_ago = add_months(getdate(time), -2)
+
+    return frappe.db.sql("""
+        SELECT 
+            name, 
+            employee, 
+            leave_type, 
+            from_date, 
+            to_date
+        FROM `tabLeave Application`
+        WHERE 
+            employee = %s
+            AND leave_category = 'Dinas'
+            AND %s BETWEEN from_date AND to_date
+            AND from_date >= %s
+        ORDER BY from_date DESC
+        LIMIT 50
+    """, (employee, time, two_months_ago))
