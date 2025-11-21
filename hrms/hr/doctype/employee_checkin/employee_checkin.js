@@ -35,29 +35,29 @@ frappe.ui.form.on("Employee Checkin", {
 			}
 		}
 
-		frappe.call({
-			method: "frappe.client.get_list",
-			args: {
-				doctype: "Leave Application",
-				filters: {
-					employee: frm.doc.employee,
-					leave_category: "Dinas",
-					status: ["not in", ["Rejected", "Cancelled"]],
-					from_date: ["<=", frappe.datetime.get_today()],
-					to_date: [">=", frappe.datetime.get_today()],
-				},
-				limit: 1
-			},
-			callback: function(r) {
-				if (!r.message || r.message.length === 0) {
-					frappe.msgprint("You don't have active Dinas Leave for this date. You cannot create an Employee Checkin.");
-					frappe.set_route("List", "Employee Checkin");
-					setTimeout(() => {
-						frm.refresh();
-					}, 10);
-				}
-			}
-		});
+		// frappe.call({
+		// 	method: "frappe.client.get_list",
+		// 	args: {
+		// 		doctype: "Leave Application",
+		// 		filters: {
+		// 			employee: frm.doc.employee,
+		// 			leave_category: "Dinas",
+		// 			status: ["not in", ["Rejected", "Cancelled"]],
+		// 			from_date: ["<=", frappe.datetime.get_today()],
+		// 			to_date: [">=", frappe.datetime.get_today()],
+		// 		},
+		// 		limit: 1
+		// 	},
+		// 	callback: function(r) {
+		// 		if (!r.message || r.message.length === 0) {
+		// 			frappe.msgprint("You don't have active Dinas Leave for this date. You cannot create an Employee Checkin.");
+		// 			frappe.set_route("List", "Employee Checkin");
+		// 			setTimeout(() => {
+		// 				frm.refresh();
+		// 			}, 10);
+		// 		}
+		// 	}
+		// });
 	},
 
 	fetch_geolocation: (frm) => {
@@ -124,3 +124,19 @@ frappe.ui.form.on("Employee Checkin", {
 // 		});
 // 	}
 // });
+
+// Leave application in employee checkin only display data from 2 months ago (haven't success)
+frappe.ui.form.on("Employee Checkin", {
+    time(frm) {
+        frm.set_query("related_dinas_leave", () => {
+            return {
+                query: "hrms.hr.doctype.employee_checkin.employee_checkin.get_dinas_for_checkin",
+                filters: {
+                    employee: frm.doc.employee,
+                    time: frm.doc.time
+                }
+            }
+        });
+    }
+});
+
