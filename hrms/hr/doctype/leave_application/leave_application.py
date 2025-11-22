@@ -1526,14 +1526,14 @@ def create_attendance_from_leave(doc, method):
 
     # Hitung periode setengah hari (21 ke 20 bulan berikutnya)
     today = date.today()
-    start_date = date(today.year, today.month, 21)
-    if today.month == 12:
-        end_date = date(today.year + 1, 1, 20)
-    else:
-        end_date = date(today.year, today.month + 1, 20)
+    start_ref = date(today.year, today.month, 21)
+    end_ref = date(today.year + (1 if today.month == 12 else 0),
+                   1 if today.month == 12 else today.month + 1, 20)
 
-    current_date = doc.from_date
-    while current_date <= doc.to_date:
+    current_date = getdate(doc.from_date)
+    end_date = getdate(doc.to_date)
+
+    while current_date <= end_date:
         # Tentukan logika berdasarkan kategori
         if leave_category == "Cuti":
             status = "On Leave"
@@ -1561,7 +1561,7 @@ def create_attendance_from_leave(doc, method):
                 filters={
                     "employee": emp,
                     "leave_category": "Setengah Hari",
-                    "from_date": ["between", [start_date, end_date]],
+                    "from_date": ["between", [start_ref, end_ref]],
                     "docstatus": 1
                 }
             )

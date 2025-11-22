@@ -527,29 +527,29 @@ def sync_unlinked_attendances():
 
     return f"{created} Attendance draft berhasil dibuat"
 
-@frappe.whitelist()
-def get_dinas_for_checkin(doctype, txt, searchfield, start, page_len, filters):
-    employee = filters.get("employee")
-    time = filters.get("time")
 
-    if not employee or not time:
+# Filter for choose leave application dinas for 2 months back
+@frappe.whitelist()
+@frappe.validate_and_sanitize_search_inputs
+def get_recent_dinas_leaves(doctype, txt, searchfield, start, page_len, filters):
+    employee = filters.get("employee")
+
+    if not employee:
         return []
 
-    two_months_ago = add_months(getdate(time), -2)
+    from datetime import datetime
+    from dateutil.relativedelta import relativedelta
+
+    # tanggal hari ini - 2 bulan
+    min_date = (datetime.today() - relativedelta(months=2)).date()
 
     return frappe.db.sql("""
-        SELECT 
-            name, 
-            employee, 
-            leave_type, 
-            from_date, 
-            to_date
+        SELECT name, leave_type, from_date, to_date
         FROM `tabLeave Application`
-        WHERE 
-            employee = %s
-            AND leave_category = 'Dinas'
-            AND %s BETWEEN from_date AND to_date
-            AND from_date >= %s
+        WHERE employee = %s
+        AND leave_category = 'Dinas'
+        AND docstatus = 1
+        AND from_date >= %s
         ORDER BY from_date DESC
-        LIMIT 50
-    """, (employee, time, two_months_ago))
+        LIMIT %s OFFSET %s
+    """, (employee, min_date, page_len, start))

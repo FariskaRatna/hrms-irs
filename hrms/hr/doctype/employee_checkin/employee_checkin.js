@@ -127,16 +127,16 @@ frappe.ui.form.on("Employee Checkin", {
 
 // Leave application in employee checkin only display data from 2 months ago (haven't success)
 frappe.ui.form.on("Employee Checkin", {
-    time(frm) {
+    refresh(frm) {
         frm.set_query("related_dinas_leave", () => {
             return {
-                query: "hrms.hr.doctype.employee_checkin.employee_checkin.get_dinas_for_checkin",
+                query: "hrms.hr.doctype.employee_checkin.employee_checkin.get_recent_dinas_leaves",
                 filters: {
-                    employee: frm.doc.employee,
-                    time: frm.doc.time
+                    employee: frm.doc.employee
                 }
-            }
+            };
         });
     }
 });
+
 
