@@ -8,6 +8,7 @@
  "field_order": [
   "employee",
   "employee_name",
+  "related_dinas_leave",
   "log_type",
   "shift",
   "photo",
@@ -74,7 +75,6 @@
    "fieldtype": "Datetime",
    "in_list_view": 1,
    "label": "Time",
-   "permlevel": 1,
    "read_only_depends_on": "eval:doc.attendance;",
    "reqd": 1
   },
@@ -180,10 +180,16 @@
    "fieldname": "photo",
    "fieldtype": "Attach Image",
    "label": "Photo"
+  },
+  {
+   "fieldname": "related_dinas_leave",
+   "fieldtype": "Link",
+   "label": "Leave Application Dinas",
+   "options": "Leave Application"
   }
  ],
  "links": [],
- "modified": "2025-10-15 15:59:33.533106",
+ "modified": "2025-11-22 20:07:20.803536",
  "modified_by": "Administrator",
  "module": "HR",
  "name": "Employee Checkin",
