@@ -156,6 +156,7 @@ override_doctype_class = {
 	"Timesheet": "hrms.overrides.employee_timesheet.EmployeeTimesheet",
 	"Payment Entry": "hrms.overrides.employee_payment_entry.EmployeePaymentEntry",
 	"Project": "hrms.overrides.employee_project.EmployeeProject",
+	"Leave Application": "hrms.custom.leave_application_custom.CustomLeaveApplication",
 }
 
 # Document Events
@@ -166,9 +167,13 @@ doc_events = {
 	"*": {
 		"validate": "hrms.events.global_lock.prevent_edit_after_approved"
 	},
+	"Attendance": {
+		"before_insert": "hrms.custom.attendance_blocker.prevent_attendance_for_dinas",
+	},
 	"Leave Application": {
 		"after_submit": "hrms.hr.doctype.leave_application.leave_application.after_submit",
-		"on_submit": "hrms.hr.doctype.leave_application.leave_application.create_attendance_from_leave",
+		# "on_submit": "hrms.hr.doctype.leave_application.leave_application.create_attendance_from_leave",
+		"on_submit": "hrms.custom.patch_leave_attendance.create_attendance_from_leave",
 	},
 	"Salary Slip": {
 		"before_save": [
