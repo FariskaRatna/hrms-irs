@@ -157,6 +157,7 @@ override_doctype_class = {
 	"Payment Entry": "hrms.overrides.employee_payment_entry.EmployeePaymentEntry",
 	"Project": "hrms.overrides.employee_project.EmployeeProject",
 	"Leave Application": "hrms.custom.leave_application_custom.CustomLeaveApplication",
+	"Attendance": "hrms.custom.attendance_override.CustomAttendance",
 }
 
 # Document Events
