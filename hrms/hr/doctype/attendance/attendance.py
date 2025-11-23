@@ -172,6 +172,12 @@ class Attendance(Document):
 
 		if leave_record:
 			for d in leave_record:
+				if d.leave_category == "Dinas":
+					self.status = "Present"
+					self.leave_type = "Leave"
+					self.leave_application = d.name
+					return
+
 				self.leave_type = d.leave_type
 				self.leave_application = d.name
 				if d.half_day_date == getdate(self.attendance_date):
@@ -239,6 +245,13 @@ class Attendance(Document):
 
 	def on_update(self):
 		self.publish_update()
+
+	def on_submit(self):
+
+		# Override agar tidak otomatis jadi On Leave
+		self.status = "Present"
+		self.db_set("status", "Present")
+
 
 	def after_delete(self):
 		self.publish_update()

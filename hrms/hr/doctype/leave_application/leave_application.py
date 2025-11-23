@@ -1514,7 +1514,6 @@ def after_submit(doc, method=None):
 		current_date = add_days(current_date, 1)
 
 
-
 def create_attendance_from_leave(doc, method):
     emp = doc.employee
     leave_category = getattr(doc, "leave_category", None)
@@ -1527,8 +1526,11 @@ def create_attendance_from_leave(doc, method):
     # Hitung periode setengah hari (21 ke 20 bulan berikutnya)
     today = date.today()
     start_ref = date(today.year, today.month, 21)
-    end_ref = date(today.year + (1 if today.month == 12 else 0),
-                   1 if today.month == 12 else today.month + 1, 20)
+    end_ref = date(
+        today.year + (1 if today.month == 12 else 0),
+        1 if today.month == 12 else today.month + 1,
+        20
+    )
 
     current_date = getdate(doc.from_date)
     end_date = getdate(doc.to_date)
@@ -1539,6 +1541,11 @@ def create_attendance_from_leave(doc, method):
             status = "On Leave"
             daily_allowance_deducted = True
             attendance_reason = "Cuti"
+
+        elif leave_category == "Dinas":
+            status = "Present"
+            daily_allowance_deducted = False
+            attendance_reason = "Dinas"
 
         elif leave_category == "Izin":
             status = "On Leave"
@@ -1601,6 +1608,7 @@ def create_attendance_from_leave(doc, method):
             }).insert(ignore_permissions=True)
 
         current_date += timedelta(days=1)
+
 
 def has_permission(doc, ptype, user):
 	if doc.status == "Approved":

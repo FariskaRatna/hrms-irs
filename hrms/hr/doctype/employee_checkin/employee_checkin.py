@@ -475,6 +475,9 @@ def sync_unlinked_attendances():
     from frappe.utils import getdate
     from hrms.hr.doctype.employee_checkin.employee_checkin import mark_attendance_and_link_log
 
+    frappe.flags.ignore_dinas_block = True
+    frappe.flags.force_sync_present = True
+
     checkins = frappe.get_all(
         "Employee Checkin",
         filters={"attendance": ["is", "not set"], "docstatus": ["in", [0, 1]]},
@@ -482,7 +485,7 @@ def sync_unlinked_attendances():
     )
 
     if not checkins:
-        return "Semua check-in sudah terhubung ke Attendance."
+        return "All check-ins have been linked to Attendance."
 
     created, skipped = 0, 0
     processed_dates = set()
@@ -510,7 +513,9 @@ def sync_unlinked_attendances():
             att.attendance_date = attendance_date
             att.status = "Present"
             att.company = frappe.db.get_value("Employee", chk["employee"], "company")
-            att.insert(ignore_permissions=True) 
+            att.insert(ignore_permissions=True)
+			
+            att.db_set("status", "Present")
 
             frappe.db.set_value("Employee Checkin", chk["name"], "attendance", att.name)
             processed_dates.add(unique_key)
@@ -523,9 +528,11 @@ def sync_unlinked_attendances():
                 message=frappe.get_traceback()
             )
 
+    frappe.flags.force_sync_present = False
     frappe.db.commit()
 
-    return f"{created} Attendance draft berhasil dibuat"
+
+    return f"{created} Attendance draft successfully created."
 
 
 # Filter for choose leave application dinas for 2 months back
