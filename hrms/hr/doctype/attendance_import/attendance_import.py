@@ -6,7 +6,7 @@ from frappe.model.document import Document
 import frappe
 import pandas as pd
 from frappe.utils import getdate
-from datetime import date, timedelta, datetime
+from datetime import date, timedelta, datetime, time
 import calendar
 from difflib import get_close_matches
 
@@ -143,19 +143,39 @@ def process_file(docname):
             "log_type": log_type
         })
         if not exists:
-            frappe.get_doc({
+            doc = frappe.get_doc({
                 "doctype": "Employee Checkin",
                 "employee": emp,
                 "time": timestamp,
                 "log_type": log_type,
+                "related_dinas_leave": None,
+                "photo": None,
                 "latitude": DEFAULT_LATITUDE,
                 "longitude": DEFAULT_LONGITUDE,
-                "skip_auto_attendance": 1
-            }).insert(ignore_permissions=True)
+                "skip_auto_attendance": 0,
+                "is_imported": 1
+            })
+
+            frappe.flags.ignore_validate = True
+            frappe.flags.ignore_permissions = True
+
+            doc.insert()
         else:
             frappe.msgprint(f"Skipped duplicate checkin for {emp} at {timestamp}")
     
     created_attendance = set()
+
+    def is_mass_leave(employee, date_part):
+        mass_list = frappe.db.get_value("Employee", employee, "mass_leave_list")
+        if not mass_list:
+            return False
+
+        return frappe.db.exists(
+            "Holiday", {
+                "parent": mass_list,
+                "holiday_date": date_part
+            }
+        )
 
     for _, row in df_finger.iterrows():
         # emp = find_employee(row["Name"])
@@ -210,6 +230,8 @@ def process_file(docname):
             else:
                 frappe.msgprint(f"No face match for {emp_face_initial} on {date_part}")
 
+        if date_part.day == 20 and out_time is None:
+            out_time = time(18, 0, 0)
 
         in_datetime = datetime.combine(date_part, in_time) if in_time else None
         out_datetime = datetime.combine(date_part, out_time) if out_time else None
@@ -262,8 +284,13 @@ def process_file(docname):
         attendance_reason = ""
         status = "Absent"
 
-        # --- Tentukan status ---
+        # Menentukan Status
         if leave_category:
+            if leave_category == "Dinas":
+                status = "Present"
+                daily_allowance_deducted = False
+                attendance_reason = "Hadir"
+
             if leave_category == "Cuti":
                 status = "On Leave"
                 daily_allowance_deducted = True
@@ -302,8 +329,25 @@ def process_file(docname):
                     status = "On Leave"
                     daily_allowance_deducted = True
                     attendance_reason = "Setengah Hari (lebih dari 2 kali)"
+
+        # Cek ada cuti bersama
+        elif is_mass_leave(emp, date_part):
+            join_date = frappe.db.get_value("Employee", emp, "date_of_joining")
+            eligible = False
+            if join_date:
+                eligible = (date_part - getdate(join_date)).days >= 365
+
+            if eligible: 
+                status = "Present"
+                daily_allowance_deducted = False
+                attendance_reason = "Cuti Bersama"
+            else:
+                status = "On Leave"
+                daily_allowance_deducted = True
+                attendance_reason = "Izin"
+        
         else:
-            # Tidak ada leave, tentukan berdasarkan clock-in/out
+            # Tidak ada leave atau cuti bersama, tentukan berdasarkan clock-in/out
             if in_datetime and out_datetime:
                 status = "Present"
                 attendance_reason = "Hadir"

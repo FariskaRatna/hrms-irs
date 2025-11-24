@@ -236,14 +236,14 @@
    "fieldname": "attendance_reason",
    "fieldtype": "Select",
    "label": "Attendance Reason",
-   "options": "\nCuti\nHadir\nIzin\nSakit dengan Surat Dokter\nSakit tanpa Surat Dokter\nSetengah Hari (kurang dari 2 kali)\nSetengah Hari (lebih dari 2 kali)\nTidak Hadir\nTidak Clock Out dan Tanpa Izin"
+   "options": "\nCuti\nHadir\nDinas\nIzin\nSakit dengan Surat Dokter\nSakit tanpa Surat Dokter\nSetengah Hari (kurang dari 2 kali)\nSetengah Hari (lebih dari 2 kali)\nTidak Hadir\nTidak Clock Out dan Tanpa Izin\nCuti Bersama"
   }
  ],
  "icon": "fa fa-ok",
  "idx": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-11-20 11:37:38.679068",
+ "modified": "2025-11-24 15:25:52.300821",
  "modified_by": "Administrator",
  "module": "HR",
  "name": "Attendance",

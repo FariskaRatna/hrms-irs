@@ -247,9 +247,10 @@ class Attendance(Document):
 		self.publish_update()
 
 	def on_submit(self):
-		self.status = "Present"
-		self.db_set("status", "Present")
-		self.db_set("attendance_reason", "Hadir")
+		if self.attendance_reason == "Dinas":
+			self.status = "Present"
+			self.db_set("status", "Present")
+			self.db_set("attendance_reason", "Hadir")
 
 
 	def after_delete(self):

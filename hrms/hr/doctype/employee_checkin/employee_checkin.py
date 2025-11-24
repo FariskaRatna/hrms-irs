@@ -34,6 +34,9 @@ class EmployeeCheckin(Document):
 		# self.validate_dinas_permission()
 
 	def validate_after_choose_dinas(self):
+		if getattr(self, "is_imported", 0):
+			return
+
 		if not self.related_dinas_leave:
 			frappe.throw("Please choose Leave Application  for Dinas first.")
 

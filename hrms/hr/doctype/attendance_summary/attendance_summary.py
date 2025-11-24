@@ -96,8 +96,8 @@ def generate_recap(docname):
 				["start_time", "end_time"]
 			)
 		else:
-			shift_start = "08:00:00"
-			shift_end = "17:00:00"
+			shift_start = "09:15:00"
+			shift_end = "18:00:00"
 
 		normal_in = datetime.combine(
 			getdate(date),
