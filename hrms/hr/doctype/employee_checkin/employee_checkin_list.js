@@ -19,20 +19,5 @@ frappe.listview_settings["Employee Checkin"] = {
 				},
 			});
 		});
-
-		// Tombol Sync Unlinked Attendances
-		listview.page.add_inner_button(__('Sync Unlinked Attendances'), function() {
-			frappe.call({
-				method: "hrms.hr.doctype.employee_checkin.employee_checkin.sync_unlinked_attendances",
-				freeze: true,
-				freeze_message: __("Checking and creating missing attendances..."),
-				callback: function(r) {
-					if (r.message) {
-						frappe.msgprint(r.message);
-						listview.refresh();
-					}
-				}
-			});
-		}, __("Attendance Actions"));
 	},
 };

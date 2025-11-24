@@ -57,6 +57,26 @@ frappe.listview_settings["Attendance"] = {
 		// 		list_view.refresh();
 		// 	}
 		// });
+
+		if (!frappe.user.has_role("HR Manager") &&
+            !frappe.user.has_role("HR User") &&
+            !frappe.user.has_role("System Manager")) {
+            return;
+        }
+
+		list_view.page.add_inner_button(__('Sync Unlinked Attendance'), function() {
+			frappe.call({
+				method: "hrms.hr.doctype.employee_checkin.employee_checkin.sync_unlinked_attendances",
+				freeze: true,
+				freeze_message: __("Checking and creating missing attendances..."),
+				callback: function(r) {
+					if (r.message) {
+						frappe.msgprint(r.message);
+						list_view.refresh();
+					}
+				}
+			});
+		}, __("Attendance Actions"));
 		
 
 		list_view.page.add_inner_button(__("Mark Attendance"), function () {
@@ -170,10 +190,10 @@ frappe.listview_settings["Attendance"] = {
 					dialog.hide();
 					list_view.refresh();
 				},
-				primary_action_label: __("Mark Attendance"),
+				// primary_action_label: __("Mark Attendance"),
 			});
 			dialog.show();
-		});
+		}, __("Attendance Actions"));
 	},
 
 	reset_dialog: function (dialog) {
