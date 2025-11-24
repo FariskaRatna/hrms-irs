@@ -67,6 +67,7 @@
    "fetch_from": "employee.employee_name",
    "fieldname": "employee_name",
    "fieldtype": "Data",
+   "in_list_view": 1,
    "label": "Employee Name",
    "read_only": 1
   },
@@ -171,7 +172,7 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-11-21 16:58:38.876888",
+ "modified": "2025-11-23 21:07:37.447008",
  "modified_by": "Administrator",
  "module": "HR",
  "name": "Business Trip Allowance",
