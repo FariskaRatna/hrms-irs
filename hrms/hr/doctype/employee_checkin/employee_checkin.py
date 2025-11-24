@@ -555,7 +555,6 @@ def get_recent_dinas_leaves(doctype, txt, searchfield, start, page_len, filters)
         FROM `tabLeave Application`
         WHERE employee = %s
         AND leave_category = 'Dinas'
-        AND docstatus = 1
         AND from_date >= %s
         ORDER BY from_date DESC
         LIMIT %s OFFSET %s

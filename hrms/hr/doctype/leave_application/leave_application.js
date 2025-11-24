@@ -153,6 +153,13 @@ frappe.ui.form.on("Leave Application", {
 		frm.trigger("make_dashboard");
 		frm.trigger("get_leave_balance");
 		frm.trigger("set_leave_approver");
+
+		if (!frm.doc.employee) return;
+
+		frappe.db.get_value("Employee", frm.doc.employee, ["hrd_user"])
+			.then(r => {
+				frm.set_value("hrd_user", r.message.hrd_user);
+			});
 	},
 
 	leave_approver: function (frm) {

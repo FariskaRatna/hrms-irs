@@ -29,6 +29,7 @@
   "section_break_7",
   "leave_approver",
   "leave_approver_name",
+  "hrd_user",
   "follow_via_email",
   "column_break_18",
   "posting_date",
@@ -264,6 +265,12 @@
    "fieldname": "doctor_note",
    "fieldtype": "Attach",
    "label": "Doctor's Note (For Sick Reason)"
+  },
+  {
+   "fieldname": "hrd_user",
+   "fieldtype": "Link",
+   "label": "HR Manager",
+   "options": "User"
   }
  ],
  "icon": "fa fa-calendar",
@@ -271,7 +278,7 @@
  "is_submittable": 1,
  "links": [],
  "max_attachments": 3,
- "modified": "2025-11-21 10:44:32.456972",
+ "modified": "2025-11-24 11:49:59.125723",
  "modified_by": "Administrator",
  "module": "HR",
  "name": "Leave Application",
