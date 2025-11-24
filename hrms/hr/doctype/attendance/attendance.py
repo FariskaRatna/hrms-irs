@@ -247,10 +247,9 @@ class Attendance(Document):
 		self.publish_update()
 
 	def on_submit(self):
-
-		# Override agar tidak otomatis jadi On Leave
 		self.status = "Present"
 		self.db_set("status", "Present")
+		self.db_set("attendance_reason", "Hadir")
 
 
 	def after_delete(self):

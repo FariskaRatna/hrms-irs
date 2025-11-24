@@ -38,6 +38,7 @@ def custom_check_leave_record(self):
             self.status = "Present"
             self.leave_type = "Leave"
             self.leave_application = d.name
+            self.attendance_reason = "Hadir"
 
             frappe.msgprint(
                 f"Attendance: {self.employee_name} is marked Present (Dinas) on {format_date(self.attendance_date)}",
