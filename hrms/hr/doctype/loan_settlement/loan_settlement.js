@@ -8,7 +8,7 @@ frappe.ui.form.on("Loan Settlement", {
             set_loan_filter(frm);
         }
 
-        if (!frm.is_new() && frm.doc.docstatus === 0) {
+        if (!frm.is_new() && frm.doc.docstatus === 0 && frm.perm[0].submit == 1) {
             frm.page.set_primary_action(__("Submit"), function () {
                 frappe.confirm(
                     `Permanently submit Loan Settlement for ${frm.doc.employee_name || frm.doc.employee}?`,

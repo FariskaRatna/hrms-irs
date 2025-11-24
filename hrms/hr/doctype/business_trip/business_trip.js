@@ -13,7 +13,7 @@ frappe.ui.form.on("Business Trip", {
 	},
     
     refresh(frm) {
-        if (!frm.is_new() && frm.doo.docstatus == 0) {
+        if (!frm.is_new() && frm.doc.docstatus === 0 && frm.perm[0].submit == 1) {
             frm.page.set_primary_action(__("Submit"), function () {
                 frappe.confirm(
                     `Permanently submit Business Trip ${frm.doc.employee_name || frm.doc.employee}?`,

@@ -2,17 +2,16 @@
 // For license information, please see license.txt
 
 frappe.ui.form.on("Overtime", {
-	refresh(frm) {
-        if (!frm.is_new() && frm.doc.docstatus === 0) {
+    refresh(frm) {
+        if (!frm.is_new() && frm.doc.docstatus === 0 && frm.perm[0].submit == 1) {
+
             frm.page.set_primary_action(__("Submit"), function () {
                 frappe.confirm(
                     `Permanently submit Overtime for ${frm.doc.employee_name || frm.doc.employee}?`,
                     function () {
                         frappe.call({
                             method: "frappe.client.submit",
-                            args: {
-                                doc: frm.doc
-                            },
+                            args: { doc: frm.doc },
                             callback: function (r) {
                                 if (!r.exc) {
                                     frappe.show_alert({ message: __("Overtime submitted"), indicator: "green" });
@@ -20,14 +19,9 @@ frappe.ui.form.on("Overtime", {
                                 }
                             }
                         });
-                    },
-                    function () {
-                        frappe.show_alert({ message: __("Submission cancelled"), indicator: "red" });
                     }
                 );
             });
-            // frm.page.clear_actions_menu();
-
         }
     },
 
@@ -41,3 +35,4 @@ frappe.ui.form.on("Overtime", {
             });
     }
 });
+

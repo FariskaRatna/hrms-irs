@@ -12,7 +12,7 @@ frappe.ui.form.on("Reimbursement", {
 	},
 
     refresh(frm) {
-        if (!frm.is_new() && frm.doc.docstatus === 0) {
+        if (!frm.is_new() && frm.doc.docstatus === 0 && frm.perm[0] == 1) {
             frm.page.set_primary_action(__("Submit"), function() {
                 frappe.confirm(
                     `Permanently submit Reimbursement ${frm.doc.name} for ${frm.doc.employee_name || frm.doc.employee}?`,

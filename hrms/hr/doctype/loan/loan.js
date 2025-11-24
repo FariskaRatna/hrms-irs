@@ -17,7 +17,7 @@ frappe.ui.form.on("Loan", {
             }, __("Tools"));
         }
 
-        if (!frm.is_new() && frm.doc.docstatus === 0) {
+        if (!frm.is_new() && frm.doc.docstatus === 0 && frm.perm[0].submit == 1) {
             frm.page.set_primary_action(__("Submit"), function () {
                 frappe.confirm(
                     `Permanently submit Loan Summary ${frm.doc.name} for ${frm.doc.employee_name || frm.doc.employee}?`,
