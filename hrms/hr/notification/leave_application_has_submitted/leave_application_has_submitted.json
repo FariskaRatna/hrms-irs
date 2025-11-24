@@ -1,0 +1,29 @@
+{
+ "attach_print": 0,
+ "channel": "Email",
+ "condition": "doc.docstatus == 1",
+ "creation": "2025-11-24 12:14:17.219170",
+ "days_in_advance": 0,
+ "docstatus": 0,
+ "doctype": "Notification",
+ "document_type": "Leave Application",
+ "enabled": 1,
+ "event": "Submit",
+ "idx": 0,
+ "is_standard": 1,
+ "message": "<h3>Your Leave Application Has Been Submitted</h3>\n\n<p>\nYour leave application request <strong>{{ doc.name }}</strong> has been fully submitted by HR.\nPlease wait for payroll processing.\n</p>\n\n<p>\n    <div style=\"text-align:center; margin-top:20px;\">\n        <a href=\"{{ frappe.utils.get_url('/app/leave-application/' ~ doc.name) }}\"\n           style=\"\n                padding: 12px 20px;\n                background: #1d6df7;\n                color: #fff;\n                border-radius: 8px;\n                text-decoration: none;\n                font-size: 14px;\n                font-weight: 600;\n                display: inline-block;\n           \">\n            View Request \u2192\n        </a>\n    </div>\n\n</p>\n",
+ "message_type": "Markdown",
+ "modified": "2025-11-24 12:14:17.219170",
+ "modified_by": "Administrator",
+ "module": "HR",
+ "name": "Leave Application has submitted",
+ "owner": "Administrator",
+ "recipients": [
+  {
+   "receiver_by_document_field": "owner"
+  }
+ ],
+ "send_system_notification": 0,
+ "send_to_all_assignees": 0,
+ "subject": "Leave Application {{ doc.name }} has submitted"
+}
