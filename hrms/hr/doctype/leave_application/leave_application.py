@@ -1515,99 +1515,135 @@ def after_submit(doc, method=None):
 
 
 def create_attendance_from_leave(doc, method):
-    emp = doc.employee
-    leave_category = getattr(doc, "leave_category", None)
-    doctor_note = getattr(doc, "doctor_note", None)
+	emp = doc.employee
+	leave_category = getattr(doc, "leave_category", None)
+	doctor_note = getattr(doc, "doctor_note", None)
 
-    status = "Absent"
-    daily_allowance_deducted = False
-    attendance_reason = ""
+	status = "Absent"
+	daily_allowance_deducted = False
+	attendance_reason = ""
 
     # Hitung periode setengah hari (21 ke 20 bulan berikutnya)
-    today = date.today()
-    start_ref = date(today.year, today.month, 21)
-    end_ref = date(
+	today = date.today()
+	start_ref = date(today.year, today.month, 21)
+	end_ref = date(
         today.year + (1 if today.month == 12 else 0),
         1 if today.month == 12 else today.month + 1,
         20
     )
 
-    current_date = getdate(doc.from_date)
-    end_date = getdate(doc.to_date)
+    # Hitung total mass leave
+	mass_list = frappe.db.get_value("Employee", emp, "mass_leave_list")
+	total_mass_leave = 0
 
-    while current_date <= end_date:
-        # Tentukan logika berdasarkan kategori
-        if leave_category == "Cuti":
-            status = "On Leave"
-            daily_allowance_deducted = True
-            attendance_reason = "Cuti"
+	if mass_list:
+		total_mass_leave = frappe.db.count(
+            "Holiday",
+            {"parent": mass_list}
+        )
 
-        elif leave_category == "Dinas":
-            status = "Present"
-            daily_allowance_deducted = False
-            attendance_reason = "Dinas"
+	total_mass_leave = int(total_mass_leave or 0)
 
-        elif leave_category == "Izin":
-            status = "On Leave"
-            daily_allowance_deducted = True
-            attendance_reason = "Izin"
-
-        elif leave_category == "Sakit":
-            if doctor_note:
-                status = "Present"
-                daily_allowance_deducted = False
-                attendance_reason = "Sakit dengan Surat Dokter"
-            else:
-                status = "On Leave"
-                daily_allowance_deducted = True
-                attendance_reason = "Sakit tanpa Surat Dokter"
-
-        elif leave_category == "Setengah Hari":
-            half_day_count = frappe.db.count(
-                "Leave Application",
-                filters={
-                    "employee": emp,
-                    "leave_category": "Setengah Hari",
-                    "from_date": ["between", [start_ref, end_ref]],
-                    "docstatus": 1
-                }
-            )
-            if half_day_count <= 2:
-                status = "Present"
-                daily_allowance_deducted = False
-                attendance_reason = "Setengah Hari (kurang dari 2 kali)"
-            else:
-                status = "On Leave"
-                daily_allowance_deducted = True
-                attendance_reason = "Setengah Hari (lebih dari 2 kali)"
-        else:
-            status = "Absent"
-            daily_allowance_deducted = True
-            attendance_reason = "Tidak Hadir"
-
-        # Cek dan buat/update Attendance
-        existing_att = frappe.db.exists("Attendance", {
+	allowed_cuti = 12 - total_mass_leave
+	if allowed_cuti < 0:
+		allowed_cuti = 0
+	
+	cuti_count = frappe.db.count(
+        "Leave Application",
+        filters={
             "employee": emp,
-            "attendance_date": current_date
-        })
+            "leave_category": "Cuti",
+            "from_date": ["between", [f"{today.year}-01-01", f"{today.year}-12-31"]],
+            "docstatus": 1,
+			"name": ["!=", doc.name],
+        }
+    )
 
-        if existing_att:
-            att = frappe.get_doc("Attendance", existing_att)
-            att.status = status
-            att.daily_allowance_deducted = daily_allowance_deducted
-            att.attendance_reason = attendance_reason
-            att.save(ignore_permissions=True)
-        else:
-            frappe.get_doc({
-                "doctype": "Attendance",
-                "employee": emp,
-                "attendance_date": current_date,
-                "status": status,
-                "daily_allowance_deducted": daily_allowance_deducted,
-                "attendance_reason": attendance_reason
-            }).insert(ignore_permissions=True)
+	remaining_quota = allowed_cuti - cuti_count
+	if remaining_quota < 0:
+		remaining_quota = 0
 
-        current_date += timedelta(days=1)
+	current_date = getdate(doc.from_date)
+	end_date = getdate(doc.to_date)
+
+	while current_date <= end_date:
+		if leave_category == "Cuti":
+			if remaining_quota > 0:
+				status = "Present"
+				daily_allowance_deducted = False
+				attendance_reason = "Cuti"
+				remaining_quota = remaining_quota - 1
+			else:
+				status = "On Leave"
+				daily_allowance_deducted = True
+				attendance_reason = "Cuti"
+
+		elif leave_category == "Dinas":
+			status = "Present"
+			daily_allowance_deducted = False
+			attendance_reason = "Dinas"
+
+		elif leave_category == "Izin":
+			status = "On Leave"
+			daily_allowance_deducted = True
+			attendance_reason = "Izin"
+
+		elif leave_category == "Sakit":
+			if doctor_note:
+				status = "Present"
+				daily_allowance_deducted = False
+				attendance_reason = "Sakit dengan Surat Dokter"
+			else:
+				status = "On Leave"
+				daily_allowance_deducted = True
+				attendance_reason = "Sakit tanpa Surat Dokter"
+
+		elif leave_category == "Setengah Hari":
+			half_day_count = frappe.db.count(
+				"Leave Application",
+				filters={
+					"employee": emp,
+					"leave_category": "Setengah Hari",
+					"from_date": ["between", [start_ref, end_ref]],
+					"docstatus": 1
+				}
+			)
+			if half_day_count <= 2:
+				status = "Present"
+				daily_allowance_deducted = False
+				attendance_reason = "Setengah Hari (kurang dari 2 kali)"
+			else:
+				status = "On Leave"
+				daily_allowance_deducted = True
+				attendance_reason = "Setengah Hari (lebih dari 2 kali)"
+
+		else:
+			status = "Absent"
+			daily_allowance_deducted = True
+			attendance_reason = "Tidak Hadir"
+
+		existing_att = frappe.db.exists("Attendance", {
+			"employee": emp,
+			"attendance_date": current_date
+		})
+
+		if existing_att:
+			att = frappe.get_doc("Attendance", existing_att)
+			att.status = status
+			att.daily_allowance_deducted = daily_allowance_deducted
+			att.attendance_reason = attendance_reason
+			att.save(ignore_permissions=True)
+		else:
+			frappe.get_doc({
+				"doctype": "Attendance",
+				"employee": emp,
+				"attendance_date": current_date,
+				"status": status,
+				"daily_allowance_deducted": daily_allowance_deducted,
+				"attendance_reason": attendance_reason
+			}).insert(ignore_permissions=True)
+
+		current_date += timedelta(days=1)
 
 
 def has_permission(doc, ptype, user):
