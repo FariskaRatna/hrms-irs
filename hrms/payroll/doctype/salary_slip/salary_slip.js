@@ -492,6 +492,54 @@ frappe.ui.form.on("Salary Slip", {
                 });
             });
         }
+
+        if (frm.doc.docstatus === 0 && frm.doc.employee && frm.doc.end_date) {
+            frm.add_custom_button(__('Fetch Total Late Days'), function () {
+                frappe.call({
+                    method: "hrms.payroll.doctype.salary_slip.salary_slip.update_total_late_days",
+                    args: {
+                        employee: frm.doc.employee,
+                        end_date: frm.doc.end_date
+                    },
+                    freeze: true,
+                    callback: function (r) {
+                        if (r.message === undefined || r.message === null) {
+                            frappe.msgprint(__("No late days data returned."));
+                            return;
+                        }
+
+                        let total_late_days = Number(r.message) || 0;
+
+                        // set ke field di Salary Slip
+                        frm.set_value("total_late_days", total_late_days);
+                        frm.refresh_field("total_late_days");
+
+                        // hitung amount potongan
+                        let late_amount = total_late_days * 80000;
+
+                        // update / tambah row deduction "Keterlambatan"
+                        let found = false;
+                        (frm.doc.deductions || []).forEach(row => {
+                            if (row.salary_component === "Keterlambatan") {
+                                row.amount = late_amount;
+                                found = true;
+                            }
+                        });
+
+                        if (!found) {
+                            frm.add_child("deductions", {
+                                salary_component: "Keterlambatan",
+                                amount: late_amount
+                            });
+                        }
+
+                        frm.refresh_field("deductions");
+                        frappe.msgprint(__("Total Late Days fetched successfully."));
+                    }
+                });
+            });
+        }
+
     }
 });
 

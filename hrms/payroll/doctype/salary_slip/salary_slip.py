@@ -2639,24 +2639,43 @@ def adjust_payment_days(salary_slip, method=None):
         if earning.salary_component == "Tunjangan Harian":
             earning.amount = base_rate * payment_days
 
+# def update_total_late_days_internal(salary_slip):
+#     if not salary_slip.employee or not salary_slip.end_date:
+#         salary_slip.total_late_days = 0
+#         return
+
+#     month_str = getdate(salary_slip.end_date).strftime("%Y-%m")
+
+#     late_days = frappe.db.get_value(
+#         "Attendance Summary",
+#         {
+#             "employee": salary_slip.employee,
+#             "month": ["like", f"{month_str}%"]
+#         },
+#         "late_days"
+#     ) or 0
+
+#     salary_slip.total_late_days = late_days
 
 
-def update_total_late_days(salary_slip, method):
-	if not salary_slip.employee or not salary_slip.end_date:
-		salary_slip.total_late_days = 0
-		return
+@frappe.whitelist()
+def update_total_late_days(employee, end_date):
+    """Return only the late_days, no need to load Salary Slip doc."""
+    if not employee or not end_date:
+        return 0
 
-	month_str = getdate(salary_slip.end_date).strftime("%Y-%m")
+    end_date = getdate(end_date)
+    month_str = end_date.strftime("%Y-%m")
 
-	late_days = frappe.db.get_value(
-		"Attendance Summary",
-		{
-			"employee": salary_slip.employee,
-			"month": ["like", f"{month_str}%"]
-		},
-		"late_days"
-	)
+    late_days = frappe.db.get_value(
+        "Attendance Summary",
+        {
+            "employee": employee,
+            "month": ["like", f"{month_str}%"]
+        },
+        "late_days"
+    ) or 0
 
+    return late_days
 
-	salary_slip.total_late_days = late_days or 0
 
