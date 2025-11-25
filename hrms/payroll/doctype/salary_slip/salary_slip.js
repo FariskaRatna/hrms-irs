@@ -219,7 +219,7 @@ frappe.ui.form.on("Salary Slip", {
 		frm.fields_dict["deductions"].grid.set_column_disp(salary_detail_fields, false);
 		frm.trigger("set_dynamic_labels");
 
-		if (!frm.is_new() && frm.doc.dosctatus === 0) {
+		if (!frm.is_new() && frm.doc.dosctatus === 0 && frm.perm[0].submit == 1) {
 			frm.page.set_primary_action(__("Submit"), function() {
 				frappe.confirm(
 					`Permanently submit Salary Slip ${frm.doc.name} for ${frm.doc.employee_name || frm.doc.employee}?`,

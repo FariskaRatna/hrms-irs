@@ -1,5 +1,4 @@
 {
- "_comments": "[{\"comment\": \"Action Failed<br><br>Salary Slip Loan: Options must be a valid DocType for field Loan Product in ...\", \"by\": \"Administrator\", \"name\": \"4kajqtgkgg\"}, {\"comment\": \"Action Failed<br><br>Salary Slip Loan: Options must be a valid DocType for field Loan Product in ...\", \"by\": \"Administrator\", \"name\": \"4s9qnp20qu\"}]",
  "actions": [],
  "allow_rename": 1,
  "autoname": "naming_series:",
@@ -68,6 +67,7 @@
    "fetch_from": "employee.employee_name",
    "fieldname": "employee_name",
    "fieldtype": "Data",
+   "in_list_view": 1,
    "label": "Employee Name",
    "read_only": 1
   },
@@ -171,7 +171,7 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-11-19 10:08:41.625868",
+ "modified": "2025-11-25 16:12:09.420965",
  "modified_by": "Administrator",
  "module": "HR",
  "name": "Loan",
