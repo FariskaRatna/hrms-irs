@@ -25,6 +25,7 @@ add_to_apps_screen = [
 app_include_js = [
 	"hrms.bundle.js",
 	"/asstes/hrms/js/global_readonly.js",
+	# "/assets/hrms/js/frappe/ui/custom_sidebar.js"
 	# "/assets/hrms/js/hr_dashboard.js",
 ]
 app_include_css = "hrms.bundle.css"
@@ -174,7 +175,10 @@ doc_events = {
 	"Leave Application": {
 		"after_submit": "hrms.hr.doctype.leave_application.leave_application.after_submit",
 		# "on_submit": "hrms.hr.doctype.leave_application.leave_application.create_attendance_from_leave",
-		"on_submit": "hrms.custom.patch_leave_attendance.create_attendance_from_leave",
+		"on_submit": [
+			"hrms.custom.patch_leave_attendance.create_attendance_from_leave",
+			"hrms.overrides.leave_sync.handle_leave_sync",
+		]
 	},
 	"Salary Slip": {
 		"before_save": [
