@@ -40,7 +40,7 @@ class EmployeeCheckin(Document):
 		if not self.related_dinas_leave:
 			frappe.throw("Please choose Leave Application  for Dinas first.")
 
-		two_months_ago = getdate(add_months(nowdate(), -2))
+		two_months_ago = getdate(add_months(nowdate(), -4))
 		leave = frappe.get_doc("Leave Application", self.related_dinas_leave)
 
 		if getdate(leave.modified) < two_months_ago:
@@ -539,26 +539,26 @@ def sync_unlinked_attendances():
 
 
 # Filter for choose leave application dinas for 2 months back
-@frappe.whitelist()
-@frappe.validate_and_sanitize_search_inputs
-def get_recent_dinas_leaves(doctype, txt, searchfield, start, page_len, filters):
-    employee = filters.get("employee")
+# @frappe.whitelist()
+# @frappe.validate_and_sanitize_search_inputs
+# def get_recent_dinas_leaves(doctype, txt, searchfield, start, page_len, filters):
+#     employee = filters.get("employee")
 
-    if not employee:
-        return []
+#     if not employee:
+#         return []
 
-    from datetime import datetime
-    from dateutil.relativedelta import relativedelta
+#     from datetime import datetime
+#     from dateutil.relativedelta import relativedelta
 
-    # tanggal hari ini - 2 bulan
-    min_date = (datetime.today() - relativedelta(months=2)).date()
+#     # tanggal hari ini - 4 bulan
+#     min_date = (datetime.today() - relativedelta(months=5)).date()
 
-    return frappe.db.sql("""
-        SELECT name, leave_type, from_date, to_date
-        FROM `tabLeave Application`
-        WHERE employee = %s
-        AND leave_category = 'Dinas'
-        AND from_date >= %s
-        ORDER BY from_date DESC
-        LIMIT %s OFFSET %s
-    """, (employee, min_date, page_len, start))
+#     return frappe.db.sql("""
+#         SELECT name, leave_type, from_date, to_date
+#         FROM `tabLeave Application`
+#         WHERE employee = %s
+#         AND leave_category = 'Dinas'
+#         AND from_date >= %s
+#         ORDER BY from_date DESC
+#         LIMIT %s OFFSET %s
+#     """, (employee, min_date, page_len, start))
