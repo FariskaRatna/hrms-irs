@@ -140,12 +140,14 @@
    "fieldname": "destination",
    "fieldtype": "Select",
    "label": "Destination",
-   "options": "\nJabodetabek\nLuar Kota\nAsia\nJepang\nArab Saudi\nEropa\nAustralia\nUSA\nCanada"
+   "options": "\nJabodetabek\nLuar Kota\nAsia\nJepang\nArab Saudi\nEropa\nAustralia\nUSA\nCanada",
+   "reqd": 1
   },
   {
    "fieldname": "description",
    "fieldtype": "Small Text",
-   "label": "Description"
+   "label": "Description",
+   "reqd": 1
   },
   {
    "fieldname": "approval_section",
@@ -181,7 +183,7 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-11-24 09:51:23.909744",
+ "modified": "2025-11-27 17:19:48.354352",
  "modified_by": "Administrator",
  "module": "HR",
  "name": "Business Trip",

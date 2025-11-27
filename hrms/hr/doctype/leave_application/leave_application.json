@@ -151,7 +151,8 @@
   {
    "fieldname": "description",
    "fieldtype": "Small Text",
-   "label": "Reason"
+   "label": "Reason",
+   "reqd": 1
   },
   {
    "fieldname": "section_break_7",
@@ -259,7 +260,8 @@
    "fieldtype": "Select",
    "in_list_view": 1,
    "label": "Leave Category",
-   "options": "\nIzin\nSakit\nCuti\nSetengah Hari\nDinas"
+   "options": "\nIzin\nSakit\nCuti\nSetengah Hari\nDinas",
+   "reqd": 1
   },
   {
    "fieldname": "doctor_note",
@@ -278,7 +280,7 @@
  "is_submittable": 1,
  "links": [],
  "max_attachments": 3,
- "modified": "2025-11-24 11:49:59.125723",
+ "modified": "2025-11-27 17:17:59.632380",
  "modified_by": "Administrator",
  "module": "HR",
  "name": "Leave Application",
