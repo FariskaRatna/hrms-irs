@@ -12,6 +12,9 @@ class OvertimeSlip(Document):
 	def before_save(self):
 		self.create_overtime_record()
 		self.check_overtime_hours()
+
+	def before_insert(self):
+		self.apply_previous_overtime()
 	
 	def create_overtime_record(self):
 		calculates = frappe.get_all(
@@ -51,28 +54,50 @@ class OvertimeSlip(Document):
 			frappe.msgprint(f"Total Overtime Hours is more than {self.MAX_MONTHLY_OVERTIME}. ")
 
 			self.total_hours = self.MAX_MONTHLY_OVERTIME
+			self.excess_hours = excesses
 
-			from_date = getdate(self.from_date)
-			next_from_date = None
-			next_to_date = None
+			# from_date = getdate(self.from_date)
+			# next_from_date = None
+			# next_to_date = None
 
-			if from_date.day >= 21:
-				next_from_date = add_months(from_date, 1).replace(day=21)
-				next_to_date = add_months(from_date, 2).replace(day=20)
-			else:
-				next_from_date = from_date.replace(day=21)
-				next_to_date = add_months(from_date, 1).replace(day=20)
+			# if from_date.day >= 21:
+			# 	next_from_date = add_months(from_date, 1).replace(day=21)
+			# 	next_to_date = add_months(from_date, 2).replace(day=20)
+			# else:
+			# 	next_from_date = from_date.replace(day=21)
+			# 	next_to_date = add_months(from_date, 1).replace(day=20)
 
-			next_slip = frappe.new_doc("Overtime Slip")
-			next_slip.employee = self.employee
-			next_slip.from_date = next_from_date
-			next_slip.to_date = next_to_date
-			next_slip.total_hours = excesses
-			next_slip.total_amount = 0
-			next_slip.status = "Draft"
-			next_slip.insert(ignore_permissions=True)
+			# next_slip = frappe.new_doc("Overtime Slip")
+			# next_slip.employee = self.employee
+			# next_slip.from_date = next_from_date
+			# next_slip.to_date = next_to_date
+			# next_slip.total_hours = excesses
+			# next_slip.total_amount = 0
+			# next_slip.status = "Draft"
+			# next_slip.insert(ignore_permissions=True)
 
 			frappe.msgprint(f"Overtime {excesses} hours automatically move on the next month.")
+
+	def apply_previous_overtime(self):
+		previous = frappe.db.sql("""
+			SELECT name, excess_hours
+			FROM `tabOvertime Slip`
+			WHERE employee = %s AND docstatus = 1 AND excess_hours > 0
+			ORDER BY to_date DESC LIMIT 1
+		""", (self.employee,), as_dict=True)
+
+
+		if previous:
+			excess = previous[0].excess_hours
+			
+			self.total_hours = (self.total_hours or 0) + excess
+
+			frappe.db.set_value("Overtime Slip", previous[0].name, "excess_hours", 0)
+
+			frappe.msgprint(
+				f"Sisa overtime {excess} jam dari bulan sebelumnya telah ditambahkan otomatis."
+			)
+
 
 # @frappe.whitelist()
 # def get_total_overtime(employee, start_date, end_date):

@@ -1,7 +1,7 @@
 {
  "attach_print": 0,
  "channel": "Email",
- "condition": "doc.status==\"Rejected\"",
+ "condition": "doc.approval_status==\"Rejected\"",
  "creation": "2025-11-17 14:57:53.029751",
  "days_in_advance": 0,
  "docstatus": 0,
@@ -13,7 +13,7 @@
  "is_standard": 1,
  "message": "<h3>Overtime Rejected by PM</h3>\n\n<p>\nThe overtime request <strong>{{ doc.name }}</strong> has been rejected by the Project Manager.\nHR is now required to review and process it.\n</p>\n\n<h4>Details</h4>\n\n<ul>\n    <li>Employee: {{ doc.employee }}</li>\n    <li>Date: {{ doc.date }}</li>\n    <li>Total Hours: {{ doc.total_hours }}</li>\n</ul>\n",
  "message_type": "Markdown",
- "modified": "2025-11-17 15:41:23.645536",
+ "modified": "2025-11-27 15:49:52.221483",
  "modified_by": "Administrator",
  "module": "HR",
  "name": "Overtime Request to PM (Rejected)",

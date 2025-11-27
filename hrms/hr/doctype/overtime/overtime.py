@@ -28,7 +28,7 @@ class Overtime(Document):
 			self.total_hours = round(total_hour, 2)
 
 	def on_submit(self):
-		if self.status == "Approved":
+		if self.approval_status == "Approved":
 			self.create_overtime_calculation()
 			# self.create_overtime_summary()
 
@@ -46,7 +46,7 @@ class Overtime(Document):
 		calculation.total_hours = self.total_hours
 		calculation.day_type = day_type
 		calculation.reference_request = self.name
-		calculation.status = "Pending"
+		calculation.approval_status = "Pending"
 		calculation.insert(ignore_permissions=True)
 		frappe.msgprint(f"Overtime calculation for {self.employee_name} successfully created.")
 	

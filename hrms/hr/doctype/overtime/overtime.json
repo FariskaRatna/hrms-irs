@@ -18,16 +18,17 @@
   "day_type",
   "start_time",
   "end_time",
-  "column_break_xyeq",
   "total_hours",
+  "column_break_xyeq",
   "description",
+  "photo",
   "amended_from",
   "approval_section",
+  "assigned_by",
   "pm_user",
-  "hrd_user",
   "column_break_orgk",
   "posting_date",
-  "status"
+  "approval_status"
  ],
  "fields": [
   {
@@ -47,6 +48,7 @@
    "fetch_from": "employee.employee_name",
    "fieldname": "employee_name",
    "fieldtype": "Data",
+   "in_global_search": 1,
    "in_list_view": 1,
    "label": "Employee Name",
    "read_only": 1
@@ -84,12 +86,14 @@
   {
    "fieldname": "start_time",
    "fieldtype": "Time",
-   "label": "Start Time"
+   "label": "Start Time",
+   "reqd": 1
   },
   {
    "fieldname": "end_time",
    "fieldtype": "Time",
-   "label": "End Time"
+   "label": "End Time",
+   "reqd": 1
   },
   {
    "fieldname": "column_break_xyeq",
@@ -98,14 +102,8 @@
   {
    "fieldname": "description",
    "fieldtype": "Small Text",
-   "label": "Description"
-  },
-  {
-   "fieldname": "status",
-   "fieldtype": "Select",
-   "label": "Status",
-   "options": "Pending\nApproved\nRejected",
-   "permlevel": 1
+   "label": "Description",
+   "reqd": 1
   },
   {
    "fieldname": "day_type",
@@ -134,14 +132,12 @@
   {
    "fieldname": "naming_series",
    "fieldtype": "Select",
-   "in_list_view": 1,
    "label": "Series",
    "no_copy": 1,
    "options": "HR-OVT-",
    "print_hide": 1,
    "read_only": 1,
    "reqd": 1,
-   "search_index": 1,
    "set_only_once": 1
   },
   {
@@ -153,15 +149,7 @@
    "fieldname": "pm_user",
    "fieldtype": "Link",
    "label": "Project Manager",
-   "options": "User",
-   "permlevel": 1
-  },
-  {
-   "fieldname": "hrd_user",
-   "fieldtype": "Link",
-   "label": "HR User",
-   "options": "User",
-   "permlevel": 1
+   "options": "User"
   },
   {
    "fieldname": "column_break_orgk",
@@ -172,13 +160,35 @@
    "fieldname": "posting_date",
    "fieldtype": "Date",
    "label": "Posting Date"
+  },
+  {
+   "fieldname": "assigned_by",
+   "fieldtype": "Link",
+   "label": "Assigned By",
+   "options": "User"
+  },
+  {
+   "fieldname": "photo",
+   "fieldtype": "Attach Image",
+   "label": "Photo",
+   "reqd": 1
+  },
+  {
+   "default": "Pending",
+   "fieldname": "approval_status",
+   "fieldtype": "Select",
+   "in_global_search": 1,
+   "in_list_view": 1,
+   "label": "Approval Status",
+   "options": "Pending\nApproved\nRejected",
+   "permlevel": 1
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-11-24 09:48:43.026126",
+ "modified": "2025-11-27 15:45:57.669727",
  "modified_by": "Administrator",
  "module": "HR",
  "name": "Overtime",
@@ -196,10 +206,82 @@
    "role": "System Manager",
    "share": 1,
    "write": 1
+  },
+  {
+   "create": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Employee",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "HR Manager",
+   "share": 1,
+   "submit": 1,
+   "write": 1
+  },
+  {
+   "email": 1,
+   "export": 1,
+   "permlevel": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "All",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "email": 1,
+   "export": 1,
+   "permlevel": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "HR Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "email": 1,
+   "export": 1,
+   "permlevel": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Projects Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Projects Manager",
+   "share": 1,
+   "submit": 1,
+   "write": 1
   }
  ],
  "row_format": "Dynamic",
+ "search_fields": "employee,employee_name,date",
  "sort_field": "modified",
  "sort_order": "DESC",
- "states": []
+ "states": [],
+ "title_field": "employee_name"
 }

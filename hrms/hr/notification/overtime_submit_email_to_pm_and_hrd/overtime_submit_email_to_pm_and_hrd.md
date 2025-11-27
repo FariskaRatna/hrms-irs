@@ -5,15 +5,18 @@ The overtime request <strong>{{ doc.name }}</strong> has been updated.
 Please review the information below.
 </p>
 
-{% if comments %}
+<p>{% if comments %}</p>
+
 <div style="margin: 10px 0; padding: 10px; background: #f7f7f7; border-left: 3px solid #ccc;">
     <strong>Last Comment:</strong><br>
     "{{ comments[-1].comment }}"<br>
     <em>- {{ comments[-1].by }}</em>
 </div>
-{% endif %}
+
+<p>{% endif %}</p>
 
 <h4>Details</h4>
+
 <ul>
     <li><strong>Employee:</strong> {{ doc.employee }}</li>
     <li><strong>Date:</strong> {{ doc.overtime_date }}</li>
