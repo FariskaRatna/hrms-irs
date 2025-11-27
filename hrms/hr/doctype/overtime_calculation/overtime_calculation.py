@@ -10,7 +10,7 @@ class OvertimeCalculation(Document):
 		self.calculate_overtime_pay()
 	
 	def on_submit(self):
-		if self.status == "Approved":
+		if self.approval_status == "Approved":
 			self.create_overtime_record()
 	
 	def calculate_overtime_pay(self):

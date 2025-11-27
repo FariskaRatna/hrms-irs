@@ -46,7 +46,7 @@ class Overtime(Document):
 		calculation.total_hours = self.total_hours
 		calculation.day_type = day_type
 		calculation.reference_request = self.name
-		calculation.approval_status = "Pending"
+		calculation.approval_status = "Approved"
 		calculation.insert(ignore_permissions=True)
 		frappe.msgprint(f"Overtime calculation for {self.employee_name} successfully created.")
 	

@@ -20,7 +20,7 @@
   "column_break_vxly",
   "reference_request",
   "total_amount",
-  "status",
+  "approval_status",
   "amended_from"
  ],
  "fields": [
@@ -46,7 +46,6 @@
   {
    "fieldname": "naming_series",
    "fieldtype": "Select",
-   "in_list_view": 1,
    "label": "Series",
    "no_copy": 1,
    "options": "HR-OVT-CALC-",
@@ -119,13 +118,6 @@
    "label": "Total Amount"
   },
   {
-   "fieldname": "status",
-   "fieldtype": "Select",
-   "label": "Status",
-   "options": "Pending\nApproved",
-   "permlevel": 1
-  },
-  {
    "fieldname": "reference_request",
    "fieldtype": "Link",
    "label": "Overtime Request",
@@ -137,13 +129,20 @@
    "fieldtype": "Data",
    "label": "Designation",
    "read_only": 1
+  },
+  {
+   "default": "Approved",
+   "fieldname": "approval_status",
+   "fieldtype": "Select",
+   "label": "Status",
+   "options": "Approved\nRejected\nPending",
+   "permlevel": 1
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
- "is_submittable": 1,
  "links": [],
- "modified": "2025-11-19 10:14:23.659950",
+ "modified": "2025-11-27 16:02:21.756069",
  "modified_by": "Administrator",
  "module": "HR",
  "name": "Overtime Calculation",
@@ -164,7 +163,9 @@
   }
  ],
  "row_format": "Dynamic",
+ "search_fields": "employee,employee_name,date,day_type",
  "sort_field": "modified",
  "sort_order": "DESC",
- "states": []
+ "states": [],
+ "title_field": "employee_name"
 }
