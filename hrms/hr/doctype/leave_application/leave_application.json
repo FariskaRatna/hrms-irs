@@ -33,7 +33,7 @@
   "follow_via_email",
   "column_break_18",
   "posting_date",
-  "status",
+  "approval_status",
   "sb_other_details",
   "salary_slip",
   "color",
@@ -176,17 +176,6 @@
    "fieldtype": "Column Break"
   },
   {
-   "default": "Open",
-   "fieldname": "status",
-   "fieldtype": "Select",
-   "in_standard_filter": 1,
-   "label": "Status",
-   "no_copy": 1,
-   "options": "Open\nApproved\nRejected\nCancelled",
-   "permlevel": 1,
-   "reqd": 1
-  },
-  {
    "default": "Today",
    "fieldname": "posting_date",
    "fieldtype": "Date",
@@ -258,7 +247,6 @@
   {
    "fieldname": "leave_category",
    "fieldtype": "Select",
-   "in_list_view": 1,
    "label": "Leave Category",
    "options": "\nIzin\nSakit\nCuti\nSetengah Hari\nDinas",
    "reqd": 1
@@ -273,6 +261,17 @@
    "fieldtype": "Link",
    "label": "HR Manager",
    "options": "User"
+  },
+  {
+   "default": "Open",
+   "fieldname": "approval_status",
+   "fieldtype": "Select",
+   "in_global_search": 1,
+   "in_list_view": 1,
+   "label": "Approval Status",
+   "options": "Open\nApproved\nRejected\nCancelled",
+   "permlevel": 1,
+   "reqd": 1
   }
  ],
  "icon": "fa fa-calendar",
@@ -280,7 +279,7 @@
  "is_submittable": 1,
  "links": [],
  "max_attachments": 3,
- "modified": "2025-11-27 17:17:59.632380",
+ "modified": "2025-11-28 09:47:47.487567",
  "modified_by": "Administrator",
  "module": "HR",
  "name": "Leave Application",

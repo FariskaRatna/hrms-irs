@@ -111,7 +111,7 @@ class LeaveApplication(Document, PWANotificationsMixin):
 
 
 	def on_update(self):
-		if self.status == "Open" and self.docstatus < 1:
+		if self.approval_status == "Open" and self.docstatus < 1:
 			# notify leave approver about creation
 			if frappe.db.get_single_value("HR Settings", "send_leave_notification"):
 				self.notify_leave_approver()
@@ -119,10 +119,10 @@ class LeaveApplication(Document, PWANotificationsMixin):
 		self.publish_update()
 		self.notify_approval_status()
 
-		if self.status in ["Rejected", "Cancelled"] and self.leave_category == "Dinas":
+		if self.approval_status in ["Rejected", "Cancelled"] and self.leave_category == "Dinas":
 			self.delete_employee_checkins()
 	def on_submit(self):
-		if self.status in ["Open", "Cancelled"]:
+		if self.approval_status in ["Open", "Cancelled"]:
 			frappe.throw(_("Only Leave Applications with status 'Approved' and 'Rejected' can be submitted"))
 
 		self.validate_back_dated_application()
@@ -137,7 +137,7 @@ class LeaveApplication(Document, PWANotificationsMixin):
 		self.reload()
 
 	def before_cancel(self):
-		self.status = "Cancelled"
+		self.approval_status = "Cancelled"
 
 	def on_cancel(self):
 		self.create_leave_ledger_entry(submit=False)
@@ -271,7 +271,7 @@ class LeaveApplication(Document, PWANotificationsMixin):
 			)
 
 	def update_attendance(self):
-		if self.status != "Approved":
+		if self.approval_status != "Approved":
 			return
 
 		holiday_dates = []
@@ -304,18 +304,18 @@ class LeaveApplication(Document, PWANotificationsMixin):
 			self.create_or_update_attendance(attendance_name, date)
 
 	def create_or_update_attendance(self, attendance_name, date):
-		status = (
+		approval_status = (
 			"Half Day" if self.half_day_date and getdate(date) == getdate(self.half_day_date) else "On Leave"
 		)
 
 		if attendance_name:
 			# update existing attendance, change absent to on leave or half day
 			doc = frappe.get_doc("Attendance", attendance_name)
-			half_day_status = None if status == "On Leave" else "Present"
-			modify_half_day_status = 1 if doc.status == "Absent" and status == "Half Day" else 0
+			half_day_status = None if approval_status == "On Leave" else "Present"
+			modify_half_day_status = 1 if doc.status == "Absent" and approval_status == "Half Day" else 0
 			doc.db_set(
 				{
-					"status": status,
+					"status": approval_status,
 					"leave_type": self.leave_type,
 					"leave_application": self.name,
 					"half_day_status": half_day_status,
@@ -331,9 +331,9 @@ class LeaveApplication(Document, PWANotificationsMixin):
 			doc.company = self.company
 			doc.leave_type = self.leave_type
 			doc.leave_application = self.name
-			doc.status = status
-			doc.half_day_status = "Present" if status == "Half Day" else None
-			doc.modify_half_day_status = 1 if status == "Half Day" else 0
+			doc.status = approval_status
+			doc.half_day_status = "Present" if approval_status == "Half Day" else None
+			doc.modify_half_day_status = 1 if approval_status == "Half Day" else 0
 			doc.flags.ignore_validate = True  # ignores check leave record validation in attendance
 			doc.insert(ignore_permissions=True)
 			doc.submit()
@@ -390,7 +390,7 @@ class LeaveApplication(Document, PWANotificationsMixin):
 			self.from_date, self.to_date, self.employee, self.company, leave_type=self.leave_type
 		)
 
-		if block_dates and self.status == "Approved":
+		if block_dates and self.approval_status == "Approved":
 			frappe.throw(_("You are not authorized to approve leaves on Block Dates"), LeaveDayBlockedError)
 
 	def validate_balance_leaves(self):
@@ -425,7 +425,7 @@ class LeaveApplication(Document, PWANotificationsMixin):
 				leave_balance_for_consumption = flt(
 					leave_balance.get("leave_balance_for_consumption"), precision
 				)
-				if self.status != "Rejected" and (
+				if self.approval_status != "Rejected" and (
 					leave_balance_for_consumption < self.total_leave_days or not leave_balance_for_consumption
 				):
 					self.show_insufficient_balance_message(leave_balance_for_consumption)
@@ -465,7 +465,7 @@ class LeaveApplication(Document, PWANotificationsMixin):
 			select
 				name, leave_type, posting_date, from_date, to_date, total_leave_days, half_day_date
 			from `tabLeave Application`
-			where employee = %(employee)s and docstatus < 2 and status in ('Open', 'Approved')
+			where employee = %(employee)s and docstatus < 2 and approval_status in ('Open', 'Approved')
 			and to_date >= %(from_date)s and from_date <= %(to_date)s
 			and name != %(name)s""",
 			{
@@ -503,7 +503,7 @@ class LeaveApplication(Document, PWANotificationsMixin):
 			"""select count(name) from `tabLeave Application`
 			where employee = %(employee)s
 			and docstatus < 2
-			and status in ('Open', 'Approved')
+			and approval_status in ('Open', 'Approved')
 			and half_day = 1
 			and half_day_date = %(half_day_date)s
 			and name != %(name)s""",
@@ -545,7 +545,7 @@ class LeaveApplication(Document, PWANotificationsMixin):
 					"leave_type": self.leave_type,
 					"to_date": prev_date,
 					"docstatus": ["!=", 2],
-					"status": ["in", ["Open", "Approved"]],
+					"approval_status": ["in", ["Open", "Approved"]],
 				},
 				["name", "from_date"],
 				as_dict=True,
@@ -565,7 +565,7 @@ class LeaveApplication(Document, PWANotificationsMixin):
 					"leave_type": self.leave_type,
 					"from_date": next_date,
 					"docstatus": ["!=", 2],
-					"status": ["in", ["Open", "Approved"]],
+					"approval_status": ["in", ["Open", "Approved"]],
 				},
 				["name", "to_date"],
 				as_dict=True,
@@ -724,7 +724,7 @@ class LeaveApplication(Document, PWANotificationsMixin):
 				pass
 
 	def create_leave_ledger_entry(self, submit=True):
-		if self.status != "Approved" and submit:
+		if self.approval_status != "Approved" and submit:
 			return
 
 		expiry_date = get_allocation_expiry_for_cf_leaves(
@@ -1089,7 +1089,7 @@ def get_leaves_pending_approval_for_period(
 	"""Returns leaves that are pending for approval"""
 	leaves = frappe.get_all(
 		"Leave Application",
-		filters={"employee": employee, "leave_type": leave_type, "status": "Open"},
+		filters={"employee": employee, "leave_type": leave_type, "approval_status": "Open"},
 		or_filters={
 			"from_date": ["between", (from_date, to_date)],
 			"to_date": ["between", (from_date, to_date)],
@@ -1334,7 +1334,7 @@ def add_leaves(events, start, end, filters=None):
 		[
 			["from_date", "<=", getdate(end)],
 			["to_date", ">=", getdate(start)],
-			["status", "in", ["Approved", "Open"]],
+			["approval_status", "in", ["Approved", "Open"]],
 			["docstatus", "<", 2],
 		]
 	)
@@ -1433,7 +1433,7 @@ def get_approved_leaves_for_period(employee, leave_type, from_date, to_date):
 		.where(
 			(LeaveApplication.employee == employee)
 			& (LeaveApplication.docstatus == 1)
-			& (LeaveApplication.status == "Approved")
+			& (LeaveApplication.approval_status == "Approved")
 			& (
 				(LeaveApplication.from_date.between(from_date, to_date))
 				| (LeaveApplication.to_date.between(from_date, to_date))
@@ -1497,19 +1497,19 @@ def after_submit(doc, method=None):
 			frappe.db.delete("Attendance", {"name": existing_att})
 			frappe.msgprint(f"Deleted old attendance for {employee} on {current_date}")
 		
-		status = "Half Day" if getattr(doc, "half_day", 0) else "On Leave"
+		approval_status = "Half Day" if getattr(doc, "half_day", 0) else "On Leave"
 
 		att = frappe.get_doc({
 			"doctype": "Attendance",
 			"employee": employee,
 			"attendance_date": current_date,
-			"status": status,
+			"status": approval_status,
 			"leave_type": doc.leave_type,
 			"docstatus": 1
 		})
 		att.insert(ignore_permissions=True)
 		att.submit()
-		frappe.msgprint(f"Attendance updated for {employee} on {current_date} as {status}")
+		frappe.msgprint(f"Attendance updated for {employee} on {current_date} as {approval_status}")
 
 		current_date = add_days(current_date, 1)
 
@@ -1519,7 +1519,7 @@ def create_attendance_from_leave(doc, method):
 	leave_category = getattr(doc, "leave_category", None)
 	doctor_note = getattr(doc, "doctor_note", None)
 
-	status = "Absent"
+	approval_status = "Absent"
 	daily_allowance_deducted = False
 	attendance_reason = ""
 
@@ -1647,7 +1647,7 @@ def create_attendance_from_leave(doc, method):
 
 
 def has_permission(doc, ptype, user):
-	if doc.status == "Approved":
+	if doc.approval_status == "Approved":
 		employee_user_id = frappe.d.get_value("Employee", doc.employee, "user_id")
 
 		if employee_user_id == user:

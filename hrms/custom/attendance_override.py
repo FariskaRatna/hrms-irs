@@ -23,7 +23,7 @@ def custom_check_leave_record(self):
             (LeaveApplication.employee == self.employee)
             & (self.attendance_date >= LeaveApplication.from_date)
             & (self.attendance_date <= LeaveApplication.to_date)
-            & (LeaveApplication.status == "Approved")
+            & (LeaveApplication.approval_status == "Approved")
             & (LeaveApplication.docstatus == 1)
         )
     ).run(as_dict=True)
