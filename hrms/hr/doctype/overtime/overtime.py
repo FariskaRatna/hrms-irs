@@ -4,6 +4,7 @@
 import frappe
 from frappe.model.document import Document
 from datetime import datetime
+from frappe import _
 
 
 class Overtime(Document):
@@ -68,3 +69,68 @@ class Overtime(Document):
 
 	# 	overtime_doc.insert(ignore_permissions=True)
 	# 	frappe.msgprint(f"Overtime record {overtime_doc.name} created for Employee {self.employee}.")
+
+	def notify_project_manager(self):
+		if self.pm_user:
+			parent_doc = frappe.get_doc("Overtime", self.name)
+			args = parent_doc.as_dict()
+
+			template = frappe.db.get_value("HR Settings", "overtime_request_notification_lead_template")
+			if not template:
+				frappe.msgprint(_("Please set default template for Overtime Request Notification in HR Settings."))
+				return
+			email_template = frappe.get_doc("Email Template", template)
+			subject = frappe.render_template(email_template.subject, args)
+			message = frappe.render_template(email_template.response_, args)
+
+			self.notify(
+				{
+					"message": message,
+					"message_to": self.pm_user,
+					"subject": subject,
+				}
+			)
+
+	def notify_assigned_by(self):
+		if self.assigned_by:
+			parent_doc = frappe.get_doc("Overtime", self.name)
+			args = parent_doc.as_dict()
+
+			template = frappe.db.get_value("HR Settings", "overtime_request_notification_template")
+			if not template:
+				frappe.msgprint(_("Please set default template for Overtime Request Notification in HR Settings."))
+				return
+			email_template = frappe.get_doc("Email Template", template)
+			subject = frappe.render_template(email_template.subject, args)
+			message = frappe.render_template(email_template.response_, args)
+
+			self.notify(
+				{
+					"message": message,
+					"message_to": self.assigned_by,
+					"subject": subject,
+					"sender_email": self.get_requester()
+				}
+			)
+	
+	def notify(self, args):
+		args = frappe._dict(args)
+		contact = args.message_to
+		if not isinstance(contact, list):
+			if not args.notify == "employee":
+				contact = frappe.get_doc("User", contact).email or contact
+
+		sender_email = args.get("sender_email")
+		if not sender_email:
+			sender_email = frappe.get_doc("User", frappe.session.user).email
+
+		try:
+			frappe.sendmail(
+				recipients=contact,
+				sender=sender_email,
+				subject=args.subject,
+				message=args.message,
+			)
+			frappe.msgprint(_("Email sen to {0}").format(contact))
+		except frappe.OngoingEmailError:
+			pass
