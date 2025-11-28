@@ -158,8 +158,7 @@
    "fieldname": "hrd_user",
    "fieldtype": "Link",
    "label": "HR Manager",
-   "options": "User",
-   "permlevel": 1
+   "options": "User"
   },
   {
    "fieldname": "column_break_fhtz",
@@ -175,15 +174,14 @@
    "fieldname": "pm_user",
    "fieldtype": "Link",
    "label": "Project Managaer",
-   "options": "User",
-   "permlevel": 1
+   "options": "User"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-11-28 14:54:29.650513",
+ "modified": "2025-11-28 16:30:11.612879",
  "modified_by": "Administrator",
  "module": "HR",
  "name": "Business Trip",
