@@ -5,7 +5,6 @@ The leave application request <strong>{{ doc.name }}</strong> has been rejected 
 HR is now required to review and process it.
 </p>
 
-
 <p>
     <div style="text-align:center; margin-top:20px;">
         <a href="{{ frappe.utils.get_url('/app/leave-application/' ~ doc.name) }}"
