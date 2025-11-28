@@ -3,7 +3,9 @@
 
 import frappe
 from frappe.model.document import Document
-from frappe.utils import getdate
+from frappe.utils import getdate, get_fullname
+from hrms.utils import get_employee_email
+from frappe import _
 
 
 class BusinessTrip(Document):
@@ -15,9 +17,26 @@ class BusinessTrip(Document):
 			days_accumulation = (end - start).days + 1
 			self.total_days = days_accumulation
 
+	def on_update(self):
+		if self.status == "Open" and self.docstatus < 1:
+			if frappe.db.get_single_value("HR Settings", "send_business_trip_notification"):
+				self.notify_project_manager()
+
+		elif self.status in ["Approved", "Rejected"] and self.docstatus < 1:
+			if frappe.db.get_single_value("HR Settings", "send_business_trip_notification"):
+				self.notify_hrd()
+				self.notify_employee()
+
+	def on_cancel(self):
+		if frappe.db.get_single_value("HR Setttings", "send_business_trip_notification"):
+			self.notify_employee()
+
 	def on_submit(self):
-		if self.status == "Approved":
-			self.create_business_trip_allowance()
+		if frappe.db.get_single_value("HR Settings", "send_business_trip_notification"):
+			self.notify_employee()
+			if self.status == "Approved":
+				self.create_business_trip_allowance()
+
 
 	def create_business_trip_allowance(self):
 		existing_business_trip = frappe.db.exists("Business Trip Allowance", {"business_trip": self.name})
@@ -38,3 +57,93 @@ class BusinessTrip(Document):
 
 		bt_doc.insert(ignore_permissions=True)
 		frappe.msgprint(f"Business Trip Allowance {bt_doc.name} created for Employee {self.employee}.")
+
+	def notify_project_manager(self):
+		if self.pm_user:
+			parent_doc = frappe.get_doc("Business Trip", self.name)
+			args = parent_doc.as_dict()
+
+			template = frappe.db.get_single_value("HR Settings", "business_trip_application_notification_template")
+			if not template:
+				frappe.msgprint(_("Please set default template for Business Trip Application in HR Settings."))
+				return
+			email_template = frappe.get_doc("Email Template", template)
+			subject = frappe.render_template(email_template.subject, args)
+			message = frappe.render_template(email_template.response_, args)
+
+			self.notify(
+				{
+					"message": message,
+					"message_to": self.pm_user,
+					"subject": subject,
+				}
+			)
+
+	def notify(self, args):
+		args = frappe._dict(args)
+		contact = args.message_to
+		if not isinstance(contact, list):
+			if not args.notify == "employee":
+				contact = frappe.get_doc("User", contact).email or contact
+		sender = dict()
+		sender["email"] = frappe.get_doc("User", frappe.session.user).email
+		sender["full_name"] = get_fullname(sender["email"])
+
+		try:
+			frappe.sendmail(
+				recipients=contact,
+				sender=sender["email"],
+				subject=args.subject,
+				message=args.message,
+			)
+			frappe.msgprint(_("Email sent to {0}").format(contact))
+		except frappe.OutgoingEmailError:
+			pass
+	
+	def notify_employee(self):
+		employee_email = get_employee_email(self.employee)
+
+		if not employee_email:
+			return
+		
+		parent_doc = frappe.get_doc("Business Trip", self.name)
+		args = parent_doc.as_dict()
+
+		template = frappe.db.get_single_value("HR Settings", "business_trip_status_notification_template")
+		if not template:
+			frappe.msgprint(_("Please set default template for Business Trip Status Notification in HR Settings."))
+			return
+		email_template = frappe.get_doc("Email Template", template)
+		subject = frappe.render_template(email_template.subject, args)
+		message = frappe.render_template(email_template.response_, args)
+
+		self.notify(
+			{
+				"message": message,
+				"message_to": employee_email,
+				"subject": subject,
+				"notify": "employee"
+			}
+		)
+
+	def notify_hrd(self):
+		if self.hrd_user:
+			parent_doc = frappe.get_doc("Business Trip", self.name)
+			args = parent_doc.as_dict()
+
+			template = frappe.db.get_single_value("HR Settings", "business_trip_application_hr_template")
+			if not template:
+				frappe.msgprint(_("Please set default tempalte for Business Trip Application Notification fo HRD in HR Settings."))
+				return
+			email_template = frappe.get_doc("Email Template", template)
+			subject = frappe.render_template(email_template.subject, args)
+			message = frappe.render_template(email_template.response_, args)
+
+		self.notify(
+			{
+				"message": message,
+				"message_to": self.hrd_user,
+				"subject": subject,
+			}
+		)
+
