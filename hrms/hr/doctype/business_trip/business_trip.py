@@ -25,7 +25,7 @@ class BusinessTrip(Document):
 		elif self.status in ["Approved", "Rejected"] and self.docstatus < 1:
 			if frappe.db.get_single_value("HR Settings", "send_business_trip_notification"):
 				self.notify_hrd()
-				self.notify_employee()
+				self.notify_employee(sender_email=self.get_email_pm())
 
 	def on_cancel(self):
 		if frappe.db.get_single_value("HR Setttings", "send_business_trip_notification"):
@@ -58,6 +58,20 @@ class BusinessTrip(Document):
 		bt_doc.insert(ignore_permissions=True)
 		frappe.msgprint(f"Business Trip Allowance {bt_doc.name} created for Employee {self.employee}.")
 
+	def get_requester(self):
+		user_id = frappe.db.get_value("Employee", self.employee, "user_id") or self.owner
+		return frappe.get_value("User", user_id, "email")
+	
+	def get_email_pm(self):
+		if self.pm_user:
+			frappe.get_value("User", self.pm_user, "email")
+		return None
+	
+	def get_email_hr(self):
+		if self.hrd_user:
+			frappe.get_value("User", self.hrd_user, "email")
+		return None
+
 	def notify_project_manager(self):
 		if self.pm_user:
 			parent_doc = frappe.get_doc("Business Trip", self.name)
@@ -76,6 +90,7 @@ class BusinessTrip(Document):
 					"message": message,
 					"message_to": self.pm_user,
 					"subject": subject,
+					"sender_email": self.get_requester(),
 				}
 			)
 
@@ -83,16 +98,21 @@ class BusinessTrip(Document):
 		args = frappe._dict(args)
 		contact = args.message_to
 		if not isinstance(contact, list):
-			if not args.notify == "employee":
+			if args.get("notify") != "employee":
 				contact = frappe.get_doc("User", contact).email or contact
-		sender = dict()
-		sender["email"] = frappe.get_doc("User", frappe.session.user).email
-		sender["full_name"] = get_fullname(sender["email"])
+
+		sender_email = args.get("sender_email")
+		if not sender_email:
+			sender_email = frappe.get_doc("User", frappe.session.user).email
+
+		# sender = dict()
+		# sender["email"] = frappe.get_doc("User", frappe.session.user).email
+		# sender["full_name"] = get_fullname(sender["email"])
 
 		try:
 			frappe.sendmail(
 				recipients=contact,
-				sender=sender["email"],
+				sender=sender_email,
 				subject=args.subject,
 				message=args.message,
 			)
@@ -100,7 +120,7 @@ class BusinessTrip(Document):
 		except frappe.OutgoingEmailError:
 			pass
 	
-	def notify_employee(self):
+	def notify_employee(self, sender_email=None):
 		employee_email = get_employee_email(self.employee)
 
 		if not employee_email:
@@ -122,7 +142,8 @@ class BusinessTrip(Document):
 				"message": message,
 				"message_to": employee_email,
 				"subject": subject,
-				"notify": "employee"
+				"notify": "employee",
+				"sender_email": sender_email,
 			}
 		)
 
@@ -144,6 +165,7 @@ class BusinessTrip(Document):
 				"message": message,
 				"message_to": self.hrd_user,
 				"subject": subject,
+				"sender_email": self.get_requester(),
 			}
 		)
 
