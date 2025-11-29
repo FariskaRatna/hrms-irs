@@ -99,7 +99,8 @@
   {
    "fieldname": "diagnosis",
    "fieldtype": "Small Text",
-   "label": "Diagnosis"
+   "label": "Diagnosis",
+   "reqd": 1
   },
   {
    "fieldname": "column_break_yscg",
@@ -162,7 +163,7 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-11-24 09:50:44.934517",
+ "modified": "2025-11-29 21:40:46.361787",
  "modified_by": "Administrator",
  "module": "HR",
  "name": "Reimbursement",

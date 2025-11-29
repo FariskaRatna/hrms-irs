@@ -25,6 +25,8 @@ class OvertimeCalculation(Document):
 		# base_salary = getattr(employee, "basic_salary", None) or getattr(employee, "base", 0) or 0
 		base_salary = assignment[0].base if assignment else 0
 
+		self.base_salary = base_salary
+
 		hourly_rate = base_salary / 173 if base_salary else 0
 		total_hours = self.total_hours or 0
 		total_coef = 0

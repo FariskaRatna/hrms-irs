@@ -19,8 +19,8 @@
   "total_hours",
   "column_break_vxly",
   "reference_request",
+  "base_salary",
   "total_amount",
-  "approval_status",
   "amended_from"
  ],
  "fields": [
@@ -131,18 +131,15 @@
    "read_only": 1
   },
   {
-   "default": "Approved",
-   "fieldname": "approval_status",
-   "fieldtype": "Select",
-   "label": "Status",
-   "options": "Approved\nRejected\nPending",
-   "permlevel": 1
+   "fieldname": "base_salary",
+   "fieldtype": "Currency",
+   "label": "Base Salary"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-11-29 19:14:31.522749",
+ "modified": "2025-11-29 21:51:12.445159",
  "modified_by": "Administrator",
  "module": "HR",
  "name": "Overtime Calculation",
