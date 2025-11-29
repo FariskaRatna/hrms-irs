@@ -148,7 +148,7 @@
   {
    "fieldname": "pm_user",
    "fieldtype": "Link",
-   "label": "Project Manager",
+   "label": "Lead",
    "options": "User"
   },
   {
@@ -188,7 +188,7 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-11-27 15:45:57.669727",
+ "modified": "2025-11-29 21:22:57.284012",
  "modified_by": "Administrator",
  "module": "HR",
  "name": "Overtime",

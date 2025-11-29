@@ -173,7 +173,7 @@
   {
    "fieldname": "pm_user",
    "fieldtype": "Link",
-   "label": "Project Managaer",
+   "label": "Lead",
    "options": "User"
   }
  ],
@@ -181,7 +181,7 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-11-28 16:30:11.612879",
+ "modified": "2025-11-29 21:23:11.458022",
  "modified_by": "Administrator",
  "module": "HR",
  "name": "Business Trip",

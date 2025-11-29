@@ -53,7 +53,8 @@
    "fieldtype": "Select",
    "in_list_view": 1,
    "label": "Log Type",
-   "options": "\nIN\nOUT"
+   "options": "\nIN\nOUT",
+   "reqd": 1
   },
   {
    "fieldname": "shift",
@@ -166,7 +167,8 @@
   {
    "fieldname": "photo",
    "fieldtype": "Attach Image",
-   "label": "Photo"
+   "label": "Photo",
+   "reqd": 1
   },
   {
    "fieldname": "related_dinas_leave",
@@ -176,7 +178,7 @@
   }
  ],
  "links": [],
- "modified": "2025-11-27 17:18:58.935296",
+ "modified": "2025-11-29 21:45:12.355858",
  "modified_by": "Administrator",
  "module": "HR",
  "name": "Employee Checkin",

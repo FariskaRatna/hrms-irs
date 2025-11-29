@@ -113,7 +113,8 @@
   {
    "fieldname": "date_required",
    "fieldtype": "Date",
-   "label": "Date Required"
+   "label": "Date Required",
+   "reqd": 1
   },
   {
    "fieldname": "column_break_torb",
@@ -122,7 +123,8 @@
   {
    "fieldname": "reason",
    "fieldtype": "Small Text",
-   "label": "Reason"
+   "label": "Reason",
+   "reqd": 1
   },
   {
    "fieldname": "status",
@@ -165,7 +167,7 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-11-25 16:11:48.492069",
+ "modified": "2025-11-29 21:44:05.377247",
  "modified_by": "Administrator",
  "module": "HR",
  "name": "Loan Application",
