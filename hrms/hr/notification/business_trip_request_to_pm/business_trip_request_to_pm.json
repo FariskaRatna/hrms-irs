@@ -13,7 +13,7 @@
  "is_standard": 1,
  "message": "<h3>New Business Trip Request</h3>\n\n<p>\nEmployee <strong>{{ doc.employee }}</strong> submitted a new business trip request: \n<strong>{{ doc.name }}</strong>.\nPlease review and approve.\n</p>\n\n<h4>Details</h4>\n\n<ul>\n    <li>Departure Date: {{ doc.from_date }}</li>\n    <li>Return Date: {{ doc.to_date }}</li>\n    <li>Total Days: {{ doc.total_days }}</li>\n    <li>Destination: {{ doc.destination }}</li>\n</ul>\n\n<p>\n    <div style=\"text-align:center; margin-top:20px;\">\n        <a href=\"{{ frappe.utils.get_url('/app/business-trip/' ~ doc.name) }}\"\n           style=\"\n                padding: 12px 20px;\n                background: #1d6df7;\n                color: #fff;\n                border-radius: 8px;\n                text-decoration: none;\n                font-size: 14px;\n                font-weight: 600;\n                display: inline-block;\n           \">\n            View Request \u2192\n        </a>\n    </div>\n\n</p>\n",
  "message_type": "Markdown",
- "modified": "2025-11-28 15:04:52.246774",
+ "modified": "2025-11-29 17:02:05.083292",
  "modified_by": "Administrator",
  "module": "HR",
  "name": "Business Trip Request to PM",

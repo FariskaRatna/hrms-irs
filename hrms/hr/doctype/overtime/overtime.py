@@ -5,6 +5,8 @@ import frappe
 from frappe.model.document import Document
 from datetime import datetime
 from frappe import _
+from frappe.utils import get_fullname
+from hrms.utils import get_employee_email
 
 
 class Overtime(Document):
@@ -28,10 +30,28 @@ class Overtime(Document):
 			total_hour = full_hour + rounding
 			self.total_hours = round(total_hour, 2)
 
+	def on_update(self):
+		if self.approval_status == "Pending" and self.docstatus < 1:
+			if frappe.db.get_single_value("HR Settings", "send_overtime_application_notification"):
+				self.notify_assigned_by()
+
+		# HARUS sejajar, bukan di dalam IF
+		if self.approval_status in ["Approved", "Rejected"] and self.docstatus < 1:
+			if frappe.db.get_single_value("HR Settings", "send_overtime_application_notification"):
+				self.notify_project_manager()
+				self.notify_employee(sender_email=self.get_email_assigned_by())
+
+
+	def on_cancel(self):
+		if frappe.db.get_single_value("HR Settings", "send_overtime_application_notification"):
+			self.notify_employee()
+
 	def on_submit(self):
-		if self.approval_status == "Approved":
-			self.create_overtime_calculation()
-			# self.create_overtime_summary()
+		if frappe.db.get_single_value("HR Settings", "send_overtime_application_notification"):
+			self.notify_employee()
+			if self.approval_status == "Approved":
+				self.create_overtime_calculation()
+				# self.create_overtime_summary()
 
 	def create_overtime_calculation(self):
 		existing_calculation = frappe.db.exists("Overtime Calculation", {"reference_request": self.name})
@@ -70,12 +90,26 @@ class Overtime(Document):
 	# 	overtime_doc.insert(ignore_permissions=True)
 	# 	frappe.msgprint(f"Overtime record {overtime_doc.name} created for Employee {self.employee}.")
 
+	def get_requester(self):
+		user_id = frappe.db.get_value("Employee", self.employee, "user_id") or self.owner
+		return frappe.get_value("User", user_id, "email")
+
+	def get_email_pm(self):
+		if self.pm_user:
+			frappe.get_value("User", self.pm_user, "email")
+		return None
+
+	def get_email_assigned_by(self):
+		if self.assigned_by:
+			return frappe.get_value("User", self.assigned_by, "email")
+		return None
+
 	def notify_project_manager(self):
 		if self.pm_user:
 			parent_doc = frappe.get_doc("Overtime", self.name)
 			args = parent_doc.as_dict()
 
-			template = frappe.db.get_value("HR Settings", "overtime_request_notification_lead_template")
+			template = frappe.db.get_single_value("HR Settings", "overtime_request_notification_lead_template")
 			if not template:
 				frappe.msgprint(_("Please set default template for Overtime Request Notification in HR Settings."))
 				return
@@ -88,6 +122,7 @@ class Overtime(Document):
 					"message": message,
 					"message_to": self.pm_user,
 					"subject": subject,
+					"sender_email": self.get_requester()
 				}
 			)
 
@@ -96,7 +131,7 @@ class Overtime(Document):
 			parent_doc = frappe.get_doc("Overtime", self.name)
 			args = parent_doc.as_dict()
 
-			template = frappe.db.get_value("HR Settings", "overtime_request_notification_template")
+			template = frappe.db.get_single_value("HR Settings", "overtime_request_notification_template")
 			if not template:
 				frappe.msgprint(_("Please set default template for Overtime Request Notification in HR Settings."))
 				return
@@ -112,6 +147,33 @@ class Overtime(Document):
 					"sender_email": self.get_requester()
 				}
 			)
+
+	def notify_employee(self, sender_email=None):
+		employee_email = get_employee_email(self.employee)
+
+		if not employee_email:
+			return
+		
+		parent_doc = frappe.get_doc("Overtime", self.name)
+		args = parent_doc.as_dict()
+
+		template = frappe.db.get_single_value("HR Settings", "overtime_status_notification_template")
+		if not template:
+			frappe.msgprint(_("Please set default template for Overtime Status Notification in HR Settings."))
+			return
+		email_template = frappe.get_doc("Email Template", template)
+		subject = frappe.render_template(email_template.subject, args)
+		message = frappe.render_template(email_template.response_, args)
+
+		self.notify(
+			{
+				"message": message,
+				"message_to": employee_email,
+				"subject": subject,
+				"notify": "employee",
+				"sender_email": sender_email,
+			}
+		)
 	
 	def notify(self, args):
 		args = frappe._dict(args)
@@ -131,6 +193,6 @@ class Overtime(Document):
 				subject=args.subject,
 				message=args.message,
 			)
-			frappe.msgprint(_("Email sen to {0}").format(contact))
+			frappe.msgprint(_("Email sent to {0}").format(contact))
 		except frappe.OngoingEmailError:
 			pass

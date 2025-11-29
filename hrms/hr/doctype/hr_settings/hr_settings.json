@@ -39,6 +39,12 @@
   "column_break_vwns",
   "business_trip_application_hr_template",
   "business_trip_status_notification_template",
+  "overtime_notification",
+  "send_overtime_application_notification",
+  "overtime_request_notification_template",
+  "column_break_ryol",
+  "overtime_request_notification_lead_template",
+  "overtime_status_notification_template",
   "shift_settings_section",
   "allow_multiple_shift_assignments",
   "hiring_settings_section",
@@ -237,7 +243,7 @@
    "default": "1",
    "fieldname": "send_business_trip_notification",
    "fieldtype": "Check",
-   "label": "Send Business Trip Applicaion Notification"
+   "label": "Send Business Trip Application Notification"
   },
   {
    "fieldname": "business_trip_application_notification_template",
@@ -385,13 +391,47 @@
    "fieldtype": "Link",
    "label": "Business Trip Application for HR Template",
    "options": "Email Template"
+  },
+  {
+   "collapsible": 1,
+   "fieldname": "overtime_notification",
+   "fieldtype": "Section Break",
+   "label": "Overtime Notification"
+  },
+  {
+   "default": "1",
+   "fieldname": "send_overtime_application_notification",
+   "fieldtype": "Check",
+   "label": "Send Overtime Application Notification"
+  },
+  {
+   "fieldname": "overtime_request_notification_template",
+   "fieldtype": "Link",
+   "label": "Overtime Request Notification Template",
+   "options": "Email Template"
+  },
+  {
+   "fieldname": "column_break_ryol",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "overtime_request_notification_lead_template",
+   "fieldtype": "Link",
+   "label": "Overtime Request Notification for Lead Template",
+   "options": "Email Template"
+  },
+  {
+   "fieldname": "overtime_status_notification_template",
+   "fieldtype": "Link",
+   "label": "Overtime Status Notification Template",
+   "options": "Email Template"
   }
  ],
  "icon": "fa fa-cog",
  "idx": 1,
  "issingle": 1,
  "links": [],
- "modified": "2025-11-28 14:41:27.147260",
+ "modified": "2025-11-29 16:03:38.978323",
  "modified_by": "Administrator",
  "module": "HR",
  "name": "HR Settings",
