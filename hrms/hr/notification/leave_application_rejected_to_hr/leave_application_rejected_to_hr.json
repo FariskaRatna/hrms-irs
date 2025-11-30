@@ -13,7 +13,7 @@
  "is_standard": 1,
  "message": "<h3>Leave Application {{ doc.name }} Rejected by PM</h3>\n\n<p>\nThe leave application request <strong>{{ doc.name }}</strong> has been rejected by the Project Manager.\nHR is now required to review and process it.\n</p>\n\n<p>\n    <div style=\"text-align:center; margin-top:20px;\">\n        <a href=\"{{ frappe.utils.get_url('/app/leave-application/' ~ doc.name) }}\"\n           style=\"\n                padding: 12px 20px;\n                background: #1d6df7;\n                color: #fff;\n                border-radius: 8px;\n                text-decoration: none;\n                font-size: 14px;\n                font-weight: 600;\n                display: inline-block;\n           \">\n            View Request \u2192\n        </a>\n    </div>\n\n</p>\n",
  "message_type": "Markdown",
- "modified": "2025-11-28 11:01:09.514872",
+ "modified": "2025-11-30 10:03:50.226431",
  "modified_by": "Administrator",
  "module": "HR",
  "name": "Leave Application Rejected to HR",
