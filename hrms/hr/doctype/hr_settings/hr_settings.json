@@ -23,6 +23,7 @@
   "leave_and_expense_claim_settings",
   "send_leave_notification",
   "leave_approval_notification_template",
+  "leave_approval_hrd_notification_template",
   "leave_status_notification_template",
   "leave_approver_mandatory_in_leave_application",
   "restrict_backdated_leave_application",
@@ -45,6 +46,19 @@
   "column_break_ryol",
   "overtime_request_notification_lead_template",
   "overtime_status_notification_template",
+  "reimbursement_notification",
+  "send_reimbursement_application_notification",
+  "reimbursement_request_notification_template",
+  "column_break_htrz",
+  "reimbursement_status_notification_template",
+  "loan_notification",
+  "send_loan_application_notification",
+  "loan_request_notification_template",
+  "loan_status_notification_template",
+  "column_break_zlsa",
+  "send_loan_settlement_application_notification",
+  "loan_settlement_request_notification_template",
+  "loan_settlement_status_notification_template",
   "shift_settings_section",
   "allow_multiple_shift_assignments",
   "hiring_settings_section",
@@ -425,13 +439,95 @@
    "fieldtype": "Link",
    "label": "Overtime Status Notification Template",
    "options": "Email Template"
+  },
+  {
+   "depends_on": "eval: doc.send_leave_notification == 1",
+   "fieldname": "leave_approval_hrd_notification_template",
+   "fieldtype": "Link",
+   "label": "Leave Approval to HRD Notification Template",
+   "mandatory_depends_on": "eval: doc.send_leave_notification == 1",
+   "options": "Email Template"
+  },
+  {
+   "collapsible": 1,
+   "fieldname": "loan_notification",
+   "fieldtype": "Section Break",
+   "label": "Loan Notification"
+  },
+  {
+   "default": "1",
+   "fieldname": "send_loan_application_notification",
+   "fieldtype": "Check",
+   "label": "Send Loan Application Notification"
+  },
+  {
+   "fieldname": "loan_request_notification_template",
+   "fieldtype": "Link",
+   "label": "Loan Request Notification Template",
+   "options": "Email Template"
+  },
+  {
+   "fieldname": "loan_status_notification_template",
+   "fieldtype": "Link",
+   "label": "Loan Status Notification Template",
+   "options": "Email Template"
+  },
+  {
+   "fieldname": "column_break_zlsa",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "1",
+   "fieldname": "send_loan_settlement_application_notification",
+   "fieldtype": "Check",
+   "label": "Send Loan Settlement Application Notification"
+  },
+  {
+   "fieldname": "loan_settlement_request_notification_template",
+   "fieldtype": "Link",
+   "label": "Loan Settlement Request Notification Template",
+   "options": "Email Template"
+  },
+  {
+   "fieldname": "loan_settlement_status_notification_template",
+   "fieldtype": "Link",
+   "label": "Loan Settlement Status Notification Template",
+   "options": "Email Template"
+  },
+  {
+   "collapsible": 1,
+   "fieldname": "reimbursement_notification",
+   "fieldtype": "Section Break",
+   "label": "Reimbursement Notification"
+  },
+  {
+   "default": "1",
+   "fieldname": "send_reimbursement_application_notification",
+   "fieldtype": "Check",
+   "label": "Send Reimbursement Application Notification"
+  },
+  {
+   "fieldname": "reimbursement_request_notification_template",
+   "fieldtype": "Link",
+   "label": "Reimbursement Request Notification Template",
+   "options": "Email Template"
+  },
+  {
+   "fieldname": "column_break_htrz",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "reimbursement_status_notification_template",
+   "fieldtype": "Link",
+   "label": "Reimbursement Status Notification Template",
+   "options": "Email Template"
   }
  ],
  "icon": "fa fa-cog",
  "idx": 1,
  "issingle": 1,
  "links": [],
- "modified": "2025-11-29 16:03:38.978323",
+ "modified": "2025-11-30 17:15:34.368288",
  "modified_by": "Administrator",
  "module": "HR",
  "name": "HR Settings",
