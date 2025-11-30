@@ -28,9 +28,9 @@ frappe.ui.form.on("Overtime", {
     employee(frm) {
         if (!frm.doc.employee) return;
 
-        frappe.db.get_value("Employee", frm.doc.employee, ["project_manager"])
+        frappe.db.get_value("Employee", frm.doc.employee, ["user_id"])
             .then(r => {
-                frm.set_value("pm_user", r.message.project_manager);
+                frm.set_value("pm_user", r.message.user_id);
             });
     }
 });

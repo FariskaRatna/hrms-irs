@@ -7,8 +7,18 @@ frappe.ui.form.on("Business Trip", {
 
         frappe.db.get_value("Employee", frm.doc.employee, ["project_manager", "hrd_user"])
             .then(r => {
-                frm.set_value("pm_user", r.message.project_manager);
-                frm.set_value("hrd_user", r.message.hrd_user);
+                const pm = r.message.project_manager;
+                const hrd = r.message.hrd_user;
+
+                if (pm) {
+                    frappe.db.get_value("Employee", pm, "user_id")
+                        .then(u => frm.set_value("pm_user", u.message.user_id));
+                }
+
+                if (hrd) {
+                    frappe.db.get_value("Employee", hrd, "user_id")
+                        .then(u => frm.set_value("hrd_user", u.message.user_id));
+                }
             });
 	},
     

@@ -77,6 +77,16 @@ class BusinessTrip(Document):
 			parent_doc = frappe.get_doc("Business Trip", self.name)
 			args = parent_doc.as_dict()
 
+			frappe.get_doc({
+				"doctype": "Notification Log",
+				"subject": f"Business Trip Request from {self.employee_name} Requires Your Approval",
+				"email_content": f"Employee {self.employee_name} has submitted an business trip request.",
+				"for_user": self.pm_user,
+				"type": "Alert",
+				"document_type": "Business Trip",
+				"document_name": self.name
+			}).insert(ignore_permissions=True)
+
 			template = frappe.db.get_single_value("HR Settings", "business_trip_application_notification_template")
 			if not template:
 				frappe.msgprint(_("Please set default template for Business Trip Application in HR Settings."))
@@ -125,6 +135,18 @@ class BusinessTrip(Document):
 
 		if not employee_email:
 			return
+
+		employee_user = frappe.db.get_value("Employee", self.employee, "user_id")
+
+		frappe.get_doc({
+			"doctype": "Notification Log",
+			"subject": f"Business Trip Request {self.approval_status}",
+			"email_content": f"Your business trip request has been {self.approval_status}.",
+			"for_user": employee_user,
+			"type": "Alert",
+			"document_type": "Business Trip",
+			"document_name": self.name
+		}).insert(ignore_permissions=True)
 		
 		parent_doc = frappe.get_doc("Business Trip", self.name)
 		args = parent_doc.as_dict()
@@ -151,6 +173,16 @@ class BusinessTrip(Document):
 		if self.hrd_user:
 			parent_doc = frappe.get_doc("Business Trip", self.name)
 			args = parent_doc.as_dict()
+
+			frappe.get_doc({
+				"doctype": "Notification Log",
+				"subject": f"Business Trip Request {self.employee_name} has been Processed by Lead",
+				"email_content": f"Employee {self.employee_name} submitted business trip and Lead has been processed.",
+				"for_user": self.hrd_user,
+				"type": "Alert",
+				"document_type": "Business Trip",
+				"document_name": self.name
+			}).insert(ignore_permissions=True)
 
 			template = frappe.db.get_single_value("HR Settings", "business_trip_application_hr_template")
 			if not template:
