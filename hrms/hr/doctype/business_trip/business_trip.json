@@ -27,7 +27,7 @@
   "hrd_user",
   "column_break_fhtz",
   "posting_date",
-  "status"
+  "approval_status"
  ],
  "fields": [
   {
@@ -129,14 +129,6 @@
    "fieldtype": "Column Break"
   },
   {
-   "allow_on_submit": 1,
-   "fieldname": "status",
-   "fieldtype": "Select",
-   "label": "Status",
-   "options": "Open\nApproved\nRejected\nCancelled",
-   "permlevel": 1
-  },
-  {
    "fieldname": "destination",
    "fieldtype": "Select",
    "label": "Destination",
@@ -175,13 +167,23 @@
    "fieldtype": "Link",
    "label": "Lead",
    "options": "User"
+  },
+  {
+   "allow_on_submit": 1,
+   "fieldname": "approval_status",
+   "fieldtype": "Select",
+   "in_global_search": 1,
+   "in_list_view": 1,
+   "label": "Approval Status",
+   "options": "Open\nApproved\nRejected\nCancelled",
+   "permlevel": 1
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-12-01 10:47:26.236666",
+ "modified": "2025-12-01 14:25:20.979277",
  "modified_by": "Administrator",
  "module": "HR",
  "name": "Business Trip",
@@ -203,7 +205,9 @@
   }
  ],
  "row_format": "Dynamic",
+ "search_fields": "employee,employee_name,destination,from_date,to_date",
  "sort_field": "modified",
  "sort_order": "DESC",
- "states": []
+ "states": [],
+ "title_field": "employee_name"
 }

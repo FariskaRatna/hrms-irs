@@ -18,11 +18,11 @@ class BusinessTrip(Document):
 			self.total_days = days_accumulation
 
 	def on_update(self):
-		if self.status == "Open" and self.docstatus < 1:
+		if self.approval_status == "Open" and self.docstatus < 1:
 			if frappe.db.get_single_value("HR Settings", "send_business_trip_notification"):
 				self.notify_project_manager()
 
-		elif self.status in ["Approved", "Rejected"] and self.docstatus < 1:
+		elif self.approval_status in ["Approved", "Rejected"] and self.docstatus < 1:
 			if frappe.db.get_single_value("HR Settings", "send_business_trip_notification"):
 				self.notify_hrd()
 				self.notify_employee(sender_email=self.get_email_pm())
@@ -34,7 +34,7 @@ class BusinessTrip(Document):
 	def on_submit(self):
 		if frappe.db.get_single_value("HR Settings", "send_business_trip_notification"):
 			self.notify_employee()
-			if self.status == "Approved":
+			if self.approval_status == "Approved":
 				self.create_business_trip_allowance()
 
 
