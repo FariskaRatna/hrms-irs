@@ -474,68 +474,75 @@ def update_attendance_in_checkins(log_names: list, attendance_id: str):
 
 @frappe.whitelist()
 def sync_unlinked_attendances():
-    import frappe
-    from frappe.utils import getdate
-    from hrms.hr.doctype.employee_checkin.employee_checkin import mark_attendance_and_link_log
+	import frappe
+	from frappe.utils import getdate
+	from hrms.hr.doctype.employee_checkin.employee_checkin import mark_attendance_and_link_log
 
-    frappe.flags.ignore_dinas_block = True
-    frappe.flags.force_sync_present = True
+	frappe.flags.ignore_dinas_block = True
+	frappe.flags.force_sync_present = True
 
-    checkins = frappe.get_all(
-        "Employee Checkin",
-        filters={"attendance": ["is", "not set"], "docstatus": ["in", [0, 1]]},
-        fields=["name", "employee", "time", "docstatus"]
-    )
+	checkins = frappe.get_all(
+		"Employee Checkin",
+		filters={"attendance": ["is", "not set"], "docstatus": ["in", [0, 1]]},
+		fields=["name", "employee", "time", "docstatus"]
+	)
 
-    if not checkins:
-        return "All check-ins have been linked to Attendance."
+	if not checkins:
+		return "All check-ins have been linked to Attendance."
 
-    created, skipped = 0, 0
-    processed_dates = set()
+	grouped = {}
 
-    for chk in checkins:
-        try:
-            attendance_date = getdate(chk["time"])
-            unique_key = f"{chk['employee']}_{attendance_date}"
+	for chk in checkins:
+		date = getdate(chk["time"])
+		key = f"{chk['employee']}_{date}"
 
-            if unique_key in processed_dates:
-                skipped += 1
-                continue
+		if key not in grouped:
+			grouped[key] = {
+				"employee": chk["employee"],
+				"date": date,
+				"times": [],
+				"records": []
+			}
 
-            existing_att = frappe.db.exists(
-                "Attendance",
-                {"employee": chk["employee"], "attendance_date": attendance_date}
-            )
-            if existing_att:
-                skipped += 1
-                processed_dates.add(unique_key)
-                continue
+		grouped[key]["times"].append(chk["time"])
+		grouped[key]["records"].append(chk["name"])
+		
 
-            att = frappe.new_doc("Attendance")
-            att.employee = chk["employee"]
-            att.attendance_date = attendance_date
-            att.status = "Present"
-            att.company = frappe.db.get_value("Employee", chk["employee"], "company")
-            att.insert(ignore_permissions=True)
-			
-            att.db_set("status", "Present")
+	created, skipped = 0, 0
 
-            frappe.db.set_value("Employee Checkin", chk["name"], "attendance", att.name)
-            processed_dates.add(unique_key)
-            created += 1
+	for key, data in grouped.items():
+		employee = data["employee"]
+		date = data["date"]
+		times = sorted(data["times"])
 
-        except Exception:
-            skipped += 1
-            frappe.log_error(
-                title=f"Error syncing {chk['name']}",
-                message=frappe.get_traceback()
-            )
+		existing_att = frappe.db.exists("Attendance", {"employee": employee, "attendance_date": date})
 
-    frappe.flags.force_sync_present = False
-    frappe.db.commit()
+		if existing_att:
+			skipped += 1
+			continue
+
+		att = frappe.new_doc("Attendance")
+		att.employee = employee
+		att.attendance_date = date
+		att.status = "Present"
+		att.company = frappe.db.get_value("Employee", employee, "company")
+
+		att.check_in = times[0]
+		att.check_out = times[-1]
+
+		att.insert(ignore_permissions=True)
+		att.submit()
+
+		for chk in data["records"]:
+			frappe.db.set_value("Employee Checkin", chk, "attendance", att.name)
+
+		created += 1
+
+	frappe.flags.force_sync_present = False
+	frappe.db.commit()
 
 
-    return f"{created} Attendance draft successfully created."
+	return f"{created} Attendance has successfully created."
 
 
 # Filter for choose leave application dinas for 2 months back
