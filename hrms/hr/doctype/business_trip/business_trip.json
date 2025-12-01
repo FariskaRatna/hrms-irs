@@ -10,6 +10,7 @@
   "naming_series",
   "employee",
   "employee_name",
+  "approval_status",
   "column_break_jxrz",
   "department",
   "designation",
@@ -26,8 +27,7 @@
   "pm_user",
   "hrd_user",
   "column_break_fhtz",
-  "posting_date",
-  "approval_status"
+  "posting_date"
  ],
  "fields": [
   {
@@ -47,13 +47,11 @@
   },
   {
    "fieldname": "employee_details",
-   "fieldtype": "Section Break",
-   "label": "Employee Details"
+   "fieldtype": "Section Break"
   },
   {
    "fieldname": "naming_series",
    "fieldtype": "Select",
-   "in_list_view": 1,
    "label": "Series",
    "no_copy": 1,
    "options": "BTRP-.YYYY.-",
@@ -121,6 +119,7 @@
   {
    "fieldname": "total_days",
    "fieldtype": "Data",
+   "in_list_view": 1,
    "label": "Total Days",
    "read_only": 1
   },
@@ -131,6 +130,7 @@
   {
    "fieldname": "destination",
    "fieldtype": "Select",
+   "in_list_view": 1,
    "label": "Destination",
    "options": "\nJabodetabek\nLuar Kota\nAsia\nJepang\nArab Saudi\nEropa\nAustralia\nUSA\nCanada",
    "reqd": 1
@@ -183,7 +183,7 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-12-01 14:25:20.979277",
+ "modified": "2025-12-01 16:32:07.738915",
  "modified_by": "Administrator",
  "module": "HR",
  "name": "Business Trip",

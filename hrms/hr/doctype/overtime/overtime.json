@@ -10,6 +10,7 @@
   "naming_series",
   "employee",
   "employee_name",
+  "approval_status",
   "column_break_bgys",
   "department",
   "designation",
@@ -27,19 +28,16 @@
   "assigned_by",
   "pm_user",
   "column_break_orgk",
-  "posting_date",
-  "approval_status"
+  "posting_date"
  ],
  "fields": [
   {
    "fieldname": "employee_details_section",
-   "fieldtype": "Section Break",
-   "label": "Employee Details"
+   "fieldtype": "Section Break"
   },
   {
    "fieldname": "employee",
    "fieldtype": "Link",
-   "in_list_view": 1,
    "label": "Employee",
    "options": "Employee",
    "reqd": 1
@@ -188,7 +186,7 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-11-29 21:22:57.284012",
+ "modified": "2025-12-01 16:30:48.257890",
  "modified_by": "Administrator",
  "module": "HR",
  "name": "Overtime",

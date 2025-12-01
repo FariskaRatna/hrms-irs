@@ -10,6 +10,7 @@
   "naming_series",
   "employee",
   "employee_name",
+  "approval_status",
   "column_break_eahz",
   "department",
   "designation",
@@ -23,15 +24,13 @@
   "deduction_start_date",
   "approval_section",
   "posting_date",
-  "hrd_user",
   "column_break_fbpw",
-  "approval_status"
+  "hrd_user"
  ],
  "fields": [
   {
    "fieldname": "section_break_8vra",
-   "fieldtype": "Section Break",
-   "label": "Employee Details"
+   "fieldtype": "Section Break"
   },
   {
    "fieldname": "amended_from",
@@ -46,7 +45,6 @@
   {
    "fieldname": "naming_series",
    "fieldtype": "Select",
-   "in_list_view": 1,
    "label": "Series",
    "no_copy": 1,
    "options": "HR-LOAN-",
@@ -58,7 +56,6 @@
   {
    "fieldname": "employee",
    "fieldtype": "Link",
-   "in_list_view": 1,
    "label": "Employee",
    "options": "Employee",
    "reqd": 1
@@ -158,7 +155,8 @@
   {
    "fieldname": "approval_status",
    "fieldtype": "Select",
-   "label": "Status",
+   "in_list_view": 1,
+   "label": "Approval Status",
    "options": "Pending\nApproved\nRejected\nCancelled",
    "permlevel": 1
   }
@@ -167,7 +165,7 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-11-30 10:10:28.804894",
+ "modified": "2025-12-01 16:34:21.802781",
  "modified_by": "Administrator",
  "module": "HR",
  "name": "Loan Application",
@@ -191,5 +189,6 @@
  "row_format": "Dynamic",
  "sort_field": "modified",
  "sort_order": "DESC",
- "states": []
+ "states": [],
+ "title_field": "employee_name"
 }

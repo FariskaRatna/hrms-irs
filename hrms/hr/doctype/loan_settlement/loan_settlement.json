@@ -10,6 +10,7 @@
   "naming_series",
   "employee",
   "employee_name",
+  "approval_status",
   "column_break_pwoc",
   "department",
   "designation",
@@ -22,9 +23,9 @@
   "transaction_proof",
   "amended_from",
   "approval_section",
-  "hrd_user",
+  "posting_date",
   "column_break_gjda",
-  "approval_status"
+  "hrd_user"
  ],
  "fields": [
   {
@@ -44,7 +45,6 @@
   {
    "fieldname": "naming_series",
    "fieldtype": "Select",
-   "in_list_view": 1,
    "label": "Series",
    "no_copy": 1,
    "options": "HR-LOAN-SET-",
@@ -56,7 +56,6 @@
   {
    "fieldname": "employee",
    "fieldtype": "Link",
-   "in_list_view": 1,
    "label": "Employee",
    "options": "Employee",
    "reqd": 1
@@ -101,6 +100,7 @@
   {
    "fieldname": "amount",
    "fieldtype": "Currency",
+   "in_list_view": 1,
    "label": "Amount",
    "precision": "0",
    "reqd": 1
@@ -148,16 +148,24 @@
   {
    "fieldname": "approval_status",
    "fieldtype": "Select",
+   "in_global_search": 1,
+   "in_list_view": 1,
    "label": "Approval Status",
    "options": "Pending\nApproved\nRejected",
    "permlevel": 1
+  },
+  {
+   "default": "Today",
+   "fieldname": "posting_date",
+   "fieldtype": "Date",
+   "label": "Posting Date"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-11-30 10:25:59.285435",
+ "modified": "2025-12-01 16:38:42.792416",
  "modified_by": "Administrator",
  "module": "HR",
  "name": "Loan Settlement",
@@ -181,5 +189,6 @@
  "row_format": "Dynamic",
  "sort_field": "modified",
  "sort_order": "DESC",
- "states": []
+ "states": [],
+ "title_field": "employee_name"
 }
