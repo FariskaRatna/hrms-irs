@@ -13,7 +13,7 @@
  "is_standard": 1,
  "message": "<h3>Your Overtime Request Has Been Submitted</h3>\r\n\r\n<p>\r\nYour overtime request <strong>{{ doc.name }}</strong> has been fully submitted by HR.\r\nPlease wait for payroll processing.\r\n</p>\r\n\r\n<h4>Summary</h4>\r\n<ul>\r\n    <li>Date: {{ doc.date }}</li>\r\n    <li>Total Hours: {{ doc.total_hours }}</li>\r\n    <li>Status: {{ doc.status }}</li>\r\n</ul>\r\n",
  "message_type": "Markdown",
- "modified": "2025-11-29 17:02:27.648879",
+ "modified": "2025-12-01 15:06:25.424304",
  "modified_by": "Administrator",
  "module": "HR",
  "name": "Overtime Submitted by HRD",

@@ -13,7 +13,7 @@
  "is_standard": 1,
  "message": "<h3>Overtime Rejected by PM</h3>\n\n<p>\nThe overtime request <strong>{{ doc.name }}</strong> has been rejected by the Project Manager.\nHR is now required to review and process it.\n</p>\n\n<h4>Details</h4>\n\n<ul>\n    <li>Employee: {{ doc.employee }}</li>\n    <li>Date: {{ doc.date }}</li>\n    <li>Total Hours: {{ doc.total_hours }}</li>\n</ul>\n",
  "message_type": "Markdown",
- "modified": "2025-11-29 17:02:27.548410",
+ "modified": "2025-12-01 15:06:25.460372",
  "modified_by": "Administrator",
  "module": "HR",
  "name": "Overtime Request to PM (Rejected)",

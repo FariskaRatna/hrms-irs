@@ -13,7 +13,7 @@
  "is_standard": 1,
  "message": "<h3>Your Reimbursement Request Has Been Submitted</h3>\n\n<p>\nYour reimbursement request <strong>{{ doc.name }}</strong> has been fully submitted by HR.\nPlease wait for payroll processing.\n</p>\n\n<h4>Summary</h4>\n\n<ul>\n    <li>Employee: {{ doc.employee_name }}</li>\n    <li>Total Reimbursement: {{ doc.amount }}</li>\n    <li>Date: {{ doc.outpatient_date }}</li>\n    <li>Diagnosis: {{ doc.diagnosis }}</li>\n</ul>\n\n<p>\n    <div style=\"text-align:center; margin-top:20px;\">\n        <a href=\"{{ frappe.utils.get_url('/app/reimbursement/' ~ doc.name) }}\"\n           style=\"\n                padding: 12px 20px;\n                background: #1d6df7;\n                color: #fff;\n                border-radius: 8px;\n                text-decoration: none;\n                font-size: 14px;\n                font-weight: 600;\n                display: inline-block;\n           \">\n            View Request \u2192\n        </a>\n    </div>\n\n</p>",
  "message_type": "Markdown",
- "modified": "2025-11-30 17:10:53.856912",
+ "modified": "2025-12-01 15:06:25.275798",
  "modified_by": "Administrator",
  "module": "HR",
  "name": "Reimbursement Application Submitted",

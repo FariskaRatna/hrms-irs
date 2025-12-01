@@ -13,7 +13,7 @@
  "is_standard": 1,
  "message": "<h3>Your Loan Settlement Request Has Been Submitted</h3>\n\n<p>\nYour loan settlement request <strong>{{ doc.name }}</strong> has been fully submitted by HR.\nPlease wait for payroll processing.\n</p>\n\n<h4>Summary</h4>\n\n<ul>\n    <li>Employee: {{ doc.employee_name }}</li>\n    <li>Loan: {{ doc.loan }}</li>\n    <li>Loan Balance: {{ doc.loan_balance }}</li>\n    <li>Amount of Settlement: {{ doc.amount }}</li>\n</ul>\n\n<p>\n    <div style=\"text-align:center; margin-top:20px;\">\n        <a href=\"{{ frappe.utils.get_url('/app/loan-settlement/' ~ doc.name) }}\"\n           style=\"\n                padding: 12px 20px;\n                background: #1d6df7;\n                color: #fff;\n                border-radius: 8px;\n                text-decoration: none;\n                font-size: 14px;\n                font-weight: 600;\n                display: inline-block;\n           \">\n            View Request \u2192\n        </a>\n    </div>\n\n</p>\n",
  "message_type": "Markdown",
- "modified": "2025-11-30 10:19:40.668858",
+ "modified": "2025-12-01 15:06:25.342298",
  "modified_by": "Administrator",
  "module": "HR",
  "name": "Loan Settlement Request Submitted",
