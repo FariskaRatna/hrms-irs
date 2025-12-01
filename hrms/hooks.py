@@ -175,10 +175,13 @@ doc_events = {
 	"Leave Application": {
 		"after_submit": "hrms.hr.doctype.leave_application.leave_application.after_submit",
 		# "on_submit": "hrms.hr.doctype.leave_application.leave_application.create_attendance_from_leave",
+        "before_validate": "hrms.custom.before_validate.ignore_attendance_check",
 		"on_submit": [
 			"hrms.custom.patch_leave_attendance.create_attendance_from_leave",
 			"hrms.overrides.leave_sync.handle_leave_sync",
-		]
+            "hrms.custom.override_attendance_leave.override_attendance_leave",
+		],
+        # "before_submit": "hrms.custom.override_attendance_leave.override_attendance_leave",
 	},
 	"Salary Slip": {
 		"before_save": [
