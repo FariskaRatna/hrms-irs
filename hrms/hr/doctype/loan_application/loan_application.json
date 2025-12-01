@@ -25,7 +25,7 @@
   "posting_date",
   "hrd_user",
   "column_break_fbpw",
-  "status"
+  "approval_status"
  ],
  "fields": [
   {
@@ -127,13 +127,6 @@
    "reqd": 1
   },
   {
-   "fieldname": "status",
-   "fieldtype": "Select",
-   "label": "Status",
-   "options": "Draft\nApproved\nRejected\nCancelled",
-   "permlevel": 1
-  },
-  {
    "default": "Today",
    "fieldname": "posting_date",
    "fieldtype": "Date",
@@ -147,6 +140,7 @@
    "read_only": 1
   },
   {
+   "collapsible": 1,
    "fieldname": "approval_section",
    "fieldtype": "Section Break",
    "label": "Approval"
@@ -155,22 +149,29 @@
    "fieldname": "hrd_user",
    "fieldtype": "Link",
    "label": "HR Manager",
-   "options": "User",
-   "permlevel": 1
+   "options": "User"
   },
   {
    "fieldname": "column_break_fbpw",
    "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "approval_status",
+   "fieldtype": "Select",
+   "label": "Status",
+   "options": "Pending\nApproved\nRejected\nCancelled",
+   "permlevel": 1
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-11-29 21:44:05.377247",
+ "modified": "2025-11-30 10:10:28.804894",
  "modified_by": "Administrator",
  "module": "HR",
  "name": "Loan Application",
+ "naming_rule": "By \"Naming Series\" field",
  "owner": "Administrator",
  "permissions": [
   {

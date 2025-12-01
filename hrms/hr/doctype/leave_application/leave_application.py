@@ -119,6 +119,11 @@ class LeaveApplication(Document, PWANotificationsMixin):
 		self.publish_update()
 		self.notify_approval_status()
 
+		if self.approval_status in ["Approved", "Rejected"] and self.docstatus < 1:
+			if frappe.db.get_single_value("HR Settings", "send_leave_notification"):
+				self.notify_hrd()
+				self.notify_employee(sender_email=self.get_email_leave_approver())
+
 		if self.approval_status in ["Rejected", "Cancelled"] and self.leave_category == "Dinas":
 			self.delete_employee_checkins()
 	def on_submit(self):
@@ -646,11 +651,37 @@ class LeaveApplication(Document, PWANotificationsMixin):
 		if self.half_day == 0:
 			self.half_day_date = None
 
-	def notify_employee(self):
+	def get_requester(self):
+		user_id = frappe.db.get_value("Employee", self.employee, "user_id") or self.owner
+		return frappe.get_value("User", user_id, "email")
+
+	def get_email_leave_approver(self):
+		if self.leave_approver:
+			frappe.get_value("User", self.leave_approver, "email")
+		return None
+
+	def get_email_hrd(self):
+		if self.hrd_user:
+			return frappe.get_value("User", self.hrd_user, "email")
+		return None
+
+	def notify_employee(self, sender_email=None):
 		employee_email = get_employee_email(self.employee)
 
 		if not employee_email:
 			return
+
+		employee_user = frappe.db.get_value("Employee", self.employee, "user_id")
+
+		frappe.get_doc({
+			"doctype": "Notification Log",
+			"subject": f"Leave Application Request {self.approval_status}",
+			"email_content": f"Your leave application request has been {self.approval_status}.",
+			"for_user": employee_user,
+			"type": "Alert",
+			"document_type": "Leave Application",
+			"document_name": self.name
+		}).insert(ignore_permissions=True)
 
 		parent_doc = frappe.get_doc("Leave Application", self.name)
 		args = parent_doc.as_dict()
@@ -671,6 +702,7 @@ class LeaveApplication(Document, PWANotificationsMixin):
 				# for email
 				"subject": subject,
 				"notify": "employee",
+				"sender_email": sender_email
 			}
 		)
 
@@ -678,6 +710,16 @@ class LeaveApplication(Document, PWANotificationsMixin):
 		if self.leave_approver:
 			parent_doc = frappe.get_doc("Leave Application", self.name)
 			args = parent_doc.as_dict()
+
+			frappe.get_doc({
+				"doctype": "Notification Log",
+				"subject": f"Leave Application Request from {self.employee_name}",
+				"email_content": f"Employee {self.employee_name} has submitted an leave application request.",
+				"for_user": self.leave_approver,
+				"type": "Alert",
+				"document_type": "Leave Application",
+				"document_name": self.name
+			}).insert(ignore_permissions=True)
 
 			template = frappe.db.get_single_value("HR Settings", "leave_approval_notification_template")
 			if not template:
@@ -696,6 +738,39 @@ class LeaveApplication(Document, PWANotificationsMixin):
 					"message_to": self.leave_approver,
 					# for email
 					"subject": subject,
+					"sender_email": self.get_requester()
+				}
+			)
+
+	def notify_hrd(self):
+		if self.hrd_user:
+			parent_doc = frappe.get_doc("Leave Application", self.name)
+			args = parent_doc.as_dict()
+
+			frappe.get_doc({
+				"doctype": "Notification Log",
+				"subject": f"Leave Application Request from {self.employee_name}",
+				"email_content": f"Employee {self.employee_name} has submitted an leave application request.",
+				"for_user": self.hrd_user,
+				"type": "Alert",
+				"document_type": "Leave Application",
+				"document_name": self.name
+			}).insert(ignore_permissions=True)
+
+			template = frappe.db.get_single_value("HR Settings", "leave_approval_hrd_notification_template")
+			if not template:
+				frappe.msgprint(_("Please set default template for Leave Request Notification in HR Settings."))
+				return
+			email_template = frappe.get_doc("Email Template", template)
+			subject = frappe.render_template(email_template.subject, args)
+			message = frappe.render_template(email_template.response_, args)
+
+			self.notify(
+				{
+					"message": message,
+					"message_to": self.hrd_user,
+					"subject": subject,
+					"sender_email": self.get_requester()
 				}
 			)
 
@@ -708,14 +783,18 @@ class LeaveApplication(Document, PWANotificationsMixin):
 				if not args.notify == "employee":
 					contact = frappe.get_doc("User", contact).email or contact
 
-			sender = dict()
-			sender["email"] = frappe.get_doc("User", frappe.session.user).email
-			sender["full_name"] = get_fullname(sender["email"])
+			# sender = dict()
+			# sender["email"] = frappe.get_doc("User", frappe.session.user).email
+			# sender["full_name"] = get_fullname(sender["email"])
+
+			sender_email = args.get("sender_email")
+			if not sender_email:
+				sender_email = frappe.get_doc("User", frappe.session.user).email
 
 			try:
 				frappe.sendmail(
 					recipients=contact,
-					sender=sender["email"],
+					sender=sender_email,
 					subject=args.subject,
 					message=args.message,
 				)

@@ -35,7 +35,6 @@ class Overtime(Document):
 			if frappe.db.get_single_value("HR Settings", "send_overtime_application_notification"):
 				self.notify_assigned_by()
 
-		# HARUS sejajar, bukan di dalam IF
 		if self.approval_status in ["Approved", "Rejected"] and self.docstatus < 1:
 			if frappe.db.get_single_value("HR Settings", "send_overtime_application_notification"):
 				self.notify_project_manager()

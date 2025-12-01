@@ -46,9 +46,9 @@ frappe.ui.form.on("Loan Settlement", {
 
         if (!frm.doc.employee) return;
 
-        frappe.db.get_value("Employee", frm.doc.employee, ["hrd_user"])
+        frappe.db.get_value("Employee", frm.doc.employee, ["user_id"])
             .then(r => {
-                frm.set_value("hrd_user", r.message.hrd_user);
+                frm.set_value("hrd_user", r.message.user_id);
             });
     }
 });

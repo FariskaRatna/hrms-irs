@@ -25,7 +25,7 @@
   "posting_date",
   "hrd_user",
   "column_break_kqch",
-  "status"
+  "approval_status"
  ],
  "fields": [
   {
@@ -119,13 +119,6 @@
    "reqd": 1
   },
   {
-   "fieldname": "status",
-   "fieldtype": "Select",
-   "label": "Status",
-   "options": "Draft\nApproved\nRejected\nCancelled",
-   "permlevel": 1
-  },
-  {
    "fieldname": "amended_from",
    "fieldtype": "Link",
    "label": "Amended From",
@@ -143,6 +136,7 @@
    "reqd": 1
   },
   {
+   "collapsible": 1,
    "fieldname": "section_break_xprp",
    "fieldtype": "Section Break",
    "label": "Approval"
@@ -151,19 +145,25 @@
    "fieldname": "hrd_user",
    "fieldtype": "Link",
    "label": "HR Manager",
-   "options": "User",
-   "permlevel": 1
+   "options": "User"
   },
   {
    "fieldname": "column_break_kqch",
    "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "approval_status",
+   "fieldtype": "Select",
+   "label": "Approval Status",
+   "options": "Pending\nApproved\nRejected\nCancelled",
+   "permlevel": 1
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-11-29 21:40:46.361787",
+ "modified": "2025-11-30 17:19:17.961510",
  "modified_by": "Administrator",
  "module": "HR",
  "name": "Reimbursement",

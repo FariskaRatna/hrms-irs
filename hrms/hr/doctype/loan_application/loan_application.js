@@ -3,7 +3,7 @@
 
 frappe.ui.form.on("Loan Application", {
 	refresh(frm) {
-        if (!frm.is_new() && frm.doc.docstatus === 0) {
+        if (!frm.is_new() && frm.doc.docstatus === 0 && frm.perm[0].submit == 1) {
             frm.page.set_primary_action(__("Submit"), function () {
                 frappe.confirm(
                     `Permanently submit Loan Application for ${frm.doc.employee_name || frm.doc.employee}?`,
@@ -32,9 +32,9 @@ frappe.ui.form.on("Loan Application", {
     employee(frm) {
         if (!frm.doc.employee) return;
 
-        frappe.db.get_value("Employee", frm.doc.employee, ["hrd_user"])
+        frappe.db.get_value("Employee", frm.doc.employee, ["user_id"])
             .then(r => {
-                frm.set_value("hrd_user", r.message.hrd_user);
+                frm.set_value("hrd_user", r.message.user_id);
             });
     }
 });
