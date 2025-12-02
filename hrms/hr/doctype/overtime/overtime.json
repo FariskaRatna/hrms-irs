@@ -147,7 +147,8 @@
    "fieldname": "pm_user",
    "fieldtype": "Link",
    "label": "Lead",
-   "options": "User"
+   "options": "User",
+   "read_only": 1
   },
   {
    "fieldname": "column_break_orgk",
@@ -186,7 +187,7 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-12-01 16:30:48.257890",
+ "modified": "2025-12-02 09:32:36.084993",
  "modified_by": "Administrator",
  "module": "HR",
  "name": "Overtime",
