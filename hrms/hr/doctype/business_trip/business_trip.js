@@ -2,12 +2,26 @@
 // For license information, please see license.txt
 
 frappe.ui.form.on("Business Trip", {
+    setup: function (frm) {
+        frm.set_query("pm_user", function () {
+            return {
+                query: "hrms.hr.doctype.department_approver.department_approver.get_approvers",
+                filters: {
+                    employee: frm.doc.employee,
+                    doctype: frm.doc.doctype,
+                },
+            };
+        });
+    },
+
     employee(frm) {
+        frm.trigger("set_pm_user");
+
         if (!frm.doc.employee) return;
 
-        frappe.db.get_value("Employee", frm.doc.employee, ["project_manager", "hrd_user"])
+        frappe.db.get_value("Employee", frm.doc.employee, ["hrd_user"])
         .then(r => {
-            frm.set_value("pm_user", r.message.project_manager);
+            // frm.set_value("pm_user", r.message.project_manager);
             frm.set_value("hrd_user", r.message.hrd_user)
         });
     },
@@ -37,5 +51,21 @@ frappe.ui.form.on("Business Trip", {
                 );
             });
         }
-    }
+    },
+
+    set_pm_user: function (frm) {
+        if (frm.doc.employee) {
+            return frappe.call({
+                method: "hrms.hr.doctype.business_trip.business_trip.get_pm_user",
+                args : {
+                    employee: frm.doc.employee,
+                },
+                callback: function (r) {
+                    if (r && r.message) {
+                        frm.set_value("pm_user", r.message);
+                    }
+                },
+            });
+        }
+    },
 });
