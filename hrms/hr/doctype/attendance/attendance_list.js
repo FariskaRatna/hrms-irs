@@ -79,7 +79,7 @@ frappe.listview_settings["Attendance"] = {
 		}, __("Attendance Actions"));
 		
 
-		list_view.page.add_inner_button(__("Mark Attendance"), function () {
+		list_view.page.add_inner_button(__("Create Attendance"), function () {
 			let first_day_of_month = moment().startOf("month");
 
 			if (moment().toDate().getDate() === 1) {
@@ -87,7 +87,7 @@ frappe.listview_settings["Attendance"] = {
 			}
 
 			let dialog = new frappe.ui.Dialog({
-				title: __("Mark Attendance"),
+				title: __("Craete Attendance"),
 				fields: [
 					{
 						fieldname: "employee",
