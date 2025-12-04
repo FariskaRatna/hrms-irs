@@ -149,12 +149,16 @@ def process_file(docname):
                 "time": timestamp,
                 "log_type": log_type,
                 "related_dinas_leave": None,
-                "photo": None,
                 "latitude": DEFAULT_LATITUDE,
                 "longitude": DEFAULT_LONGITUDE,
                 "skip_auto_attendance": 0,
                 "is_imported": 1
             })
+            
+            # Set photo ke None dan bypass required validation
+            doc.photo = None
+            doc.flags.ignore_validate = True
+            doc.flags.ignore_mandatory = True
 
             frappe.flags.ignore_validate = True
             frappe.flags.ignore_permissions = True
@@ -205,30 +209,42 @@ def process_file(docname):
 
         in_time, out_time = row["Clock In"], row["Clock Out"]
 
-        if (in_time is None or out_time is None) and not df_face.empty:
+        # Cari data face untuk dibandingkan dengan finger
+        if not df_face.empty:
             emp_face = find_employee(row["Name"], source="finger")
-            if not emp_face:
-                frappe.msgprint(f"Employee {row['Name']} not found (finger), cannot fallback to face.")
-                continue
-            
-            emp_face_initial = frappe.db.get_value("Employee", emp_face, "initial_name_face")
-
-            face_rows = df_face[df_face["Date"] == date_part]
-
-            match_row = face_rows[face_rows["Name"] == emp_face_initial]
-
-            if not match_row.empty:
-                match_row = match_row.iloc[0]
-
-                if in_time is None and pd.notna(match_row["First-In"]):
-                    in_time = match_row["First-In"]
-                    # frappe.msgprint(f"Filled Clock In for {row['Name']} from face")
-
-                if out_time is None and pd.notna(match_row["Last-Out"]):
-                    out_time = match_row["Last-Out"]
-                    # frappe.msgprint(f"Filled Clock Out for {row['Name']} from face")
-            else:
-                frappe.msgprint(f"No face match for {emp_face_initial} on {date_part}")
+            if emp_face:
+                emp_face_initial = frappe.db.get_value("Employee", emp_face, "initial_name_face")
+                
+                if emp_face_initial:
+                    face_rows = df_face[df_face["Date"] == date_part]
+                    match_row = face_rows[face_rows["Name"] == emp_face_initial]
+                    
+                    if not match_row.empty:
+                        match_row = match_row.iloc[0]
+                        face_in_time = match_row["First-In"] if pd.notna(match_row["First-In"]) else None
+                        face_out_time = match_row["Last-Out"] if pd.notna(match_row["Last-Out"]) else None
+                        
+                        # Untuk Clock In: ambil yang paling cepat (earliest)
+                        if face_in_time is not None:
+                            if in_time is None:
+                                in_time = face_in_time
+                            else:
+                                # Bandingkan dan ambil yang lebih cepat
+                                finger_datetime = datetime.combine(date_part, in_time)
+                                face_datetime = datetime.combine(date_part, face_in_time)
+                                if face_datetime < finger_datetime:
+                                    in_time = face_in_time
+                        
+                        # Untuk Clock Out: ambil yang paling lama (latest)
+                        if face_out_time is not None:
+                            if out_time is None:
+                                out_time = face_out_time
+                            else:
+                                # Bandingkan dan ambil yang lebih lama
+                                finger_datetime = datetime.combine(date_part, out_time)
+                                face_datetime = datetime.combine(date_part, face_out_time)
+                                if face_datetime > finger_datetime:
+                                    out_time = face_out_time
 
         if date_part.day == 20 and out_time is None:
             out_time = time(18, 0, 0)
