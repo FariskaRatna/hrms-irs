@@ -92,7 +92,7 @@
    "no_copy": 1,
    "oldfieldname": "status",
    "oldfieldtype": "Select",
-   "options": "\nPresent\nAbsent\nOn Leave\nHalf Day\nWork From Home",
+   "options": "\nPresent\nAbsent\nOn Leave\nHalf Day",
    "reqd": 1,
    "search_index": 1
   },
@@ -245,7 +245,7 @@
  "idx": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-12-01 12:41:47.309862",
+ "modified": "2025-12-05 10:03:52.273957",
  "modified_by": "Administrator",
  "module": "HR",
  "name": "Attendance",

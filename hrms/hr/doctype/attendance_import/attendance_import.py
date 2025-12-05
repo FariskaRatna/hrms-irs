@@ -312,7 +312,7 @@ def process_file(docname):
                 daily_allowance_deducted = True
                 attendance_reason = "Cuti"
 
-            elif leave_category == "Izin":
+            elif leave_category == "Izin Satu Hari":
                 status = "On Leave"
                 daily_allowance_deducted = True
                 attendance_reason = "Izin"
@@ -327,12 +327,12 @@ def process_file(docname):
                     daily_allowance_deducted = True
                     attendance_reason = "Sakit tanpa Surat Dokter"
 
-            elif leave_category == "Setengah Hari":
+            elif leave_category == "Izin Setengah Hari":
                 half_day_count = frappe.db.count(
                     "Leave Application",
                     filters={
                         "employee": emp,
-                        "leave_category": "Setengah Hari",
+                        "leave_category": "Izin Setengah Hari",
                         "from_date": ["between", [start_date, end_date]],
                         "docstatus": 1
                     }

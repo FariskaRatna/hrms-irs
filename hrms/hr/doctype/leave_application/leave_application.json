@@ -249,7 +249,7 @@
    "fieldtype": "Select",
    "in_list_view": 1,
    "label": "Leave Category",
-   "options": "\nIzin\nSakit\nCuti\nSetengah Hari\nDinas",
+   "options": "\nIzin Satu Hari\nSakit\nCuti\nIzin Setengah Hari\nDinas",
    "reqd": 1
   },
   {
@@ -290,7 +290,7 @@
  "is_submittable": 1,
  "links": [],
  "max_attachments": 3,
- "modified": "2025-12-04 15:47:20.862383",
+ "modified": "2025-12-05 10:10:02.973895",
  "modified_by": "Administrator",
  "module": "HR",
  "name": "Leave Application",
