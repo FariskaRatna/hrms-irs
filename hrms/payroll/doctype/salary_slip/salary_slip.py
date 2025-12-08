@@ -2630,7 +2630,7 @@ def adjust_payment_days(salary_slip, method=None):
 
     if designation == "Staff":
         base_rate = 100000
-    elif designation == "Manager":
+    elif designation == "Project Manager":
         base_rate = 175000
     else:
         base_rate = 0
