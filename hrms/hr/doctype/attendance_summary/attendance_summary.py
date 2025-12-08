@@ -57,7 +57,7 @@ def generate_recap(docname):
 			"docstatus": 1,
 			"attendance_date": ["between", [start_period.strftime("%Y-%m-%d"), end_period.strftime("%Y-%m-%d")]]
 		},
-		fields=["attendance_date", "in_time", "out_time"]
+		fields=["attendance_date", "in_time", "out_time", "attendance_reason"]
 	)
 
 
@@ -72,6 +72,14 @@ def generate_recap(docname):
 		date = att.attendance_date
 		checkin = att.in_time
 		checkout = att.out_time
+
+		reason = att.attendance_reason or ""
+
+		if reason in [
+			"Setengah Hari (kurang dari 2 kali)",
+			"Setengah Hari (waktu tidak sesuai)"
+		]:
+			continue
 
 		if not (checkin and checkout):
 			continue
@@ -108,6 +116,9 @@ def generate_recap(docname):
 			getdate(date),
 			datetime.strptime(str(shift_end), "%H:%M:%S").time()
 		)
+
+		late_in = 0
+		early_out = 0
 
 		if checkin > normal_in:
 			late_in = (checkin - normal_in).seconds // 60
