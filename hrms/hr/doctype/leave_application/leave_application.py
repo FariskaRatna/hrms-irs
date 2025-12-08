@@ -1680,11 +1680,11 @@ def create_attendance_from_leave(doc, method):
 
 		elif leave_category == "Izin Setengah Hari":
 			half_day_count = frappe.db.count(
-				"Leave Application",
+				"Attendance",
 				filters={
 					"employee": emp,
-					"leave_category": "Izin Setengah Hari",
-					"from_date": ["between", [start_ref, end_ref]],
+                    "attendance_reason": "Setengah Hari (kurang dari 2 kali)",
+					"attendance_date": ["between", [start_ref, end_ref]],
 					"docstatus": 1
 				}
 			)
@@ -1693,7 +1693,7 @@ def create_attendance_from_leave(doc, method):
 				daily_allowance_deducted = False
 				attendance_reason = "Setengah Hari (kurang dari 2 kali)"
 			else:
-				status = "On Leave"
+				status = "Present"
 				daily_allowance_deducted = False
 				attendance_reason = "Setengah Hari (lebih dari 2 kali)"
 

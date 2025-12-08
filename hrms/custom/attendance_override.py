@@ -45,6 +45,18 @@ def custom_check_leave_record(self):
                 indicator="green"
             )
             return
+        
+        if d.leave_category == "Izin Setengah Hari":
+            self.status = "Present"
+            self.leave_type = "Leave"
+            self.leave_application = d.name
+
+            frappe.msgprint(
+                f"Attendance: {self.employee_name} is marked Present (Izin Setengah Hari) on {format_date(self.attendance_date)}",
+                indicator="green"
+            )
+
+            return
 
         # Normal leave
         self.leave_type = d.leave_type

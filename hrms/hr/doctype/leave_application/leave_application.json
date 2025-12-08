@@ -290,7 +290,7 @@
  "is_submittable": 1,
  "links": [],
  "max_attachments": 3,
- "modified": "2025-12-05 10:10:02.973895",
+ "modified": "2025-12-08 11:47:39.855276",
  "modified_by": "Administrator",
  "module": "HR",
  "name": "Leave Application",
@@ -381,7 +381,7 @@
   }
  ],
  "row_format": "Dynamic",
- "search_fields": "employee,employee_name,leave_type,from_date,to_date,total_leave_days",
+ "search_fields": "employee,employee_name,leave_type,from_date,to_date,total_leave_days,purpose",
  "sort_field": "modified",
  "sort_order": "DESC",
  "states": [],

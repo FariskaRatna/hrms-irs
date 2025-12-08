@@ -12,3 +12,6 @@ class CustomLeaveApplication(LeaveApplication):
     def create_attendance(self):
         frappe.logger().info("Attendance creation skipped (custom override)")
         return
+    
+    def get_title(self):
+        return self.purpose or self.name
