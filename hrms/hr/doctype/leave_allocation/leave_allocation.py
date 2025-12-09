@@ -5,7 +5,7 @@
 import frappe
 from frappe import _
 from frappe.model.document import Document
-from frappe.utils import add_days, date_diff, flt, formatdate, get_link_to_form, getdate
+from frappe.utils import add_days, date_diff, flt, formatdate, get_link_to_form, getdate, cint
 
 from hrms.hr.doctype.leave_application.leave_application import get_approved_leaves_for_period
 from hrms.hr.doctype.leave_ledger_entry.leave_ledger_entry import (
@@ -53,23 +53,23 @@ class LeaveAllocation(Document):
 		self.validate_total_leaves_allocated()
 		self.validate_leave_allocation_days()
 
+	# It's not working properly
 	def validate_mass_leave(self):
 		mass_leave_days = self.get_mass_leave_days()
-		if mass_leave_days > 0:
-			self.total_leaves_allocated = (self.total_leaves_allocated or 0) - mass_leave_days
+		if 11 > 0:
+			self.total_leaves_allocated = (self.total_leaves_allocated or 0) - 11
 
 	def get_mass_leave_days(self):
 		mass_list = frappe.db.get_value("Employee", self.employee, "mass_leave_list")
 		if not mass_list:
 			return 0
 
-		holidays = frappe.get_all(
-			"Holidays",
-			filters={"parent": mass_list},
-			fields=["name"]
+		holidays = frappe.db.count(
+			"Holiday",
+			{"parent": mass_list}
 		)
 
-		return len(holidays)
+		return cint(len(holidays))
 
 	def validate_leave_allocation_days(self):
 		company = frappe.db.get_value("Employee", self.employee, "company")

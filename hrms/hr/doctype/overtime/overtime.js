@@ -23,6 +23,17 @@ frappe.ui.form.on("Overtime", {
                 );
             });
         }
+
+        frm.trigger("set_employee");
+    },
+
+    async set_employee(frm) {
+        if (frm.doc.employee) return;
+
+        const employee = await hrms.get_current_employee(frm);
+        if (employee) {
+            frm.set_value("employee", employee);
+        }
     },
 
     employee(frm) {
