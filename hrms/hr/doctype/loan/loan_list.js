@@ -1,31 +1,6 @@
-frappe.listview_settings["Salary Slip"] = {
-	onload: function (listview) {
-		if (
-			!has_common(frappe.user_roles, [
-				"Administrator",
-				"System Manager",
-				"HR Manager",
-				"HR User",
-			])
-		)
-			return;
-
-		listview.page.add_menu_item(__("Email Salary Slips"), () => {
-			if (!listview.get_checked_items().length) {
-				frappe.msgprint(__("Please select the salary slips to email"));
-				return;
-			}
-
-			frappe.confirm(__("Are you sure you want to email the selected salary slips?"), () => {
-				listview.call_for_selected_items(
-					"hrms.payroll.doctype.salary_slip.salary_slip.enqueue_email_salary_slips",
-				);
-			});
-		});
-	},
-
-	refresh: listview => {
-		$('span.level-item.list-liked-by-me.hidden-xs').remove();
+frappe.listview_settings["Loan"] = {
+    refresh: listview => {
+        $('span.level-item.list-liked-by-me.hidden-xs').remove();
         $('span.list-row-like.hidden-xs').remove();
         $('span.comment-count.d-flex.align-items-center').remove();
         $('span.mx-2').remove();
@@ -51,19 +26,20 @@ frappe.listview_settings["Salary Slip"] = {
                 "overflow": "hidden"
             });
 
-            $('.list-row-head .list-row-col').eq(6).css({
+            $('.list-row-head .list-row-col').eq(5).css({
                 "flex": "0 0 180px",
                 "max-width": "200px",
                 "white-space": "nowrap",
             });
 
             $('.list-row-container .list-row').each(function () {
-                $(this).find('.list-row-col').eq(6).css({
+                $(this).find('.list-row-col').eq(5).css({
                     "flex": "0 0 180px",
                     "max-width": "200px",
                     "white-space": "nowrap",
                 });
             });
         }, 0)
-	}
-};
+    }
+
+}

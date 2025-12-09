@@ -89,6 +89,8 @@ frappe.ui.form.on("Leave Application", {
 	},
 
 	refresh: function (frm) {
+		frm.page.wrapper.find(".comment-box").css({"display": "none"});
+		
 		hrms.leave_utils.add_view_ledger_button(frm);
 		if (frm.is_new()) {
 			frm.trigger("calculate_total_days");

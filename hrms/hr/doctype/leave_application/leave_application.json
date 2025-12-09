@@ -52,7 +52,8 @@
    "print_hide": 1,
    "read_only": 1,
    "reqd": 1,
-   "set_only_once": 1
+   "set_only_once": 1,
+   "width": "200"
   },
   {
    "fieldname": "employee",
@@ -245,6 +246,7 @@
    "label": "Other Details"
   },
   {
+   "columns": 1,
    "fieldname": "leave_category",
    "fieldtype": "Select",
    "in_list_view": 1,
@@ -290,7 +292,7 @@
  "is_submittable": 1,
  "links": [],
  "max_attachments": 3,
- "modified": "2025-12-08 11:47:39.855276",
+ "modified": "2025-12-09 14:15:24.307561",
  "modified_by": "Administrator",
  "module": "HR",
  "name": "Leave Application",

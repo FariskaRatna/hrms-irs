@@ -46,7 +46,6 @@
   {
    "fieldname": "naming_series",
    "fieldtype": "Select",
-   "in_list_view": 1,
    "label": "Series",
    "no_copy": 1,
    "options": "HR-DRAFT-LOAN-",
@@ -58,7 +57,6 @@
   {
    "fieldname": "employee",
    "fieldtype": "Link",
-   "in_list_view": 1,
    "label": "Employee",
    "options": "Employee",
    "reqd": 1
@@ -96,7 +94,6 @@
   {
    "fieldname": "loan_application",
    "fieldtype": "Link",
-   "in_list_view": 1,
    "label": "Loan Application",
    "options": "Loan Application",
    "reqd": 1
@@ -132,6 +129,7 @@
    "allow_on_submit": 1,
    "fieldname": "balance_amount",
    "fieldtype": "Currency",
+   "in_list_view": 1,
    "label": "Balance Amount",
    "precision": "0"
   },
@@ -139,6 +137,7 @@
    "allow_on_submit": 1,
    "fieldname": "repayment_status",
    "fieldtype": "Select",
+   "in_list_view": 1,
    "label": "Repayment Status",
    "options": "Unpaid\nPaid"
   },
@@ -171,7 +170,7 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-11-25 16:12:09.420965",
+ "modified": "2025-12-09 17:27:09.486905",
  "modified_by": "Administrator",
  "module": "HR",
  "name": "Loan",
@@ -193,7 +192,10 @@
   }
  ],
  "row_format": "Dynamic",
+ "search_fields": "employee,employee_name",
+ "show_title_field_in_link": 1,
  "sort_field": "modified",
  "sort_order": "DESC",
- "states": []
+ "states": [],
+ "title_field": "employee_name"
 }
