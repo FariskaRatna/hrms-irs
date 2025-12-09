@@ -14,55 +14,16 @@ frappe.listview_settings["Attendance"] = {
 	onload: function (list_view) {
 		let me = this;
 
-		// try {
-		// 	const existing = list_view.filter_area.get?.() || [];
-		// 	existing
-		// 		.filter(f => !Array.isArray(f) || !f[1]) // missing/empty fieldname
-		// 		.forEach(f => list_view.filter_area.remove?.(f?.[0] || list_view.doctype, f?.[1] || ""));
-		// } catch (e) {
-		// 	// ignore
-		// }
-
-		// const month_field = list_view.page.add_field({
-		// 	fieldtype: "Select",
-		// 	label: "Bulan",
-		// 	options: [
-		// 		"",
-		// 		"January","February","March","April","May","June",
-		// 		"July","August","September","October","November","December"
-		// 	],
-		// 	change: function () {
-		// 		const month = month_field.get_value();
-
-		// 		// remove all old attendance_date filters safely
-		// 		const filters = list_view.filter_area.get?.() || [];
-		// 		filters
-		// 			.filter(f => f && f[1] === "attendance_date")
-		// 			.forEach(f => list_view.filter_area.remove?.(f[0], f[1]));
-
-		// 		if (month) {
-		// 			const year = new Date().getFullYear();
-		// 			const monthIndex = new Date(`${month} 1, ${year}`).getMonth();
-		// 			const start = frappe.datetime.obj_to_str(new Date(year, monthIndex, 1));
-		// 			const end   = frappe.datetime.obj_to_str(new Date(year, monthIndex + 1, 0));
-
-		// 			list_view.filter_area.add_filter(
-		// 				list_view.doctype,
-		// 				"attendance_date",
-		// 				"between",
-		// 				[start, end]
-		// 			);
-		// 		}
-
-		// 		list_view.refresh();
-		// 	}
-		// });
-
 		if (!frappe.user.has_role("HR Manager") &&
             !frappe.user.has_role("HR User") &&
             !frappe.user.has_role("System Manager")) {
             return;
         }
+
+		list_view.page_length = 100;
+		$('button[data-value="20"]').removeClass("btn-info");
+		$('button[data-value="100"]').addClass("btn-info");
+		list_view.refresh()
 
 		list_view.page.add_inner_button(__('Sync Unlinked Attendance'), function() {
 			frappe.call({
