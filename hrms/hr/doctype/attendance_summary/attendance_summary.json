@@ -15,17 +15,21 @@
   "department",
   "designation",
   "attendance_summary_section",
-  "month",
-  "total_late_minutes",
+  "from_date",
+  "to_date",
+  "total_working_days",
+  "total_present",
+  "total_absent",
   "late_days",
+  "total_late_minutes",
   "last_updated_on",
-  "over_tolerance",
-  "remarks",
-  "generate_recap",
   "column_break_umwu",
   "late_dates",
+  "remarks",
+  "over_tolerance",
   "attendance_late_details_section",
-  "late_details"
+  "late_details",
+  "generate_recap"
  ],
  "fields": [
   {
@@ -79,13 +83,6 @@
    "fieldname": "attendance_summary_section",
    "fieldtype": "Section Break",
    "label": "Attendance Summary"
-  },
-  {
-   "fieldname": "month",
-   "fieldtype": "Data",
-   "in_list_view": 1,
-   "label": "Month (e.g. 2025-10)",
-   "reqd": 1
   },
   {
    "fieldname": "total_late_minutes",
@@ -149,12 +146,40 @@
    "fieldtype": "Table",
    "label": "Attendance Late",
    "options": "Attendance Late"
+  },
+  {
+   "fieldname": "from_date",
+   "fieldtype": "Date",
+   "in_list_view": 1,
+   "label": "From Date",
+   "reqd": 1
+  },
+  {
+   "fieldname": "to_date",
+   "fieldtype": "Date",
+   "label": "To Date",
+   "reqd": 1
+  },
+  {
+   "fieldname": "total_present",
+   "fieldtype": "Int",
+   "label": "Total Present"
+  },
+  {
+   "fieldname": "total_absent",
+   "fieldtype": "Int",
+   "label": "Total Absent"
+  },
+  {
+   "fieldname": "total_working_days",
+   "fieldtype": "Int",
+   "label": "Working Days"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-11-19 10:15:35.267020",
+ "modified": "2025-12-08 16:32:21.703531",
  "modified_by": "Administrator",
  "module": "HR",
  "name": "Attendance Summary",

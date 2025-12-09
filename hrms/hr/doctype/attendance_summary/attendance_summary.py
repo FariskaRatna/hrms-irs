@@ -5,8 +5,12 @@ import frappe
 from frappe.model.document import Document
 from frappe.utils import getdate
 from datetime import datetime
-from frappe.utils import get_first_day, get_last_day
+from frappe.utils import get_first_day, get_last_day, date_diff, cint, add_days
 
+from erpnext.setup.doctype.employee.employee import get_holiday_list_for_employee
+from hrms.utils.holiday_list import get_holiday_dates_between
+
+HOLIDAYS_BETWEEN_DATES = "holiday_between_dates"
 
 class AttendanceSummary(Document):
 	pass
@@ -15,39 +19,8 @@ class AttendanceSummary(Document):
 def generate_recap(docname):
 	doc = frappe.get_doc("Attendance Summary", docname)
 
-	if not doc.month:
-		frappe.throw("Please select a month first")
-
-	try:
-		year, month = doc.month.split("-")
-		year, month = int(year), int(month)
-	except:
-		frappe.throw("Format of month is wrong. It must be YYYY-MM")
-
-	# month_start = get_first_day(f"{year}-{month}-01").strftime("%Y-%m-%d")
-	# month_end = get_last_day(f"{year}-{month}-01").strftime("%Y-%m-%d")
-	from datetime import date
-
-
-	if month == 1:
-		start_period = date(year - 1, 12, 21)
-	else:
-		start_period = date(year, month - 1, 21)
-	
-	end_period = date(year, month, 20)
-	
-	frappe.msgprint(f"Start: {start_period}, End: {end_period}")
-
-	# attendances = frappe.get_all(
-	# 	"Attendance",
-	# 	filters={
-	# 		"employee": doc.employee,
-	# 		"status": ["in", ["Present", "Late"]],
-	# 		"docstatus": 1,
-	# 		"attendance_date": ["between", [start_period, end_period]]
-	# 	},
-	# 	fields=["attendance_date", "in_time", "out_time"]
-	# )
+	start_period = doc.from_date
+	end_period = doc.to_date
 
 	attendances = frappe.get_all(
 		"Attendance",
@@ -59,6 +32,18 @@ def generate_recap(docname):
 		},
 		fields=["attendance_date", "in_time", "out_time", "attendance_reason"]
 	)
+
+	working_days = date_diff(end_period, start_period) + 1
+	holidays = get_holidays_for_employee(doc.employee, start_period, end_period)
+	working_days_list = [add_days(getdate(start_period), days=day) for day in range(0, working_days)]
+
+	working_days_list = [i for i in working_days_list if i not in holidays]
+
+	working_days -= len(holidays)
+
+	absent, present = calculate_absent_present(doc.employee, start_period, end_period)
+	doc.total_absent = absent
+	doc.total_present = present
 
 
 	frappe.msgprint(f"Attendance ditemukan: {len(attendances)} record")
@@ -161,6 +146,7 @@ def generate_recap(docname):
 
 	over_tolerance = cumulative > threshold
 
+	doc.total_working_days = working_days
 	doc.total_late_minutes = total_late_minutes
 	doc.late_days = late_days
 	doc.over_tolerance = 1 if over_tolerance else 0
@@ -175,3 +161,40 @@ def generate_recap(docname):
 	doc.save()
 
 	frappe.msgprint(f"Recap for {doc.employee_name} - {doc.month} generated")
+
+
+def get_holidays_for_employee(employee, start_date, end_date):
+	holiday_list = get_holiday_list_for_employee(employee)
+	key = f"{holiday_list}:{start_date}:{end_date}"
+	holiday_dates = frappe.cache().hget(HOLIDAYS_BETWEEN_DATES, key)
+
+	if not holiday_dates:
+		holiday_dates = get_holiday_dates_between(holiday_list, start_date, end_date)
+		frappe.cache().hset(HOLIDAYS_BETWEEN_DATES, key, holiday_dates)
+
+	return holiday_dates
+
+def calculate_absent_present(employee, start_date, end_date):
+	absent = 0
+	present = 0
+
+	attendance_details = frappe.get_all(
+		"Attendance",
+		filters={"employee": employee, "attendance_date": ["between", [start_date, end_date]]},
+		fields=["status", "attendance_reason"]
+	)
+
+	for d in attendance_details:
+		if d.status == "Absent":
+			absent += 1
+
+		elif d.status == "Present":
+			present += 1
+		
+		elif d.status == "On Leave" and d.attendance_reason in ["Sakit dengan Surat Dokter", "Cuti", "Cuti Bersama"]:
+			present += 1
+
+		elif d.status == "On Leave" and d.attendance_reason == "Izin":
+			absent += 1
+
+	return absent, present
