@@ -159,6 +159,7 @@ override_doctype_class = {
 	"Project": "hrms.overrides.employee_project.EmployeeProject",
 	"Leave Application": "hrms.custom.leave_application_custom.CustomLeaveApplication",
 	"Attendance": "hrms.custom.attendance_override.CustomAttendance",
+    "Leave Allocation": "hrms.custom.leave_allocation_mass_leave.CustomLeaveAllocation"
 }
 
 # Document Events

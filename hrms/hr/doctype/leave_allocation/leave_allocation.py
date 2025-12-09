@@ -39,6 +39,7 @@ class ValueMultiplierError(frappe.ValidationError):
 
 class LeaveAllocation(Document):
 	def validate(self):
+		self.validate_mass_leave()
 		self.validate_period()
 		self.validate_allocation_overlap()
 		self.validate_lwp()
@@ -51,6 +52,24 @@ class LeaveAllocation(Document):
 		self.validate_back_dated_allocation()
 		self.validate_total_leaves_allocated()
 		self.validate_leave_allocation_days()
+
+	def validate_mass_leave(self):
+		mass_leave_days = self.get_mass_leave_days()
+		if mass_leave_days > 0:
+			self.total_leaves_allocated = (self.total_leaves_allocated or 0) - mass_leave_days
+
+	def get_mass_leave_days(self):
+		mass_list = frappe.db.get_value("Employee", self.employee, "mass_leave_list")
+		if not mass_list:
+			return 0
+
+		holidays = frappe.get_all(
+			"Holidays",
+			filters={"parent": mass_list},
+			fields=["name"]
+		)
+
+		return len(holidays)
 
 	def validate_leave_allocation_days(self):
 		company = frappe.db.get_value("Employee", self.employee, "company")
