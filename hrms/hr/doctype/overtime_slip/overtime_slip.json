@@ -43,7 +43,6 @@
   {
    "fieldname": "naming_series",
    "fieldtype": "Select",
-   "in_list_view": 1,
    "label": "Series",
    "no_copy": 1,
    "options": "HR-OVT-SLIP-",
@@ -55,7 +54,6 @@
   {
    "fieldname": "employee",
    "fieldtype": "Link",
-   "in_list_view": 1,
    "label": "Employee",
    "options": "Employee",
    "reqd": 1
@@ -107,11 +105,13 @@
   {
    "fieldname": "total_hours",
    "fieldtype": "Float",
+   "in_list_view": 1,
    "label": "Total Hours"
   },
   {
    "fieldname": "total_amount",
    "fieldtype": "Currency",
+   "in_list_view": 1,
    "label": "Total Amount"
   },
   {
@@ -136,7 +136,7 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-11-29 19:44:15.048023",
+ "modified": "2025-12-09 18:24:24.488180",
  "modified_by": "Administrator",
  "module": "HR",
  "name": "Overtime Slip",
@@ -158,7 +158,10 @@
   }
  ],
  "row_format": "Dynamic",
+ "search_fields": "employee,employee_name",
+ "show_title_field_in_link": 1,
  "sort_field": "modified",
  "sort_order": "DESC",
- "states": []
+ "states": [],
+ "title_field": "employee_name"
 }
