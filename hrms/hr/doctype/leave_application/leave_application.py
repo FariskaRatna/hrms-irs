@@ -121,6 +121,7 @@ class LeaveApplication(Document, PWANotificationsMixin):
 
 		if self.approval_status in ["Approved", "Rejected"] and self.docstatus < 1:
 			if frappe.db.get_single_value("HR Settings", "send_leave_notification"):
+				self.notify_leave_approver()
 				self.notify_hrd()
 				self.notify_employee(sender_email=self.get_email_leave_approver())
 

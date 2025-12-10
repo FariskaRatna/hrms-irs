@@ -24,6 +24,7 @@ class BusinessTrip(Document):
 
 		elif self.approval_status in ["Approved", "Rejected"] and self.docstatus < 1:
 			if frappe.db.get_single_value("HR Settings", "send_business_trip_notification"):
+				self.notify_project_manager()
 				self.notify_hrd()
 				self.notify_employee(sender_email=self.get_email_pm())
 
