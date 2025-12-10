@@ -1,4 +1,4 @@
-frappe.listview_settings["Reimbursement"] = {
+frappe.listview_settings["Business Trip Allowance"] = {
     refresh: listview => {
         $('span.level-item.list-liked-by-me.hidden-xs').remove();
         $('span.list-row-like.hidden-xs').remove();
@@ -26,16 +26,30 @@ frappe.listview_settings["Reimbursement"] = {
                 "overflow": "hidden"
             });
 
+            $('.list-row-head .list-row-col').eq(3).css({
+                "flex": "0 0 180px",
+                "max-width": "200px",
+                "white-space": "nowrap",
+            });
+
+            $('.list-row-container .list-row').each(function () {
+                $(this).find('.list-row-col').eq(3).css({
+                    "flex": "0 0 180px",
+                    "max-width": "200px",
+                    "white-space": "nowrap",
+                });
+            });
+
             $('.list-row-head .list-row-col').eq(6).css({
                 "flex": "0 0 180px",
-                "max-width": "180px",
+                "max-width": "200px",
                 "white-space": "nowrap",
             });
 
             $('.list-row-container .list-row').each(function () {
                 $(this).find('.list-row-col').eq(6).css({
                     "flex": "0 0 180px",
-                    "max-width": "180px",
+                    "max-width": "200px",
                     "white-space": "nowrap",
                 });
             });

@@ -32,10 +32,10 @@ frappe.listview_settings["Employee Checkin"] = {
         $('span.comment-count.d-flex.align-items-center').remove();
         $('span.mx-2').remove();
 
-		setTimeout(() => {
-			$('.list-row .level-right').css({
-                "flex": "0 0 80px",
-                "max-width": "80px",
+        setTimeout(() => {
+            $('.list-row .level-right, .list-row-head .level-right').css({
+                flex: "0 0 70px",
+                "max-width": "70px",
                 "padding": "0 4px",
                 "margin": "0",
                 "text-align": "right",
@@ -43,43 +43,54 @@ frappe.listview_settings["Employee Checkin"] = {
                 "overflow": "hidden"
             });
 
-            $('.list-row-head .level-right').css({
-                "flex": "0 0 80px",
-                "max-width": "80px",
-                "padding": "0 4px",
-                "margin": "0",
-                "text-align": "right",
+            $('.list-row-head .list-row-col').eq(2).css({
+                "flex": "0 0 100px",
+                "max-width": "100px",
                 "white-space": "nowrap",
-                "overflow": "hidden"
             });
 
-			$('.list-row-head .list-row-col').eq(2).css({
-				"flex": "0 0 100px",
-				"max-width": "100px",
-				"white-space": "nowrap",
-			});
+            $('.list-row-container .list-row').each(function () {
+                $(this).find('.list-row-col').eq(2).css({
+                    "flex": "0 0 100px",
+                    "max-width": "100px",
+                    "white-space": "nowrap",
+                });
+            });
 
-			$('.list-row-container .list-row').each(function () {
-				$(this).fins('list-row-col').eq(2).css({
-					"flex": "0 0 100px",
-					"max-width": "100px",
-					"white-space": "nowrap",
-				});
-			});
+			$('.list-row-head .list-row-col').eq(3).css({
+                "flex": "0 0 160px",
+                "max-width": "160px",
+                "white-space": "nowrap",
+            });
 
-			$('.list-row-head .list-row-col').eq(5).css({
-				"flex": "0 0 270px",
-				"max-width": "250px",
-				"white-space": "nowrap",
-			});
+            $('.list-row-container .list-row').each(function () {
+                $(this).find('.list-row-col').eq(3).css({
+                    "flex": "0 0 160px",
+                    "max-width": "160px",
+                    "white-space": "nowrap",
+                });
+            });
 
-			$('.list-row-container .list-row').each(function () {
-				$(this).fins('list-row-col').eq(5).css({
-					"flex": "0 0 270px",
-					"max-width": "250px",
-					"white-space": "nowrap",
-				});
-			});
-		}, 0)
+            $('.list-row-head .list-row-col').eq(5).css({
+                "flex": "0 0 230px",
+                "max-width": "230px",
+                "white-space": "nowrap",
+            });
+
+            $('.list-row-container .list-row').each(function () {
+                $(this).find('.list-row-col').eq(5).css({
+                    "flex": "0 0 230px",
+                    "max-width": "230px",
+                    "white-space": "nowrap",
+                });
+            });
+
+            // kalau kolom ID adalah list-subject, paksa juga di sini
+            $('.list-row .list-row-col.list-subject').css({
+                "flex": "0 0 230px",
+                "max-width": "230px",
+                "white-space": "nowrap"
+            });
+        }, 0);
 	}
 };

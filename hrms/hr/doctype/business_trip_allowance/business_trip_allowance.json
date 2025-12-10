@@ -46,7 +46,6 @@
   {
    "fieldname": "naming_series",
    "fieldtype": "Select",
-   "in_list_view": 1,
    "label": "Series",
    "no_copy": 1,
    "options": "HR-BT-ALLOW-",
@@ -58,7 +57,6 @@
   {
    "fieldname": "employee",
    "fieldtype": "Link",
-   "in_list_view": 1,
    "label": "Employee",
    "options": "Employee",
    "reqd": 1
@@ -120,6 +118,7 @@
   {
    "fieldname": "total_days",
    "fieldtype": "Data",
+   "in_list_view": 1,
    "label": "Total Days"
   },
   {
@@ -158,6 +157,7 @@
   {
    "fieldname": "destination",
    "fieldtype": "Select",
+   "in_list_view": 1,
    "label": "Destination",
    "options": "\nJabodetabek\nLuar Kota\nAsia\nJepang\nArab Saudi\nEropa\nAustralia\nUSA\nCanada"
   },
@@ -172,7 +172,7 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-11-23 21:07:37.447008",
+ "modified": "2025-12-10 18:27:06.904249",
  "modified_by": "Administrator",
  "module": "HR",
  "name": "Business Trip Allowance",
@@ -194,7 +194,10 @@
   }
  ],
  "row_format": "Dynamic",
+ "search_fields": "employee,employee_name,destination",
+ "show_title_field_in_link": 1,
  "sort_field": "modified",
  "sort_order": "DESC",
- "states": []
+ "states": [],
+ "title_field": "employee_name"
 }
