@@ -33,6 +33,9 @@ class BusinessTrip(Document):
 			self.notify_employee()
 
 	def on_submit(self):
+		if self.approval_status in ["Open", "Cancelled"]:
+			frappe.throw(_("Only Business Trip Application with status 'Approved' and 'Rejected' can be submitted"))
+			
 		if frappe.db.get_single_value("HR Settings", "send_business_trip_notification"):
 			self.notify_employee()
 			if self.approval_status == "Approved":

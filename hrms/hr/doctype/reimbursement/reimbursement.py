@@ -10,6 +10,9 @@ from hrms.utils import get_employee_email
 
 class Reimbursement(Document):
 	def on_submit(self):
+		if self.approval_status in ['Pending', 'Cancelled']:
+			frappe.throw(_("Only Reimbursement Application with approval status 'Approved' and 'Rejected' can be submitted"))
+			
 		if frappe.db.get_single_value("HR Settings", "send_reimbursement_application_notification"):
 			self.notify_employee()
 			if self.approval_status == "Approved":

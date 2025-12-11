@@ -22,6 +22,9 @@ class LoanApplication(Document):
 				self.notify_employee(sender_email=self.get_email_hrd())
 
 	def on_submit(self):
+		if self.approval_status in ["Pending", "Cancelled"]:
+			frappe.throw(_("Only Loan Application with approval status 'Approved' and 'Cancelled' can be submitted"))
+			
 		if frappe.db.get_single_value("HR Settings", "send_loan_application_notification"):
 			self.notify_employee()
 			if self.approval_status == "Approved":

@@ -47,6 +47,9 @@ class Overtime(Document):
 			self.notify_employee()
 
 	def on_submit(self):
+		if self.approval_status in ["Pending"]:
+			frappe.throw(_("Only Overtime Applicaation with status 'Approved' and 'Rejected' can be submitted"))
+		
 		if frappe.db.get_single_value("HR Settings", "send_overtime_application_notification"):
 			self.notify_employee()
 			if self.approval_status == "Approved":

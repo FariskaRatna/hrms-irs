@@ -32,6 +32,9 @@ class LoanSettlement(Document):
                 self.notify_employee(sender_email=self.get_email_hrd())
 
     def on_submit(self):
+        if self.approval_status in ["Pending"]:
+            frappe.throw(_("Only Loan Settlement with approval status 'Approved' and 'Rejected' can be submitted"))
+
         if frappe.db.get_single_value("HR Settings", "send_loan_settlement_application_notification"):
             self.notify_employee()
             if self.approval_status == "Approved":
