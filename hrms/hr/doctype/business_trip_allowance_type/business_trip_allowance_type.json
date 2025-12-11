@@ -19,6 +19,7 @@
   {
    "fieldname": "destination",
    "fieldtype": "Select",
+   "in_list_view": 1,
    "label": "Destination",
    "options": "\nJabodetabek\nLuar Kota\nAsia\nJepang\nArab Saudi\nEropa\nAustralia\nUSA\nCanada"
   },
@@ -53,6 +54,7 @@
   {
    "fieldname": "day_type",
    "fieldtype": "Select",
+   "in_list_view": 1,
    "label": "Day Type",
    "options": "\nWeekday\nWeekend"
   },
@@ -68,10 +70,11 @@
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-11-21 16:58:30.438229",
+ "modified": "2025-12-11 12:43:04.335383",
  "modified_by": "Administrator",
  "module": "HR",
  "name": "Business Trip Allowance Type",
+ "naming_rule": "By fieldname",
  "owner": "Administrator",
  "permissions": [
   {

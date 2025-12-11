@@ -32,9 +32,9 @@ frappe.listview_settings["Employee Checkin"] = {
         $('span.comment-count.d-flex.align-items-center').remove();
         $('span.mx-2').remove();
 
-        setTimeout(() => {
+        function apply_layout() {
             $('.list-row .level-right, .list-row-head .level-right').css({
-                flex: "0 0 70px",
+                "flex": "0 0 70px",
                 "max-width": "70px",
                 "padding": "0 4px",
                 "margin": "0",
@@ -43,54 +43,23 @@ frappe.listview_settings["Employee Checkin"] = {
                 "overflow": "hidden"
             });
 
-            $('.list-row-head .list-row-col').eq(2).css({
-                "flex": "0 0 100px",
-                "max-width": "100px",
-                "white-space": "nowrap",
-            });
-
-            $('.list-row-container .list-row').each(function () {
-                $(this).find('.list-row-col').eq(2).css({
-                    "flex": "0 0 100px",
-                    "max-width": "100px",
-                    "white-space": "nowrap",
-                });
-            });
-
-			$('.list-row-head .list-row-col').eq(3).css({
-                "flex": "0 0 160px",
-                "max-width": "160px",
-                "white-space": "nowrap",
-            });
-
-            $('.list-row-container .list-row').each(function () {
-                $(this).find('.list-row-col').eq(3).css({
-                    "flex": "0 0 160px",
-                    "max-width": "160px",
-                    "white-space": "nowrap",
-                });
-            });
-
-            $('.list-row-head .list-row-col').eq(5).css({
-                "flex": "0 0 230px",
-                "max-width": "230px",
-                "white-space": "nowrap",
-            });
-
-            $('.list-row-container .list-row').each(function () {
-                $(this).find('.list-row-col').eq(5).css({
-                    "flex": "0 0 230px",
-                    "max-width": "230px",
-                    "white-space": "nowrap",
-                });
-            });
-
-            // kalau kolom ID adalah list-subject, paksa juga di sini
-            $('.list-row .list-row-col.list-subject').css({
-                "flex": "0 0 230px",
-                "max-width": "230px",
+            $('.list-row-col[data-fieldname="name"]').css({
+                "flex": "0 0 260px",     
+                "max-width": "260px",
                 "white-space": "nowrap"
             });
-        }, 0);
+
+            $('.list-row-col.list-subject').css({
+                "flex": "0 0 260px",
+                "max-width": "260px",
+                "white-space": "nowrap"
+            });
+        }
+
+        if (listview.on_rendered) {
+            listview.on_rendered = apply_layout;
+        } else {
+            setTimeout(apply_layout, 50);
+        }
 	}
 };
