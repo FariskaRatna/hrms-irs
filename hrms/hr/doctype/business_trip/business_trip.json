@@ -130,7 +130,6 @@
   {
    "fieldname": "destination",
    "fieldtype": "Select",
-   "in_list_view": 1,
    "label": "Destination",
    "options": "\nJabodetabek\nLuar Kota\nAsia\nJepang\nArab Saudi\nEropa\nAustralia\nUSA\nCanada",
    "reqd": 1
@@ -185,7 +184,7 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-12-02 09:31:25.582545",
+ "modified": "2025-12-11 09:44:31.531544",
  "modified_by": "Administrator",
  "module": "HR",
  "name": "Business Trip",

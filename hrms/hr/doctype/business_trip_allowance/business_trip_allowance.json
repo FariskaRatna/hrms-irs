@@ -118,7 +118,6 @@
   {
    "fieldname": "total_days",
    "fieldtype": "Data",
-   "in_list_view": 1,
    "label": "Total Days"
   },
   {
@@ -172,7 +171,7 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-12-10 18:27:06.904249",
+ "modified": "2025-12-11 09:53:02.700208",
  "modified_by": "Administrator",
  "module": "HR",
  "name": "Business Trip Allowance",

@@ -5,14 +5,14 @@ frappe.listview_settings["Business Trip Allowance"] = {
         $('span.comment-count.d-flex.align-items-center').remove();
         $('span.mx-2').remove();
 
-        setTimeout(() => {
+        function apply_layout() {
             $('.list-row .level-right').css({
                 "flex": "0 0 70px",
                 "max-width": "70px",
                 "padding": "0 4px",
                 "margin": "0",
                 "text-align": "right",
-                "white-space": "nowrap",
+                "white-space":"nowrap",
                 "overflow": "hidden"
             });
 
@@ -26,33 +26,36 @@ frappe.listview_settings["Business Trip Allowance"] = {
                 "overflow": "hidden"
             });
 
-            $('.list-row-head .list-row-col').eq(3).css({
-                "flex": "0 0 180px",
-                "max-width": "200px",
-                "white-space": "nowrap",
+            $('.list-row-col[data-fieldname="docstatus"]').css({
+                "flex": "0 0 140px",
+                "max-width": "140px",
+                "white-space": "nowrap"
             });
 
-            $('.list-row-container .list-row').each(function () {
-                $(this).find('.list-row-col').eq(3).css({
-                    "flex": "0 0 180px",
-                    "max-width": "200px",
-                    "white-space": "nowrap",
-                });
+             $('.list-row-col[data-fieldname="business-trip"]').css({
+                "flex": "0 0 260px",
+                "max-width": "260px",
+                "white-space": "nowrap"
             });
 
-            $('.list-row-head .list-row-col').eq(6).css({
-                "flex": "0 0 180px",
-                "max-width": "200px",
-                "white-space": "nowrap",
+            $('.list-row-col[data-fieldname="name"]').css({
+                "flex": "0 0 280px",
+                "max-width": "280px",
+                "white-space": "nowrap"
             });
 
-            $('.list-row-container .list-row').each(function () {
-                $(this).find('.list-row-col').eq(6).css({
-                    "flex": "0 0 180px",
-                    "max-width": "200px",
-                    "white-space": "nowrap",
-                });
+            $('.list-row-col.list-subject').css({
+                "flex": "0 0 280px",
+                "max-width": "280px",
+                "white-space": "nowrap"
             });
-        }, 0)
+        }
+
+        if (listview.on_rendered) {
+            listview.on_rendered = apply_layout;
+        } else {
+            setTimeout(apply_layout, 50);
+        }
+
     }
 }
