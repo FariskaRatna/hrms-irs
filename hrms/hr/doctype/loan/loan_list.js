@@ -1,4 +1,39 @@
 frappe.listview_settings["Loan"] = {
+    add_fields: ["repayment_status", "docstatus"],
+    has_indicator_for_draft: 1,
+
+    get_indicator: function (doc) {
+        if (doc.docstatus === 0) {
+            return [__("Draft"), "yellow", "docstatus,=,0"];
+        }
+        if (doc.docstatus === 1) {
+            return [__("Submitted"), "blue", "docstatus,=,1"];
+        }
+        if (doc.docstatus === 2) {
+            return [__("Cancelled"), "red", "docstatus,=,2"];
+        }
+        
+    },
+
+    formatters: {
+        repayment_status: function (value, df, options, doc) {
+            if (!value) return "";
+
+            var color = "gray";
+            if (value === "Unpaid") {
+                color = "orange";
+            } else if (value === "Paid") {
+                color = "green";
+            }
+
+            return (
+                '<span class="indicator-pill whitespace-nowrap ' + color + '">' +
+                    '<span class="hidden-xs">' + frappe.utils.escape_html(__(value)) + "</span>" +
+                "</span>"
+            );
+        }
+    },
+
     refresh: listview => {
         $('span.level-item.list-liked-by-me.hidden-xs').remove();
         $('span.list-row-like.hidden-xs').remove();

@@ -1,4 +1,22 @@
 frappe.listview_settings["Business Trip Allowance"] = {
+    add_fields: [
+        "business_trip",
+        "destination"
+    ],
+    has_indicator_for_draft: 1,
+    get_indicator: function (doc) {
+        const status_color = {
+            "Approved": "green",
+            "Rejected": "red",
+            "Draft": "yellow",
+            "Cancelled": "red",
+            "Submitted": "blue"
+        };
+        const status =
+            !doc.docstatus && ["Approved", "Rejected"].includes(doc.status) ? "Draft" : doc.status;
+        return [__(status), status_color[status], "status,=," + doc.status];
+    },
+
     refresh: listview => {
         $('span.level-item.list-liked-by-me.hidden-xs').remove();
         $('span.list-row-like.hidden-xs').remove();
