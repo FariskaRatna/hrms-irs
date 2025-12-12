@@ -231,3 +231,16 @@ class Overtime(Document):
 			frappe.msgprint(_("Email sent to {0}").format(contact))
 		except frappe.OngoingEmailError:
 			pass
+
+@frappe.whitelist()
+def get_pm_user(employee):
+	pm_user, department = frappe.db.get_value("Employee", employee, ["project_manager", "department"])
+
+	if not pm_user and department:
+		pm_user = frappe.db.get_value(
+			"Department Approver",
+			{"parent": department, "parentfield": "leave_approvers", "idx": 1},
+			"approver",
+		)
+
+	return pm_user

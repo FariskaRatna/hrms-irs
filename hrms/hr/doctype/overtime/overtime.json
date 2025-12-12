@@ -20,9 +20,9 @@
   "start_time",
   "end_time",
   "total_hours",
-  "description",
-  "column_break_xyeq",
   "reason",
+  "column_break_xyeq",
+  "description",
   "result",
   "photo",
   "amended_from",
@@ -40,9 +40,10 @@
   {
    "fieldname": "employee",
    "fieldtype": "Link",
+   "in_global_search": 1,
+   "in_standard_filter": 1,
    "label": "Employee",
    "options": "Employee",
-   "read_only": 1,
    "reqd": 1
   },
   {
@@ -203,7 +204,7 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-12-10 16:59:25.373776",
+ "modified": "2025-12-12 17:31:06.719124",
  "modified_by": "Administrator",
  "module": "HR",
  "name": "Overtime",
