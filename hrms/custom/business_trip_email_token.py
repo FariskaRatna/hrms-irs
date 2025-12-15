@@ -1,7 +1,7 @@
 import frappe
 from frappe.utils import now_datetime, add_to_date, get_url
 
-def _make_token(bt_name: str, action: str, approver_user: str, hours_valid: int = 48) -> str:
+def _make_token(bt_name: str, action: str, approver_user: str, hours_valid: int = 72) -> str:
     token = frappe.generate_hash(length=40)
 
     doc =  frappe.get_doc({

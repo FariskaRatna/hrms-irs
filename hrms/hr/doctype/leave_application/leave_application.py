@@ -20,6 +20,7 @@ from frappe.utils import (
 	nowdate,
 )
 from datetime import timedelta, date
+from hrms.custom.email_token.leave_application_email_token import build_action_url
 
 from erpnext.buying.doctype.supplier_scorecard.supplier_scorecard import daterange
 from erpnext.setup.doctype.employee.employee import get_holiday_list_for_employee
@@ -121,9 +122,13 @@ class LeaveApplication(Document, PWANotificationsMixin):
 
 		if self.approval_status in ["Approved", "Rejected"] and self.docstatus < 1:
 			if frappe.db.get_single_value("HR Settings", "send_leave_notification"):
-				self.notify_leave_approver()
-				self.notify_hrd()
-				self.notify_employee(sender_email=self.get_email_leave_approver())
+				if getattr(self.flags, "from_email_action", False):
+					self.notify_hrd()
+					self.notify_employee(sender_email=self.get_email_leave_approver())
+				else:
+					self.notify_leave_approver()
+					self.notify_hrd()
+					self.notify_employee(sender_email=self.get_email_leave_approver())
 
 		if self.approval_status in ["Rejected", "Cancelled"] and self.leave_category == "Dinas":
 			self.delete_employee_checkins()
@@ -708,40 +713,57 @@ class LeaveApplication(Document, PWANotificationsMixin):
 		)
 
 	def notify_leave_approver(self):
-		if self.leave_approver:
-			parent_doc = frappe.get_doc("Leave Application", self.name)
-			args = parent_doc.as_dict()
+		if not self.leave_approver:
+			return
+		
+		parent_doc = frappe.get_doc("Leave Application", self.name)
+		approver_user = self.leave_approver or parent_doc.owner
 
-			frappe.get_doc({
-				"doctype": "Notification Log",
-				"subject": f"Leave Application Request from {self.employee_name}",
-				"email_content": f"Employee {self.employee_name} has submitted an leave application request.",
-				"for_user": self.leave_approver,
-				"type": "Alert",
-				"document_type": "Leave Application",
-				"document_name": self.name
-			}).insert(ignore_permissions=True)
+		args = parent_doc.as_dict()
 
-			template = frappe.db.get_single_value("HR Settings", "leave_approval_notification_template")
-			if not template:
-				frappe.msgprint(
-					_("Please set default template for Leave Approval Notification in HR Settings.")
-				)
-				return
-			email_template = frappe.get_doc("Email Template", template)
-			subject = frappe.render_template(email_template.subject, args)
-			message = frappe.render_template(email_template.response_, args)
+		args.update({
+			"approve_url": build_action_url(
+				parent_doc.name,
+				"Approved",
+				approver_user
+			),
+			"reject_url": build_action_url(
+				parent_doc.name,
+				"Rejected",
+				approver_user
+			),
+		})
 
-			self.notify(
-				{
-					# for post in messages
-					"message": message,
-					"message_to": self.leave_approver,
-					# for email
-					"subject": subject,
-					"sender_email": self.get_requester()
-				}
+		frappe.get_doc({
+			"doctype": "Notification Log",
+			"subject": f"Leave Application Request from {self.employee_name}",
+			"email_content": f"Employee {self.employee_name} has submitted an leave application request.",
+			"for_user": self.leave_approver,
+			"type": "Alert",
+			"document_type": "Leave Application",
+			"document_name": self.name
+		}).insert(ignore_permissions=True)
+
+		template = frappe.db.get_single_value("HR Settings", "leave_approval_notification_template")
+		if not template:
+			frappe.msgprint(
+				_("Please set default template for Leave Approval Notification in HR Settings.")
 			)
+			return
+		email_template = frappe.get_doc("Email Template", template)
+		subject = frappe.render_template(email_template.subject, args)
+		message = frappe.render_template(email_template.response_, args)
+
+		self.notify(
+			{
+				# for post in messages
+				"message": message,
+				"message_to": self.leave_approver,
+				# for email
+				"subject": subject,
+				"sender_email": self.get_requester()
+			}
+		)
 
 	def notify_hrd(self):
 		if self.hrd_user:

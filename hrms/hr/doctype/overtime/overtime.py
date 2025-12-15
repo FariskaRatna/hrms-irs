@@ -7,6 +7,7 @@ from datetime import datetime
 from frappe import _
 from frappe.utils import get_fullname
 from hrms.utils import get_employee_email
+from hrms.custom.email_token.overtime_email_token import build_action_url
 
 
 class Overtime(Document):
@@ -37,9 +38,13 @@ class Overtime(Document):
 
 		if self.approval_status in ["Approved", "Rejected"] and self.docstatus < 1:
 			if frappe.db.get_single_value("HR Settings", "send_overtime_application_notification"):
-				self.notify_assigned_by()
-				self.notify_project_manager()
-				self.notify_employee(sender_email=self.get_email_assigned_by())
+				if getattr(self.flags, "from_email_action", False):
+					self.notify_project_manager()
+					self.notify_employee(sender_email=self.get_email_assigned_by())
+				else:
+					self.notify_assigned_by()
+					self.notify_project_manager()
+					self.notify_employee(sender_email=self.get_email_assigned_by())
 
 
 	def on_cancel(self):
@@ -140,36 +145,53 @@ class Overtime(Document):
 			)
 
 	def notify_assigned_by(self):
-		if self.assigned_by:
-			parent_doc = frappe.get_doc("Overtime", self.name)
-			args = parent_doc.as_dict()
+		if not self.assigned_by:
+			return
+		
+		parent_doc = frappe.get_doc("Overtime", self.name)
+		approver_user = self.assigned_by or parent_doc.owner
 
-			frappe.get_doc({
-				"doctype": "Notification Log",
-				"subject": f"Overtime Request from {self.employee_name}",
-				"email_content": f"Employee {self.employee_name} has submitted an overtime request.",
-				"for_user": self.assigned_by,
-				"type": "Alert",
-				"document_type": "Overtime",
-				"document_name": self.name
-			}).insert(ignore_permissions=True)
+		args = parent_doc.as_dict()
 
-			template = frappe.db.get_single_value("HR Settings", "overtime_request_notification_template")
-			if not template:
-				frappe.msgprint(_("Please set default template for Overtime Request Notification in HR Settings."))
-				return
-			email_template = frappe.get_doc("Email Template", template)
-			subject = frappe.render_template(email_template.subject, args)
-			message = frappe.render_template(email_template.response_, args)
+		args.update({
+			"approve_url": build_action_url(
+				parent_doc.name,
+				"Approved",
+				approver_user
+			),
+			"reject_url": build_action_url(
+				parent_doc.name,
+				"Rejected",
+				approver_user
+			),
+		})
 
-			self.notify(
-				{
-					"message": message,
-					"message_to": self.assigned_by,
-					"subject": subject,
-					"sender_email": self.get_requester()
-				}
-			)
+		frappe.get_doc({
+			"doctype": "Notification Log",
+			"subject": f"Overtime Request from {self.employee_name}",
+			"email_content": f"Employee {self.employee_name} has submitted an overtime request.",
+			"for_user": self.assigned_by,
+			"type": "Alert",
+			"document_type": "Overtime",
+			"document_name": self.name
+		}).insert(ignore_permissions=True)
+
+		template = frappe.db.get_single_value("HR Settings", "overtime_request_notification_template")
+		if not template:
+			frappe.msgprint(_("Please set default template for Overtime Request Notification in HR Settings."))
+			return
+		email_template = frappe.get_doc("Email Template", template)
+		subject = frappe.render_template(email_template.subject, args)
+		message = frappe.render_template(email_template.response_, args)
+
+		self.notify(
+			{
+				"message": message,
+				"message_to": self.assigned_by,
+				"subject": subject,
+				"sender_email": self.get_requester()
+			}
+		)
 
 	def notify_employee(self, sender_email=None):
 		employee_email = get_employee_email(self.employee)
