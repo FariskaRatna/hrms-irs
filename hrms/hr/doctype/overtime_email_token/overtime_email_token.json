@@ -1,0 +1,102 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2025-12-15 15:33:48.803657",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "token",
+  "reference_doctype",
+  "reference_name",
+  "action",
+  "column_break_vcjc",
+  "approver_user",
+  "expires_on",
+  "used",
+  "used_on"
+ ],
+ "fields": [
+  {
+   "fieldname": "token",
+   "fieldtype": "Data",
+   "label": "Token",
+   "read_only": 1,
+   "unique": 1
+  },
+  {
+   "fieldname": "reference_doctype",
+   "fieldtype": "Data",
+   "label": "Reference Doctype",
+   "options": "Overtime",
+   "read_only": 1
+  },
+  {
+   "fieldname": "reference_name",
+   "fieldtype": "Data",
+   "label": "Reference Name",
+   "read_only": 1
+  },
+  {
+   "fieldname": "action",
+   "fieldtype": "Select",
+   "label": "Action",
+   "options": "Approved\nRejected",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_vcjc",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "approver_user",
+   "fieldtype": "Link",
+   "label": "Approver User",
+   "options": "User",
+   "read_only": 1
+  },
+  {
+   "fieldname": "expires_on",
+   "fieldtype": "Datetime",
+   "label": "Expires On",
+   "read_only": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "used",
+   "fieldtype": "Check",
+   "label": "Used",
+   "read_only": 1
+  },
+  {
+   "depends_on": "eval: doc.used==1",
+   "fieldname": "used_on",
+   "fieldtype": "Datetime",
+   "label": "Used On",
+   "read_only": 1
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2025-12-15 15:39:07.714376",
+ "modified_by": "Administrator",
+ "module": "HR",
+ "name": "Overtime Email Token",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}
