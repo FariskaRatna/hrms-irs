@@ -6,6 +6,7 @@ from frappe.model.document import Document
 from frappe.utils import getdate, get_fullname
 from hrms.utils import get_employee_email
 from frappe import _
+from hrms.custom.business_trip_email_token import build_action_url
 
 
 class BusinessTrip(Document):
@@ -18,12 +19,18 @@ class BusinessTrip(Document):
 			self.total_days = days_accumulation
 
 	def on_update(self):
+		if not frappe.db.get_single_value("HR Settings", "send_business_trip_notification"):
+			return
+		
 		if self.approval_status == "Open" and self.docstatus < 1:
-			if frappe.db.get_single_value("HR Settings", "send_business_trip_notification"):
-				self.notify_project_manager()
+			self.notify_project_manager()
+			return
 
-		elif self.approval_status in ["Approved", "Rejected"] and self.docstatus < 1:
-			if frappe.db.get_single_value("HR Settings", "send_business_trip_notification"):
+		if self.approval_status in ["Approved", "Rejected"] and self.docstatus < 1:
+			if getattr(self.flags, "from_email_action", False):
+				self.notify_hrd()
+				self.notify_employee(sender_email=self.get_email_pm())
+			else:
 				self.notify_project_manager()
 				self.notify_hrd()
 				self.notify_employee(sender_email=self.get_email_pm())
@@ -77,36 +84,53 @@ class BusinessTrip(Document):
 		return None
 
 	def notify_project_manager(self):
-		if self.pm_user:
-			parent_doc = frappe.get_doc("Business Trip", self.name)
-			args = parent_doc.as_dict()
+		if not self.pm_user:
+			return
+		
+		parent_doc = frappe.get_doc("Business Trip", self.name)
+		approver_user = self.pm_user or parent_doc.owner
 
-			frappe.get_doc({
-				"doctype": "Notification Log",
-				"subject": f"Business Trip Request from {self.employee_name} Requires Your Approval",
-				"email_content": f"Employee {self.employee_name} has submitted an business trip request.",
-				"for_user": self.pm_user,
-				"type": "Alert",
-				"document_type": "Business Trip",
-				"document_name": self.name
-			}).insert(ignore_permissions=True)
+		args = parent_doc.as_dict()
 
-			template = frappe.db.get_single_value("HR Settings", "business_trip_application_notification_template")
-			if not template:
-				frappe.msgprint(_("Please set default template for Business Trip Application in HR Settings."))
-				return
-			email_template = frappe.get_doc("Email Template", template)
-			subject = frappe.render_template(email_template.subject, args)
-			message = frappe.render_template(email_template.response_, args)
+		args.update({
+			"approve_url": build_action_url(
+				parent_doc.name,
+				"Approved",
+				approver_user
+			),
+			"reject_url": build_action_url(
+				parent_doc.name,
+				"Rejected",
+				approver_user
+			),
+		})
 
-			self.notify(
-				{
-					"message": message,
-					"message_to": self.pm_user,
-					"subject": subject,
-					"sender_email": self.get_requester(),
-				}
-			)
+		frappe.get_doc({
+			"doctype": "Notification Log",
+			"subject": f"Business Trip Request from {self.employee_name} Requires Your Approval",
+			"email_content": f"Employee {self.employee_name} has submitted an business trip request.",
+			"for_user": self.pm_user,
+			"type": "Alert",
+			"document_type": "Business Trip",
+			"document_name": self.name
+		}).insert(ignore_permissions=True)
+
+		template = frappe.db.get_single_value("HR Settings", "business_trip_application_notification_template")
+		if not template:
+			frappe.msgprint(_("Please set default template for Business Trip Application in HR Settings."))
+			return
+		email_template = frappe.get_doc("Email Template", template)
+		subject = frappe.render_template(email_template.subject, args)
+		message = frappe.render_template(email_template.response_, args)
+
+		self.notify(
+			{
+				"message": message,
+				"message_to": self.pm_user,
+				"subject": subject,
+				"sender_email": self.get_requester(),
+			}
+		)
 
 	def notify(self, args):
 		args = frappe._dict(args)
