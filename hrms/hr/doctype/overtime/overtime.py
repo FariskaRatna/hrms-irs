@@ -32,19 +32,20 @@ class Overtime(Document):
 			self.total_hours = round(total_hour, 2)
 
 	def on_update(self):
+		if not frappe.db.get_single_value("HR Settings", "send_overtime_application_notification"):
+			return
 		if self.approval_status == "Pending" and self.docstatus < 1:
-			if frappe.db.get_single_value("HR Settings", "send_overtime_application_notification"):
-				self.notify_assigned_by()
+			self.notify_assigned_by()
+			return
 
 		if self.approval_status in ["Approved", "Rejected"] and self.docstatus < 1:
-			if frappe.db.get_single_value("HR Settings", "send_overtime_application_notification"):
-				if getattr(self.flags, "from_email_action", False):
-					self.notify_project_manager()
-					self.notify_employee(sender_email=self.get_email_assigned_by())
-				else:
-					self.notify_assigned_by()
-					self.notify_project_manager()
-					self.notify_employee(sender_email=self.get_email_assigned_by())
+			if getattr(self.flags, "from_email_action", False):
+				self.notify_project_manager()
+				self.notify_employee(sender_email=self.get_email_assigned_by())
+			else:
+				self.notify_assigned_by()
+				self.notify_project_manager()
+				self.notify_employee(sender_email=self.get_email_assigned_by())
 
 
 	def on_cancel(self):
