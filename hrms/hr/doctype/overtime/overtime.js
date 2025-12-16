@@ -21,6 +21,20 @@ frappe.ui.form.on("Overtime", {
         frm.trigger("set_pm_user");
     },
 
+    assigned_by: function (frm) {
+        if (frm.doc.assigned_by) {
+            frappe.db.get_value(
+                "User",
+                frm.doc.assigned_by,
+                "full_name"
+            ).then(r => {
+                if (r && r.message && r.message.full_name) {
+                    frm.set_value("assigned_by_name", r.message.full_name);
+                }
+            });
+        }
+    },
+
     refresh(frm) {
         frm.trigger("toggle_employee_read_only")
 
@@ -51,9 +65,7 @@ frappe.ui.form.on("Overtime", {
     validate(frm) {
         if (!frm.doc.assigned_by || !frm.doc.employee) return;
 
-        const current_user = frappe.session.user;
-
-        if (frm.doc.assigned_by === current_user) {
+        if (frm.doc.assigned_by === frm.doc.owner) {
             frappe.msgprint({
                 title: __("Invalid Assignment"),
                 message: __("You cannot assign overtime to yourself."),

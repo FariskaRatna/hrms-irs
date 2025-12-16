@@ -184,13 +184,15 @@ class Overtime(Document):
 		email_template = frappe.get_doc("Email Template", template)
 		subject = frappe.render_template(email_template.subject, args)
 		message = frappe.render_template(email_template.response_, args)
+		attachments = get_doc_attachments("Overtime", self.name)
 
 		self.notify(
 			{
 				"message": message,
 				"message_to": self.assigned_by,
 				"subject": subject,
-				"sender_email": self.get_requester()
+				"sender_email": self.get_requester(),
+				"attachments": attachments,
 			}
 		)
 
@@ -233,6 +235,8 @@ class Overtime(Document):
 			}
 		)
 	
+	
+
 	def notify(self, args):
 		args = frappe._dict(args)
 		contact = args.message_to
@@ -244,12 +248,15 @@ class Overtime(Document):
 		if not sender_email:
 			sender_email = frappe.get_doc("User", frappe.session.user).email
 
+		attachments = args.get("attachments") or []
 		try:
+
 			frappe.sendmail(
 				recipients=contact,
 				sender=sender_email,
 				subject=args.subject,
 				message=args.message,
+				attachments=attachments,
 			)
 			frappe.msgprint(_("Email sent to {0}").format(contact))
 		except frappe.OngoingEmailError:
@@ -267,3 +274,26 @@ def get_pm_user(employee):
 		)
 
 	return pm_user
+
+def get_doc_attachments(doctype: str, name: str):
+	files = frappe.get_all(
+		"File",
+		filters={
+			"attached_to_doctype": doctype,
+			"attached_to_name": name,
+			"is_folder": 0,
+		},
+		fields=["file_name", "file_url"],
+		order_by="creation asc"
+	)
+
+	attachments = []
+	for f in files:
+		if not f.get("file_url"):
+			continue
+		attachments.append({
+			"file_url": f["file_url"],
+			"fname": f.get("file_name") or "attachment"
+		})
+	
+	return attachments
