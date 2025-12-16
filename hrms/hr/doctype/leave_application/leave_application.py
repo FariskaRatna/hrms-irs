@@ -753,6 +753,7 @@ class LeaveApplication(Document, PWANotificationsMixin):
 		email_template = frappe.get_doc("Email Template", template)
 		subject = frappe.render_template(email_template.subject, args)
 		message = frappe.render_template(email_template.response_, args)
+		attachments = get_doc_attachments("Leave Application", self.name)
 
 		self.notify(
 			{
@@ -761,7 +762,8 @@ class LeaveApplication(Document, PWANotificationsMixin):
 				"message_to": self.leave_approver,
 				# for email
 				"subject": subject,
-				"sender_email": self.get_requester()
+				"sender_email": self.get_requester(),
+				"attachments": attachments,
 			}
 		)
 
@@ -814,12 +816,14 @@ class LeaveApplication(Document, PWANotificationsMixin):
 			if not sender_email:
 				sender_email = frappe.get_doc("User", frappe.session.user).email
 
+			attachments = args.get("attachments") or []
 			try:
 				frappe.sendmail(
 					recipients=contact,
 					sender=sender_email,
 					subject=args.subject,
 					message=args.message,
+					attachments=attachments,
 				)
 				frappe.msgprint(_("Email sent to {0}").format(contact))
 			except frappe.OutgoingEmailError:
@@ -1757,3 +1761,26 @@ def has_permission(doc, ptype, user):
 			return ptype == "read"
 
 	return True
+
+def get_doc_attachments(doctype: str, name: str):
+	files = frappe.get_all(
+		"File",
+		filters={
+			"attached_to_doctype": doctype,
+			"attached_to_name": name,
+			"is_folder": 0,
+		},
+		fields=["file_name", "file_url"],
+		order_by="creation asc"
+	)
+
+	attachments = []
+	for f in files:
+		if not f.get("file_url"):
+			continue
+		attachments.append({
+			"file_url": f["file_url"],
+			"fname": f.get("file_name") or "attachment"
+		})
+	
+	return attachments

@@ -6,6 +6,7 @@ from frappe.model.document import Document
 from frappe.utils import nowdate, getdate
 from frappe import _
 from hrms.utils import get_employee_email
+from hrms.custom.email_token.reimbursement_email_token import build_action_url_reimburse
 
 
 class Reimbursement(Document):
@@ -26,7 +27,10 @@ class Reimbursement(Document):
 
 		if self.approval_status in ["Approved", "Rejected"] and self.docstatus < 1:
 			if frappe.db.get_single_value("HR Settings", "send_reimbursement_application_notification"):
-				self.notify_employee(sender_email=self.get_email_hrd())
+				if getattr(self.flags, "from_email_action", False):
+					self.notify_employee(sender_email=self.get_email_hrd())
+				else:
+					self.notify_employee(sender_email=self.get_email_hrd())
 
 	def on_cancel(self):
 		if frappe.db.get_single_value("HR Settings", "send_reimbursement_application_notification"):
@@ -67,36 +71,54 @@ class Reimbursement(Document):
 		return None
 
 	def notify_hrd(self):
-		if self.hrd_user:
-			parent_doc = frappe.get_doc("Reimbursement", self.name)
-			args = parent_doc.as_dict()
+		if not self.hrd_user:
+			return 
+		
+		parent_doc = frappe.get_doc("Reimbursement", self.name)
+		approver_user = self.hrd_user or parent_doc.owner
+		args = parent_doc.as_dict()
 
-			frappe.get_doc({
-				"doctype": "Notification Log",
-				"subject": f"Reimbursement Request {self.employee_name} Requires Your Approval",
-				"email_content": f"Employee {self.employee_name} submitted reimbursement application and requires your approval.",
-				"for_user": self.hrd_user,
-				"type": "Alert",
-				"document_type": "Reimbursement",
-				"document_name": self.name
-			}).insert(ignore_permissions=True)
+		args.update({
+			"approve_url": build_action_url_reimburse(
+				parent_doc.name,
+				"Approved",
+				approver_user
+			),
+			"reject_url": build_action_url_reimburse(
+				parent_doc.name,
+				"Rejected",
+				approver_user
+			),
+		})
 
-			template = frappe.db.get_single_value("HR Settings", "reimbursement_request_notification_template")
-			if not template:
-				frappe.msgprint(_("Please set default template for Reimbursement Request Notification in HR Settings."))
-				return
-			email_template = frappe.get_doc("Email Template", template)
-			subject = frappe.render_template(email_template.subject, args)
-			message = frappe.render_template(email_template.response_, args)
+		frappe.get_doc({
+			"doctype": "Notification Log",
+			"subject": f"Reimbursement Request {self.employee_name} Requires Your Approval",
+			"email_content": f"Employee {self.employee_name} submitted reimbursement application and requires your approval.",
+			"for_user": self.hrd_user,
+			"type": "Alert",
+			"document_type": "Reimbursement",
+			"document_name": self.name
+		}).insert(ignore_permissions=True)
 
-			self.notify(
-				{
-					"message": message,
-					"message_to": self.hrd_user,
-					"subject": subject,
-					"sender_email": self.get_requester()
-				}
-			)
+		template = frappe.db.get_single_value("HR Settings", "reimbursement_request_notification_template")
+		if not template:
+			frappe.msgprint(_("Please set default template for Reimbursement Request Notification in HR Settings."))
+			return
+		email_template = frappe.get_doc("Email Template", template)
+		subject = frappe.render_template(email_template.subject, args)
+		message = frappe.render_template(email_template.response_, args)
+		attachments = get_doc_attachments("Reimbursement", self.name)
+
+		self.notify(
+			{
+				"message": message,
+				"message_to": self.hrd_user,
+				"subject": subject,
+				"sender_email": self.get_requester(),
+				"atatchments": attachments,
+			}
+		)
 
 
 	def notify_employee(self, sender_email=None):
@@ -149,13 +171,40 @@ class Reimbursement(Document):
 		if not sender_email:
 			sender_email = frappe.get_doc("User", frappe.session.user).email
 
+		attachments = args.get("attachments") or []
+
 		try:
 			frappe.sendmail(
 				recipients=contact,
 				sender=sender_email,
 				subject=args.subject,
 				message=args.message,
+				attachments=attachments,
 			)
 			frappe.msgprint(_("Email sent to {0}").format(contact))
 		except frappe.OngoingEmailError:
 			pass
+
+
+def get_doc_attachments(doctype: str, name: str):
+	files = frappe.get_all(
+		"File",
+		filters={
+			"attached_to_doctype": doctype,
+			"attached_to_name": name,
+			"is_folder": 0,
+		},
+		fields=["file_name", "file_url"],
+		order_by="creation asc"
+	)
+
+	attachments = []
+	for f in files:
+		if not f.get("file_url"):
+			continue
+		attachments.append({
+			"file_url": f["file_url"],
+			"fname": f.get("file_name") or "attachment"
+		})
+	
+	return attachments
