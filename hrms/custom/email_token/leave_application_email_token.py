@@ -52,18 +52,29 @@ def act(name: str, token: str):
         frappe.throw("This link has expired.", frappe.PermissionError)
 
     action = t.get("action")
-    if action not in ("Approved", "Rejected"):
+    if action not in ("Approved", "Rejected", "Submit"):
         frappe.throw("Invalid action.", frappe.PermissionError)
 
-    bt = frappe.get_doc("Business Trip", name)
+    bt = frappe.get_doc("Leave Application", name)
+
+    if bt.docstatus != 0:
+        frappe.throw(f"Document is not in Draft", frappe.PermissionError)
 
     current = (bt.get("approval_status") or "").strip()
-    if current in ("Approved", "Rejected"):
-        frappe.throw(f"Leave Application is already {current}.", frappe.PermissionError)
 
-    bt.flags.from_email_action = True
-    bt.approval_status = action
-    bt.save(ignore_permissions=True)
+    if action == "Submit":
+        bt.flags.from_email_action = True
+        bt.flags.ignore_permissions = True
+        bt.submit()
+    elif action in ("Approved", "Rejected"):
+        if current in ("Approved", "Rejected"):
+            frappe.throw(f"Leave Application is already {current}", frappe.PermissionError)
+
+        bt.flags.from_email_action = True
+        bt.approval_status = action
+        bt.save(ignore_permissions=True)
+    else:
+        frappe.throw("Invalid Link", frappe.PermissionError)
 
     frappe.db.sql(
         """

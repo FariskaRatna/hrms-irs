@@ -142,7 +142,8 @@ class LeaveApplication(Document, PWANotificationsMixin):
 
 		# notify leave applier about approval
 		if frappe.db.get_single_value("HR Settings", "send_leave_notification"):
-			self.notify_employee()
+			if getattr(self.flags, "from_email_action", False):
+				self.notify_employee()
 
 		self.create_leave_ledger_entry()
 		self.reload()
@@ -770,7 +771,10 @@ class LeaveApplication(Document, PWANotificationsMixin):
 	def notify_hrd(self):
 		if self.hrd_user:
 			parent_doc = frappe.get_doc("Leave Application", self.name)
+			hrd_user = self.hrd_user or parent_doc.owner
 			args = parent_doc.as_dict()
+
+			args["submit_url"] = build_action_url(parent_doc.name, "Submit", hrd_user)
 
 			frappe.get_doc({
 				"doctype": "Notification Log",

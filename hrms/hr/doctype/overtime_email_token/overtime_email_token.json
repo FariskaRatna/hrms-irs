@@ -40,7 +40,7 @@
    "fieldname": "action",
    "fieldtype": "Select",
    "label": "Action",
-   "options": "Approved\nRejected",
+   "options": "Approved\nRejected\nSubmit",
    "read_only": 1
   },
   {
@@ -78,7 +78,7 @@
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-12-15 15:39:07.714376",
+ "modified": "2025-12-16 17:03:23.382080",
  "modified_by": "Administrator",
  "module": "HR",
  "name": "Overtime Email Token",

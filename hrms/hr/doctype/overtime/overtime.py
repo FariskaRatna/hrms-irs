@@ -57,10 +57,12 @@ class Overtime(Document):
 			frappe.throw(_("Only Overtime Applicaation with status 'Approved' and 'Rejected' can be submitted"))
 		
 		if frappe.db.get_single_value("HR Settings", "send_overtime_application_notification"):
-			self.notify_employee()
-			if self.approval_status == "Approved":
-				self.create_overtime_calculation()
-				# self.create_overtime_summary()
+			if getattr(self.flags, "from_email_action", False):
+				self.notify_employee()
+
+				if self.approval_status == "Approved":
+					self.create_overtime_calculation()
+					# self.create_overtime_summary()
 
 	def create_overtime_calculation(self):
 		existing_calculation = frappe.db.exists("Overtime Calculation", {"reference_request": self.name})
@@ -116,7 +118,10 @@ class Overtime(Document):
 	def notify_project_manager(self):
 		if self.pm_user:
 			parent_doc = frappe.get_doc("Overtime", self.name)
+			pm_user = self.pm_user or parent_doc.owner
 			args = parent_doc.as_dict()
+
+			args["submit_url"] = build_action_url(parent_doc.name, "Submit", pm_user)
 
 			frappe.get_doc({
 				"doctype": "Notification Log",

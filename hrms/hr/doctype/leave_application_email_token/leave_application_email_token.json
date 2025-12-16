@@ -38,7 +38,7 @@
    "fieldname": "action",
    "fieldtype": "Select",
    "label": "Action",
-   "options": "Approved\nRejected",
+   "options": "Approved\nRejected\nSubmit",
    "read_only": 1
   },
   {
@@ -76,7 +76,7 @@
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-12-15 12:09:25.455991",
+ "modified": "2025-12-16 15:37:46.949650",
  "modified_by": "Administrator",
  "module": "HR",
  "name": "Leave Application Email Token",

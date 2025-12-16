@@ -166,7 +166,15 @@ frappe.ui.form.on("Leave Application", {
 
 	leave_approver: function (frm) {
 		if (frm.doc.leave_approver) {
-			frm.set_value("leave_approver_name", frappe.user.full_name(frm.doc.leave_approver));
+			frappe.db.get_value(
+				"User",
+				frm.doc.leave_approver,
+				"full_name"
+			).then(r => {
+				if (r && r.message && r.message.full_name) {
+					frm.set_value("leave_approver_name", r.message.full_name);
+				}
+			})
 		}
 	},
 
