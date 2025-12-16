@@ -51,6 +51,18 @@ frappe.ui.form.on("Business Trip", {
                 );
             });
         }
+
+        frm.set_query('project_code', () => {
+            return {
+                filters: {
+                    project: frm.doc.project
+                }
+            }
+        });
+    },
+
+    project(frm) {
+        frm.set_value('project_code', null);
     },
 
     set_pm_user: function (frm) {
