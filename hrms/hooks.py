@@ -170,6 +170,9 @@ doc_events = {
 	"*": {
 		"validate": "hrms.events.global_lock.prevent_edit_after_approved"
 	},
+    "Comment": {
+        "after_insert": "hrms.custom.comment_notify.notify_comment"
+	},
 	"Attendance": {
 		"before_insert": "hrms.custom.attendance_blocker.prevent_attendance_for_dinas",
 	},
