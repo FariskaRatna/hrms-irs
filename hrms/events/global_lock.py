@@ -3,10 +3,10 @@ import frappe
 ALLOWED_ROLES = ["Administrator", "HR Manager", "HR User", "Project Manager", "System Manager"]
 
 def prevent_edit_after_approved(doc, event):
-    if not hasattr(doc, "status"):
+    if not hasattr(doc, "approval_status"):
         return
 
-    if doc.status != "Approved":
+    if doc.approval_status != "Approved":
         return
 
     if doc.is_new():

@@ -22,6 +22,7 @@ frappe.ui.form.on("Overtime", {
     },
 
     assigned_by: function (frm) {
+        frm.trigger("toggle_approval_editable")
         if (frm.doc.assigned_by) {
             frappe.db.get_value(
                 "User",
@@ -37,6 +38,7 @@ frappe.ui.form.on("Overtime", {
 
     refresh(frm) {
         frm.trigger("toggle_employee_read_only")
+        frm.trigger("toggle_approval_editable")
 
         if (!frm.is_new() && frm.doc.docstatus === 0 && frm.perm[0].submit == 1) {
 
@@ -61,6 +63,8 @@ frappe.ui.form.on("Overtime", {
 
         frm.trigger("set_employee");
     },
+
+    
 
     validate(frm) {
         if (!frm.doc.assigned_by || !frm.doc.employee) return;
@@ -108,6 +112,16 @@ frappe.ui.form.on("Overtime", {
         );
 
         frm.set_df_property("employee", "read_only", !has_access);
+    },
+
+    toggle_approval_editable: function(frm) {
+        const user = frappe.session.user;
+        const is_assigned_by = frm.doc.assigned_by && frm.doc.assigned_by === user;
+        const allowed_user = ["System Manager", "HR Manager", "HR User", "Project Manager"];
+
+        const override = allowed_user.some(role => frappe.user.has_role(role));
+
+        frm.set_df_property("approval_status", "read_only", !(is_assigned_by || override));
     }
 
 });
