@@ -257,7 +257,7 @@
   {
    "depends_on": "eval:doc.leave_category==\"Sakit\"",
    "fieldname": "doctor_note",
-   "fieldtype": "Attach",
+   "fieldtype": "Attach Image",
    "label": "Doctor's Note (For Sick Reason)"
   },
   {
@@ -292,7 +292,7 @@
  "is_submittable": 1,
  "links": [],
  "max_attachments": 3,
- "modified": "2025-12-10 19:27:26.828281",
+ "modified": "2025-12-17 17:29:40.361968",
  "modified_by": "Administrator",
  "module": "HR",
  "name": "Leave Application",

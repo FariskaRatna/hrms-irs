@@ -36,5 +36,24 @@ frappe.ui.form.on("Reimbursement", {
                 );
             });
         }
+
+        frm.trigger("attachment_filename");
+    },
+
+    document_photo(frm) {
+        frm.trigger("attachment_filename");
+    },
+
+    attachment_filename: function(frm) {
+        const url = frm.doc.document_photo;
+		const field = frm.fields_dict.document_photo;
+		if (!field) return;
+
+		const $attach = $(field.$wrapper).find("a.attached-file-link");
+		if (!url || $attach.lenth) return;
+
+		const filename = url.split("/").pop();
+		$attach.text(filename);
+		$attach.attr("title", filename);
     }
 });

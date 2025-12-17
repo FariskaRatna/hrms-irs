@@ -62,9 +62,12 @@ frappe.ui.form.on("Overtime", {
         }
 
         frm.trigger("set_employee");
+        frm.trigger("render_attachment_preview");
     },
 
-    
+    photo(frm) {
+        frm.trigger("render_attachment_preview")
+    },
 
     validate(frm) {
         if (!frm.doc.assigned_by || !frm.doc.employee) return;
@@ -122,6 +125,19 @@ frappe.ui.form.on("Overtime", {
         const override = allowed_user.some(role => frappe.user.has_role(role));
 
         frm.set_df_property("approval_status", "read_only", !(is_assigned_by || override));
+    },
+
+    render_attachment_preview: function(frm) {
+        const url = frm.doc.photo;
+        const field = frm.fields_dict.photo;
+        if (!field) return;
+
+        const $a = $(field.$wrapper).find("a.attached-file-link");
+        if (!url || !$a.length) return;
+
+        const filename = url.split("/").pop();
+        $a.text(filename);    
+        $a.attr("title", filename);
     }
 
 });

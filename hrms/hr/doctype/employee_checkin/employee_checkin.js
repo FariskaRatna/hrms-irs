@@ -22,6 +22,25 @@ frappe.ui.form.on("Employee Checkin", {
 			hide_field(["fetch_geolocation", "latitude", "longitude", "geolocation"]);
 			return;
 		}
+
+		frm.trigger("attachment_filename");
+	},
+
+	photo(frm) {
+		frm.trigger("attachment_filename");
+	},
+
+	attachment_filename: function(frm) {
+		const url = frm.doc.photo;
+		const field = frm.fields_dict.photo;
+		if (!field) return;
+
+		const $attach = $(field.$wrapper).find("a.attached-file-link");
+		if (!url || $attach.lenth) return;
+
+		const filename = url.split("/").pop();
+		$attach.text(filename);
+		$attach.attr("title", filename);
 	},
 
 	onload: function(frm) {

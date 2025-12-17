@@ -140,6 +140,25 @@ frappe.ui.form.on("Leave Application", {
 				);
 			});
 		}
+
+		frm.trigger("attachment_filename");
+	},
+
+	doctor_note(frm) {
+		frm.trigger("attachment_filename");
+	},
+
+	attachment_filename: function (frm) {
+		const url = frm.doc.doctor_note;
+		const field = frm.fields_dict.doctor_note;
+		if (!field) return;
+
+		const $attach = $(field.$wrapper).find("a.attached-file-link");
+		if (!url || $attach.lenth) return;
+
+		const filename = url.split("/").pop();
+		$attach.text(filename);
+		$attach.attr("title", filename);
 	},
 
 	async set_employee(frm) {

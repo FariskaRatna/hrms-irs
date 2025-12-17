@@ -32,6 +32,25 @@ frappe.ui.form.on("Loan Settlement", {
                 );
             });
         }
+
+        frm.trigger("attachment_filename");
+    },
+
+    transaction_proof(frm) {
+        frm.trigger("attachment_filename");
+    },
+
+    attachment_filename: function(frm) {
+        const url = frm.doc.transaction_proof;
+		const field = frm.fields_dict.transaction_proof;
+		if (!field) return;
+
+		const $attach = $(field.$wrapper).find("a.attached-file-link");
+		if (!url || $attach.lenth) return;
+
+		const filename = url.split("/").pop();
+		$attach.text(filename);
+		$attach.attr("title", filename);
     },
 
     employee: function(frm) {
