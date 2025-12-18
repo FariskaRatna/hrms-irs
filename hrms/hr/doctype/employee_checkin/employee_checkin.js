@@ -5,7 +5,7 @@ frappe.ui.form.on("Employee Checkin", {
 	refresh: async (frm) => {
 		frm.trigger("attachment_filename");
 		frm.trigger("sync_photo_preview");
-		
+
 		if (frm.doc.offshift) {
 			frm.dashboard.clear_headline();
 			frm.dashboard.set_headline(
@@ -33,18 +33,21 @@ frappe.ui.form.on("Employee Checkin", {
 		frm.trigger("sync_photo_preview");
 	},
 
-	attachment_filename: function(frm) {
+	attachment_filename: function (frm) {
 		const url = frm.doc.photo;
 		const field = frm.fields_dict.photo;
-		if (!field) return;
+		if (!url || !field) return;
 
-		const $attach = $(field.$wrapper).find("a.attached-file-link");
-		if (!url || $attach.length) return;
+		setTimeout(() => {
+			const $attach = $(field.$wrapper).find("a.attached-file-link");
+			if (!$attach.length) return;
 
-		const filename = url.split("/").pop();
-		$attach.text(filename);
-		$attach.attr("title", filename);
+			const filename = url.split("/").pop();
+			$attach.text(filename);
+			$attach.attr("title", filename);
+		}, 300);
 	},
+
 
 	sync_photo_preview: function(frm) {
         const file_url = frm.doc.photo

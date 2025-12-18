@@ -453,36 +453,47 @@ frappe.ui.form.on("Salary Slip", {
         }
 
         // === Tombol Fetch Overtime ===
-        if (frm.doc.docstatus === 0 && frm.doc.employee) {
-            frm.add_custom_button("Fetch Overtime", function() {
-                if (!frm.doc.start_date || !frm.doc.end_date) {
-                    frappe.msgprint("Fill Employee, Start Date, dan End Date first.");
-                    return;
-                }
+		if (frm.doc.docstatus === 0 && frm.doc.employee) {
+			frm.add_custom_button("Fetch Overtime", function() {
+				if (!frm.doc.start_date || !frm.doc.end_date) {
+					frappe.msgprint("Fill Employee, Start Date, dan End Date first.");
+					return;
+				}
 
-                frappe.call({
-                    method: "hrms.payroll.doctype.salary_slip.salary_slip.get_total_overtime",
-                    args: {
-                        employee: frm.doc.employee,
-                        start_date: frm.doc.start_date,
-                        end_date: frm.doc.end_date
-                    },
-                    callback: function(r) {
+				frappe.call({
+					method: "hrms.payroll.doctype.salary_slip.salary_slip.get_total_overtime",
+					args: {
+						employee: frm.doc.employee,
+						start_date: frm.doc.start_date,
+						end_date: frm.doc.end_date
+					},
+					callback: function(r) {
 						if (r.message && r.message.total_overtime) {
 							let total_overtime = r.message.total_overtime;
 
-							let found = false;
-							(frm.doc.earnings || []).forEach(row => {
-								if (row.salary_component === "Overtime") {
-									row.amount = total_overtime
-									found = true
-								}
-							});
-							if (!found) {
-								frm.add_child("earnings", {
-									salary_component: "Overtime",
-									amount: total_overtime
-								});
+							// let found = false;
+							// (frm.doc.earnings || []).forEach(row => {
+							// 	if (row.salary_component === "Overtime") {
+							// 		row.amount = total_overtime
+							// 		found = true
+							// 	}
+							// });
+							// if (!found) {
+							// 	frm.add_child("earnings", {
+							// 		salary_component: "Overtime",
+							// 		amount: total_overtime
+							// 	});
+							// }
+
+							let row = (frm.doc.earnings || []).find(r => r.salary_component === "Overtime");
+							if (!row) {
+							row = frm.add_child("earnings", { salary_component: "Overtime" });
+							}
+
+							row.amount = total_overtime;
+
+							if ("additional_amount" in row) {
+							row.additional_amount = total_overtime;
 							}
 							frm.refresh_field("earnings");
 
@@ -491,10 +502,10 @@ frappe.ui.form.on("Salary Slip", {
 						} else {
 							frappe.msgprint("No Overtime found in this period.");
 						}
-                    }
-                });
-            });
-        }
+					}
+				});
+			});
+		}
 
         if (frm.doc.docstatus === 0 && frm.doc.employee && frm.doc.end_date) {
             frm.add_custom_button(__('Fetch Total Late Days'), function () {
