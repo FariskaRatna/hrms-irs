@@ -219,6 +219,7 @@ class SalarySlip(TransactionBase):
 				)
 				if email_salary_slip:
 					self.email_salary_slip()
+					self.notify_employee()
 
 		self.update_payment_status_for_gratuity_and_leave_encashment()
 
@@ -2160,6 +2161,18 @@ class SalarySlip(TransactionBase):
 						"available_leaves": flt(leave_values.get("remaining_leaves")),
 					},
 				)
+
+	def notify_employee(self):
+		employee_user = frappe.db.get_value("Employee", self.employee, "user_id")
+
+		frappe.get_doc({
+			"doctype": "Notification Log",
+			"subject": f"Salary Slip for {self.start_date} to {self.end_date}",
+			"for_user": employee_user,
+			"type": "Alert",
+			"document_type": "Salary Slip",
+			"document_name": self.name
+		}).insert(ignore_permissions=True)
 
 
 def unlink_ref_doc_from_salary_slip(doc, method=None):
