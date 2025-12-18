@@ -55,22 +55,23 @@
   "base_hour_rate",
   "earning_deduction_sb",
   "earnings",
-  "total_overtime_amount",
+  "gross_pay",
   "column_break_k1jz",
   "deductions",
-  "installment",
+  "total_deduction",
   "totals",
-  "gross_pay",
+  "net_pay",
+  "rounded_total",
+  "column_break_brfw",
+  "total_in_words",
+  "totals_1",
   "base_gross_pay",
   "gross_year_to_date",
   "base_gross_year_to_date",
   "column_break_25",
-  "total_deduction",
   "base_total_deduction",
   "net_pay_info",
-  "net_pay",
   "base_net_pay",
-  "rounded_total",
   "base_rounded_total",
   "column_break_dqnd",
   "year_to_date",
@@ -78,8 +79,6 @@
   "month_to_date",
   "base_month_to_date",
   "section_break_55",
-  "total_in_words",
-  "column_break_69",
   "base_total_in_words",
   "income_tax_calculation_breakup_section",
   "ctc",
@@ -331,8 +330,7 @@
   {
    "fieldname": "totals",
    "fieldtype": "Section Break",
-   "label": "Totals",
-   "oldfieldtype": "Section Break"
+   "label": "Totals"
   },
   {
    "fieldname": "gross_pay",
@@ -348,13 +346,13 @@
   {
    "fieldname": "net_pay_info",
    "fieldtype": "Tab Break",
+   "hidden": 1,
    "label": "Net Pay Info"
   },
   {
    "fieldname": "net_pay",
    "fieldtype": "Currency",
    "label": "Net Pay",
-   "options": "currency",
    "read_only": 1
   },
   {
@@ -362,7 +360,6 @@
    "fieldname": "rounded_total",
    "fieldtype": "Currency",
    "label": "Rounded Total",
-   "options": "currency",
    "read_only": 1
   },
   {
@@ -443,6 +440,7 @@
   {
    "fieldname": "base_gross_pay",
    "fieldtype": "Currency",
+   "hidden": 1,
    "label": "Gross Pay (Company Currency)",
    "options": "Company:company:default_currency",
    "read_only": 1
@@ -459,6 +457,7 @@
   {
    "fieldname": "base_total_deduction",
    "fieldtype": "Currency",
+   "hidden": 1,
    "label": "Total Deduction (Company Currency)",
    "options": "Company:company:default_currency",
    "read_only": 1
@@ -484,10 +483,6 @@
    "label": "Total in words (Company Currency)",
    "length": 240,
    "read_only": 1
-  },
-  {
-   "fieldname": "column_break_69",
-   "fieldtype": "Column Break"
   },
   {
    "description": "Total salary booked for this employee from the beginning of the year (payroll period or fiscal year) up to the current salary slip's end date.",
@@ -534,6 +529,7 @@
   {
    "fieldname": "gross_year_to_date",
    "fieldtype": "Currency",
+   "hidden": 1,
    "label": "Gross Year To Date",
    "options": "currency",
    "read_only": 1
@@ -541,6 +537,7 @@
   {
    "fieldname": "base_gross_year_to_date",
    "fieldtype": "Currency",
+   "hidden": 1,
    "label": "Gross Year To Date(Company Currency)",
    "options": "Company:company:default_currency",
    "read_only": 1
@@ -744,29 +741,27 @@
    "read_only": 1
   },
   {
-   "fieldname": "total_overtime_amount",
-   "fieldtype": "Currency",
-   "label": "Total Overtime Amount",
-   "read_only": 1
-  },
-  {
    "fieldname": "total_late_days",
    "fieldtype": "Int",
    "label": "Total Late Days"
   },
   {
-   "fieldname": "installment",
-   "fieldtype": "Currency",
-   "label": "Installment",
-   "precision": "0",
-   "read_only": 1
+   "fieldname": "column_break_brfw",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "totals_1",
+   "fieldtype": "Section Break",
+   "hidden": 1,
+   "label": "Totals 1",
+   "oldfieldtype": "Section Break"
   }
  ],
  "icon": "fa fa-file-text",
  "idx": 9,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-12-09 17:48:30.832210",
+ "modified": "2025-12-18 14:19:35.401508",
  "modified_by": "Administrator",
  "module": "Payroll",
  "name": "Salary Slip",

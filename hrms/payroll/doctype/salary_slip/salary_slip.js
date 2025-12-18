@@ -242,6 +242,7 @@ frappe.ui.form.on("Salary Slip", {
 					}
 				);
 			});
+
 		}
 	},
 
@@ -416,7 +417,6 @@ frappe.ui.form.on("Salary Detail", {
 
 frappe.ui.form.on("Salary Slip", {
     refresh(frm) {
-        // === Tombol Fetch Loan Installment ===
         if (frm.doc.docstatus === 0 && frm.doc.employee) {
             frm.add_custom_button(__('Fetch Loan Installment'), function () {
                 frappe.call({
@@ -425,7 +425,7 @@ frappe.ui.form.on("Salary Slip", {
                     callback: function (r) {
                         if (r.message && r.message.total_installment) {
                             let total_installment = r.message.total_installment;
-                            frm.set_value("installment", total_installment);
+                            // frm.set_value("installment", total_installment);
 
                             let found = false;
                             (frm.doc.deductions || []).forEach(row => {
@@ -442,6 +442,7 @@ frappe.ui.form.on("Salary Slip", {
                             }
 
                             frm.refresh_field("deductions");
+							set_totals(frm);
                             frappe.msgprint("Loan installment fetched successfully.");
                         } else {
                             frappe.msgprint("No active loan found for this employee.");
@@ -455,7 +456,7 @@ frappe.ui.form.on("Salary Slip", {
         if (frm.doc.docstatus === 0 && frm.doc.employee) {
             frm.add_custom_button("Fetch Overtime", function() {
                 if (!frm.doc.start_date || !frm.doc.end_date) {
-                    frappe.msgprint("Isi Employee, Start Date, dan End Date dulu ya.");
+                    frappe.msgprint("Fill Employee, Start Date, dan End Date first.");
                     return;
                 }
 
@@ -467,27 +468,29 @@ frappe.ui.form.on("Salary Slip", {
                         end_date: frm.doc.end_date
                     },
                     callback: function(r) {
-                        if (r.message) {
-                            let amount = r.message;
-                            frm.set_value("total_overtime_amount", amount);
+						if (r.message && r.message.total_overtime) {
+							let total_overtime = r.message.total_overtime;
 
-                            let overtime_row = frm.doc.earnings.find(e => e.salary_component === "Overtime");
-                            if (!overtime_row) {
-                                overtime_row = frm.add_child("earnings", {
-                                    salary_component: "Overtime",
-                                    amount: amount
-                                });
-                            } else {
-                                overtime_row.amount = amount;
-                            }
+							let found = false;
+							(frm.doc.earnings || []).forEach(row => {
+								if (row.salary_component === "Overtime") {
+									row.amount = total_overtime
+									found = true
+								}
+							});
+							if (!found) {
+								frm.add_child("earnings", {
+									salary_component: "Overtime",
+									amount: total_overtime
+								});
+							}
+							frm.refresh_field("earnings");
 
-                            frm.refresh_field("earnings");
-                            frm.trigger("calculate_totals");
-
-                            frappe.msgprint(`Total Overtime Rp ${amount.toLocaleString()} berhasil diambil.`);
-                        } else {
-                            frappe.msgprint("Tidak ada overtime pada periode ini.");
-                        }
+							set_totals(frm);
+							frappe.msgprint("Total Overtime fetched successfully");
+						} else {
+							frappe.msgprint("No Overtime found in this period.");
+						}
                     }
                 });
             });
@@ -510,14 +513,11 @@ frappe.ui.form.on("Salary Slip", {
 
                         let total_late_days = Number(r.message) || 0;
 
-                        // set ke field di Salary Slip
                         frm.set_value("total_late_days", total_late_days);
                         frm.refresh_field("total_late_days");
 
-                        // hitung amount potongan
                         let late_amount = total_late_days * 80000;
 
-                        // update / tambah row deduction "Keterlambatan"
                         let found = false;
                         (frm.doc.deductions || []).forEach(row => {
                             if (row.salary_component === "Keterlambatan") {
@@ -534,6 +534,7 @@ frappe.ui.form.on("Salary Slip", {
                         }
 
                         frm.refresh_field("deductions");
+						set_totals(frm)
                         frappe.msgprint(__("Total Late Days fetched successfully."));
                     }
                 });
@@ -543,4 +544,6 @@ frappe.ui.form.on("Salary Slip", {
     }
 });
 
-// s
+
+
+

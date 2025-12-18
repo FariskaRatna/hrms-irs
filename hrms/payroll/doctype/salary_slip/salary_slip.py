@@ -2557,19 +2557,19 @@ def update_loan_repayment_from_salary(salary_slip, method):
 
 @frappe.whitelist()
 def get_total_overtime(employee, start_date, end_date):
-    """Ambil total lembur pegawai untuk rentang tanggal tertentu"""
-    res = frappe.db.sql("""
-        SELECT SUM(total_amount)
-        FROM `tabOvertime Slip`
-        WHERE employee = %s
-        AND docstatus = 1
-        AND (
-            (from_date BETWEEN %s AND %s)
-            OR (to_date BETWEEN %s AND %s)
-        )
-    """, (employee, start_date, end_date, start_date, end_date))
+	res = frappe.db.sql("""
+		SELECT SUM(total_amount)
+		FROM `tabOvertime Slip`
+		WHERE employee = %s
+		AND docstatus = 1
+		AND (
+			(from_date BETWEEN %s AND %s)
+			OR (to_date BETWEEN %s AND %s)
+		)
+	""", (employee, start_date, end_date, start_date, end_date))
 
-    return float(res[0][0]) if res and res[0][0] else 0.0
+	total_overtime = float(res[0][0] or 0)
+	return {"total_overtime": total_overtime}
 
 import frappe
 from frappe.utils import getdate
