@@ -10,6 +10,7 @@
   "section_break_6",
   "employee",
   "employee_name",
+  "id_irs",
   "company",
   "department",
   "designation",
@@ -755,13 +756,20 @@
    "hidden": 1,
    "label": "Totals 1",
    "oldfieldtype": "Section Break"
+  },
+  {
+   "fetch_from": "employee.id_irs",
+   "fieldname": "id_irs",
+   "fieldtype": "Data",
+   "label": "ID IRS",
+   "read_only": 1
   }
  ],
  "icon": "fa fa-file-text",
  "idx": 9,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-12-18 14:19:35.401508",
+ "modified": "2025-12-18 17:35:45.243123",
  "modified_by": "Administrator",
  "module": "Payroll",
  "name": "Salary Slip",
