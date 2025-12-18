@@ -3,6 +3,9 @@
 
 frappe.ui.form.on("Employee Checkin", {
 	refresh: async (frm) => {
+		frm.trigger("attachment_filename");
+		frm.trigger("sync_photo_preview");
+		
 		if (frm.doc.offshift) {
 			frm.dashboard.clear_headline();
 			frm.dashboard.set_headline(
@@ -23,11 +26,11 @@ frappe.ui.form.on("Employee Checkin", {
 			return;
 		}
 
-		frm.trigger("attachment_filename");
 	},
 
 	photo(frm) {
 		frm.trigger("attachment_filename");
+		frm.trigger("sync_photo_preview");
 	},
 
 	attachment_filename: function(frm) {
@@ -36,12 +39,25 @@ frappe.ui.form.on("Employee Checkin", {
 		if (!field) return;
 
 		const $attach = $(field.$wrapper).find("a.attached-file-link");
-		if (!url || $attach.lenth) return;
+		if (!url || $attach.length) return;
 
 		const filename = url.split("/").pop();
 		$attach.text(filename);
 		$attach.attr("title", filename);
 	},
+
+	sync_photo_preview: function(frm) {
+        const file_url = frm.doc.photo
+
+        if (!file_url) {
+            frm.set_value("image", "");
+            frm.toggle_display("image", false);
+            return
+        }
+
+        frm.set_value("image", file_url);
+        frm.toggle_display("image", true);
+    },
 
 	onload: function(frm) {
 		if (!frm.is_new()) return;

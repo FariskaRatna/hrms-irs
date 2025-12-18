@@ -11,6 +11,7 @@
   "related_dinas_leave",
   "shift",
   "photo",
+  "image",
   "column_break_4",
   "time",
   "log_type",
@@ -184,10 +185,17 @@
    "label": "Timestamp",
    "permlevel": 1,
    "reqd": 1
+  },
+  {
+   "fieldname": "image",
+   "fieldtype": "Image",
+   "label": "Image",
+   "options": "photo"
   }
  ],
+ "image_field": "photo",
  "links": [],
- "modified": "2025-12-10 16:59:02.436526",
+ "modified": "2025-12-18 10:28:17.714076",
  "modified_by": "Administrator",
  "module": "HR",
  "name": "Employee Checkin",

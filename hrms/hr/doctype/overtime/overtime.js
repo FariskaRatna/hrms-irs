@@ -63,10 +63,12 @@ frappe.ui.form.on("Overtime", {
 
         frm.trigger("set_employee");
         frm.trigger("render_attachment_preview");
+        frm.trigger("sync_photo_preview");
     },
 
     photo(frm) {
-        frm.trigger("render_attachment_preview")
+        frm.trigger("render_attachment_preview");
+        frm.trigger("sync_photo_preview");
     },
 
     validate(frm) {
@@ -138,7 +140,20 @@ frappe.ui.form.on("Overtime", {
         const filename = url.split("/").pop();
         $a.text(filename);    
         $a.attr("title", filename);
-    }
+    },
+
+    sync_photo_preview: function(frm) {
+        const file_url = frm.doc.photo
+
+        if (!file_url) {
+            frm.set_value("image", "");
+            frm.toggle_display("image", false);
+            return
+        }
+
+        frm.set_value("image", file_url);
+        frm.toggle_display("image", true);
+    },
 
 });
 
