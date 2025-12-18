@@ -3,8 +3,11 @@ frappe.listview_settings["Overtime Slip"] = {
         "from_date",
         "to_date",
         "total_hours",
+        "docstatus",
+        "status"
     ],
     has_indicator_for_draft: 1,
+
     get_indicator: function (doc) {
         const color_status = {
             "Approved": "green",
@@ -13,10 +16,15 @@ frappe.listview_settings["Overtime Slip"] = {
             "Cancelled": "orange",
             "Submitted": "blue"
         };
-        const status =
-            !doc.docstatus && ["Approved", "Rejected"].includes(doc.status) ? "Draft" : doc.status;
-        return [__(status), status_color[status], "status,=," + doc.status];
+
+        let status = doc.status || "Draft";
+        if (doc.docstatus === 0) {
+            status = "Draft";
+        }
+
+        return [__(status), color_status[status] || "gray", "status,=," + status];
     },
+
 
     refresh: listview => {
         $('span.level-item.list-liked-by-me.hidden-xs').remove();
