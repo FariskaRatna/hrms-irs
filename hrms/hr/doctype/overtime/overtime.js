@@ -9,7 +9,7 @@ frappe.ui.form.on("Overtime", {
                 filters: {
                     employee: frm.doc.employee,
                     doctype: frm.doc.doctype
-                },
+                },  
             };
         });
         frm.set_query("employee", erpnext.queries.employee);

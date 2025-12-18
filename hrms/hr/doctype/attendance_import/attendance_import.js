@@ -14,6 +14,8 @@ frappe.ui.form.on('Attendance Import', {
                 frappe.call({
                     method: 'hrms.hr.doctype.attendance_import.attendance_import.process_file', 
                     args: { docname: frm.doc.name },
+                    freeze: true,
+                    freeze_message: __('Processing attendance file, please wait...'),
                     callback: function(r) {
                         if (!r.exc) {
                             frappe.msgprint(__('File processed successfully!'));
