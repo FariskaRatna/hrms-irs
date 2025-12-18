@@ -5,31 +5,37 @@ import frappe
 from frappe.model.document import Document
 from datetime import datetime
 from frappe import _
-from frappe.utils import get_fullname
+from frappe.utils import get_fullname, time_diff_in_hours, now_datetime
 from hrms.utils import get_employee_email
 from hrms.custom.email_token.overtime_email_token import build_action_url
 
 
 class Overtime(Document):
 	def before_save(self):
-		if self.start_time and self.end_time:
-			fmt = "%H:%M:%S"
-			start = datetime.strptime(str(self.start_time), fmt)
-			end = datetime.strptime(str(self.end_time), fmt)
-			diff = (end - start).seconds / 3600
+		if not self.start_time or not self.end_time:
+			self.total_hours = 0
+			return
 
-			full_hour = int(diff)
-			remainder = diff - full_hour
+		if self.end_time <= self.start_time:
+			frappe.throw("Overtime End must be after Start")
 
-			if remainder >= 0.75:
-				rounding = 1.0
-			elif remainder >= 0.25:
-				rounding = 0.5
-			else:
-				rounding = 0.0
+		diff = time_diff_in_hours(
+			self.end_time,
+			self.start_time
+		)
 
-			total_hour = full_hour + rounding
-			self.total_hours = round(total_hour, 2)
+		full_hour = int(diff)
+		remainder = diff - full_hour
+
+		if remainder >= 0.75:
+			rounding = 1.0
+		elif remainder >= 0.25:
+			rounding = 0.5
+		else:
+			rounding = 0.0
+
+		total_hour = full_hour + rounding
+		self.total_hours = round(total_hour, 2)
 
 	def on_update(self):
 		if not frappe.db.get_single_value("HR Settings", "send_overtime_application_notification"):
