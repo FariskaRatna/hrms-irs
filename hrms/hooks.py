@@ -170,6 +170,10 @@ doc_events = {
 	"*": {
 		"validate": "hrms.events.global_lock.prevent_edit_after_approved"
 	},
+    "Employee Checkin": {
+        "after_insert": "hrms.custom.employee_checkin_lock.lock_employee_checkin",
+        "before_save": "hrms.custom.employee_checkin_lock.prevent_edit_if_locked",
+	},
     "Comment": {
         "after_insert": "hrms.custom.comment_notify.notify_comment"
 	},

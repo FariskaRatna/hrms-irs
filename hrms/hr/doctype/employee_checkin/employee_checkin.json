@@ -17,6 +17,7 @@
   "log_type",
   "timestamp",
   "attendance",
+  "locked",
   "location_section",
   "latitude",
   "column_break_yqpi",
@@ -191,11 +192,18 @@
    "fieldtype": "Image",
    "label": "Image",
    "options": "photo"
+  },
+  {
+   "default": "0",
+   "fieldname": "locked",
+   "fieldtype": "Check",
+   "hidden": 1,
+   "label": "Locked"
   }
  ],
  "image_field": "photo",
  "links": [],
- "modified": "2025-12-18 10:28:17.714076",
+ "modified": "2025-12-19 10:40:35.332708",
  "modified_by": "Administrator",
  "module": "HR",
  "name": "Employee Checkin",
