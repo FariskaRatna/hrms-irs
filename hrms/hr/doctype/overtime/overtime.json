@@ -25,7 +25,7 @@
   "description",
   "result",
   "photo",
-  "image",
+  "photo_preview",
   "approval_section",
   "assigned_by",
   "assigned_by_name",
@@ -202,10 +202,9 @@
    "read_only": 1
   },
   {
-   "fieldname": "image",
-   "fieldtype": "Image",
-   "label": "Image",
-   "options": "photo"
+   "fieldname": "photo_preview",
+   "fieldtype": "HTML",
+   "label": "Photo Preview"
   }
  ],
  "grid_page_length": 50,
@@ -213,7 +212,7 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-12-18 17:05:31.887105",
+ "modified": "2025-12-19 11:49:48.019023",
  "modified_by": "Administrator",
  "module": "HR",
  "name": "Overtime",

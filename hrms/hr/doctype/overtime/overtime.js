@@ -143,16 +143,22 @@ frappe.ui.form.on("Overtime", {
     },
 
     sync_photo_preview: function(frm) {
-        const file_url = frm.doc.photo
+        const url = frm.doc.photo;
+		const w = frm.fields_dict.photo_preview?.$wrapper;
+		if (!w) return;
 
-        if (!file_url) {
-            frm.set_value("image", "");
-            frm.toggle_display("image", false);
-            return
-        }
+		if (!url) {
+			w.html("");
+			return;
+		}
 
-        frm.set_value("image", file_url);
-        frm.toggle_display("image", true);
+		w.html(`
+		<div style="margin-top:10px">
+			<img src="${encodeURI(url)}"
+				style="max-width:240px; max-height:240px; width:auto; height:auto;
+						object-fit:contain; border-radius:10px; border:1px solid #ddd;" />
+		</div>
+		`);
     },
 
 });

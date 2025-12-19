@@ -28,6 +28,7 @@
   "description",
   "leave_balance",
   "doctor_note",
+  "photo_preview",
   "section_break_7",
   "leave_approver",
   "leave_approver_name",
@@ -285,14 +286,21 @@
    "in_standard_filter": 1,
    "label": "Purpose",
    "mandatory_depends_on": "eval:doc.leave_category==\"Dinas\""
+  },
+  {
+   "depends_on": "eval:doc.leave_category==\"Sakit\"",
+   "fieldname": "photo_preview",
+   "fieldtype": "HTML",
+   "label": "Photo Preview"
   }
  ],
  "icon": "fa fa-calendar",
  "idx": 1,
+ "image_field": "doctor_note",
  "is_submittable": 1,
  "links": [],
  "max_attachments": 3,
- "modified": "2025-12-17 17:29:40.361968",
+ "modified": "2025-12-19 12:26:00.618155",
  "modified_by": "Administrator",
  "module": "HR",
  "name": "Leave Application",

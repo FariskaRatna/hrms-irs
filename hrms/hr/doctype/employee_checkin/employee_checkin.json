@@ -9,12 +9,12 @@
   "employee",
   "employee_name",
   "related_dinas_leave",
-  "shift",
   "photo",
-  "image",
+  "photo_preview",
   "column_break_4",
   "time",
   "log_type",
+  "shift",
   "timestamp",
   "attendance",
   "locked",
@@ -188,22 +188,21 @@
    "reqd": 1
   },
   {
-   "fieldname": "image",
-   "fieldtype": "Image",
-   "label": "Image",
-   "options": "photo"
-  },
-  {
    "default": "0",
    "fieldname": "locked",
    "fieldtype": "Check",
    "hidden": 1,
    "label": "Locked"
+  },
+  {
+   "fieldname": "photo_preview",
+   "fieldtype": "HTML",
+   "label": "Photo Preview"
   }
  ],
  "image_field": "photo",
  "links": [],
- "modified": "2025-12-19 10:40:35.332708",
+ "modified": "2025-12-19 11:47:16.288123",
  "modified_by": "Administrator",
  "module": "HR",
  "name": "Employee Checkin",
