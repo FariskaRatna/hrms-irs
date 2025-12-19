@@ -50,16 +50,25 @@ frappe.ui.form.on("Employee Checkin", {
 
 
 	sync_photo_preview: function(frm) {
-        const file_url = frm.doc.photo
+		const file_url = frm.doc.photo || "";
 
-        if (!file_url) {
-            frm.set_value("image", "");
-            frm.toggle_display("image", false);
-            return
-        }
+		if (!frm.is_new()) return;
 
-        frm.set_value("image", file_url);
-        frm.toggle_display("image", true);
+		if ((frm.doc.image || "") !== file_url) {
+			frm.set_value("image", file_url);
+		}
+
+		frm.toggle_display("image", !!file_url);
+        // const file_url = frm.doc.photo
+
+        // if (!file_url) {
+        //     frm.set_value("image", "");
+        //     frm.toggle_display("image", false);
+        //     return
+        // }
+
+        // frm.set_value("image", file_url);
+        // frm.toggle_display("image", true);
     },
 
 	onload: function(frm) {
