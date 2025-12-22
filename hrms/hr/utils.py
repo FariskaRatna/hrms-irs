@@ -73,7 +73,33 @@ def format_date_id(value):
 
     return f"{hari[d.weekday()]}, {d.day} {bulan[d.month]} {d.year}"
 
+def _to_datetime(value):
+	if isinstance(value, datetime.datetime):
+		return value
+	if isinstance(value, datetime.date):
+		return datetime.datetime.combine(value, datetime.time.min)
+	if isinstance(value, str):
+		v = value.strip()
+		try:
+			return datetime.datetime.strptime(v[:19], "%Y-%m-%d %H:%M:%S")
+		except Exception:
+			try:
+				return datetime.datetime.strptime(v[:10], "%Y-%m-%d")
+			except Exception:
+				return datetime.datetime.fromisoformat(v)
+	raise ValueError(f"Unsupported date value: {value!r}")
 
+def format_datetime_id(value, with_seconds=False):
+	if not value:
+		return ""
+	
+	dt = _to_datetime(value)
+
+	hari = ["Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu", "Minggu"]
+	bulan = {1: "Januari", 2: "Februari", 3: "Maret", 4: "April", 5: "Mei", 6: "Juni", 7: "Juli", 8: "Agustus", 9: "September", 10: "Oktober", 11: "November", 12: "Desember"}
+
+	time_part = dt.strftime("%H:%M:%S") if with_seconds else dt.strftime("%H:%M")
+	return f"{hari[dt.weekday()]}, {dt.day} {bulan[dt.month]} {dt.year} pukul {time_part}"
 
 def set_employee_name(doc):
 	if doc.employee and not doc.employee_name:
