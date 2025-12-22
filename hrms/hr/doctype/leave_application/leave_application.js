@@ -150,7 +150,7 @@ frappe.ui.form.on("Leave Application", {
 		const w = frm.fields_dict.photo_preview?.$wrapper;
 		if (!w) return;
 
-		if (!url) {
+		if (!url) { 
 			w.html("");
 			return;
 		}

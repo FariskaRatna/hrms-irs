@@ -94,6 +94,7 @@ website_route_rules = [
 jinja = {
 	"methods": [
 		"hrms.utils.get_country",
+        "hrms.hr.utils.format_date_id",
 	],
 }
 

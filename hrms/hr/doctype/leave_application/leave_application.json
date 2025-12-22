@@ -25,10 +25,11 @@
   "half_day_date",
   "total_leave_days",
   "column_break1",
+  "job_description",
   "description",
   "leave_balance",
-  "doctor_note",
   "photo_preview",
+  "doctor_note",
   "section_break_7",
   "leave_approver",
   "leave_approver_name",
@@ -244,6 +245,7 @@
    "collapsible": 1,
    "fieldname": "sb_other_details",
    "fieldtype": "Section Break",
+   "hidden": 1,
    "label": "Other Details"
   },
   {
@@ -284,7 +286,7 @@
    "fieldname": "purpose",
    "fieldtype": "Data",
    "in_standard_filter": 1,
-   "label": "Purpose",
+   "label": "Destinasi",
    "mandatory_depends_on": "eval:doc.leave_category==\"Dinas\""
   },
   {
@@ -292,6 +294,13 @@
    "fieldname": "photo_preview",
    "fieldtype": "HTML",
    "label": "Photo Preview"
+  },
+  {
+   "depends_on": "eval:doc.leave_category==\"Dinas\"",
+   "fieldname": "job_description",
+   "fieldtype": "Small Text",
+   "label": "Job Description",
+   "mandatory_depends_on": "eval:doc.leave_category==\"Dinas\""
   }
  ],
  "icon": "fa fa-calendar",
@@ -300,7 +309,7 @@
  "is_submittable": 1,
  "links": [],
  "max_attachments": 3,
- "modified": "2025-12-19 12:26:00.618155",
+ "modified": "2025-12-19 15:41:42.782957",
  "modified_by": "Administrator",
  "module": "HR",
  "name": "Leave Application",

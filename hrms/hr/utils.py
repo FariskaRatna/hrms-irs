@@ -41,6 +41,39 @@ DateTimeLikeObject = str | datetime.date | datetime.datetime
 class DuplicateDeclarationError(frappe.ValidationError):
 	pass
 
+import datetime
+
+def format_date_id(value):
+    if not value:
+        return ""
+
+    # Normalisasi input
+    if isinstance(value, str):
+        try:
+            value = datetime.datetime.strptime(value[:10], "%Y-%m-%d")
+        except Exception:
+            value = datetime.datetime.fromisoformat(value)
+
+    if isinstance(value, datetime.datetime):
+        d = value.date()
+    elif isinstance(value, datetime.date):
+        d = value
+    else:
+        return str(value)
+
+    hari = {
+        0: "Senin", 1: "Selasa", 2: "Rabu", 3: "Kamis",
+        4: "Jumat", 5: "Sabtu", 6: "Minggu",
+    }
+    bulan = {
+        1: "Januari", 2: "Februari", 3: "Maret", 4: "April",
+        5: "Mei", 6: "Juni", 7: "Juli", 8: "Agustus",
+        9: "September", 10: "Oktober", 11: "November", 12: "Desember",
+    }
+
+    return f"{hari[d.weekday()]}, {d.day} {bulan[d.month]} {d.year}"
+
+
 
 def set_employee_name(doc):
 	if doc.employee and not doc.employee_name:
