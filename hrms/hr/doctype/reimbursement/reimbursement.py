@@ -39,18 +39,7 @@ class Reimbursement(Document):
 	def update_employee_reimbursement(self):
 		employee = frappe.get_doc("Employee", self.employee)
 
-		salary_assignment = frappe.db.get_value(
-			"Salary Structure Assignment",
-			{
-				"employee": self.employee,
-				"docstatus": 1,
-				"from_date": ["<=", frappe.utils.nowdate()],
-			},
-			"base",
-			order_by="from_date desc"
-		)
-
-		total_reimbursement = salary_assignment
+		total_reimbursement = employee.total_reimbursement or 0
 		reimbursement_used = employee.reimbursement_used or 0
 
 		reimbursement_used += self.amount

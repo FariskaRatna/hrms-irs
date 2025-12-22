@@ -101,6 +101,27 @@ def format_datetime_id(value, with_seconds=False):
 	time_part = dt.strftime("%H:%M:%S") if with_seconds else dt.strftime("%H:%M")
 	return f"{hari[dt.weekday()]}, {dt.day} {bulan[dt.month]} {dt.year} pukul {time_part}"
 
+def reset_reimbursement_on_newyear():
+	today = getdate(nowdate())
+
+	if not (today.month==1 and today.day==1):
+		return
+	
+	key = f"reimbursement_reset_{today}"
+	if frappe.cache().get_value(key):
+		return
+	
+	frappe.db.sql("""
+		UPDATE `tabEmployee`
+		SET reimbursement_used = 0,
+			balance = COALESCE(total_reimbursement, 0)
+		WHERE status = 'Active
+	""")
+
+	frappe.db.commit()
+	frappe.cache().set_value(key, 1, expires_in_sec=24 * 60 * 60)
+
+
 def set_employee_name(doc):
 	if doc.employee and not doc.employee_name:
 		doc.employee_name = frappe.db.get_value("Employee", doc.employee, "employee_name")
