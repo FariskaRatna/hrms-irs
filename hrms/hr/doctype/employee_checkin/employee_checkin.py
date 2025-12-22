@@ -580,12 +580,12 @@ def get_dinas_leave_list(doctype, txt, searchfield, start, page_len, filters):
     from datetime import datetime
     from dateutil.relativedelta import relativedelta
 
-    min_date = (datetime.today() - relativedelta(months=5)).date()
+    min_date = (datetime.today() - relativedelta(months=3)).date()
 
     return frappe.db.sql("""
         SELECT
             name,
-            CONCAT(purpose, ', ', leave_category, ', ', from_date) AS description
+            CONCAT(purpose, ', ', leave_category, ', ', from_date, ', ', description) AS description
         FROM `tabLeave Application`
         WHERE
             employee = %(employee)s
