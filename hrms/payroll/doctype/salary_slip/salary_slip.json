@@ -14,7 +14,7 @@
   "company",
   "department",
   "designation",
-  "branch",
+  "employment_type",
   "column_break_obdl",
   "posting_date",
   "letter_head",
@@ -158,17 +158,6 @@
    "oldfieldname": "designation",
    "oldfieldtype": "Link",
    "options": "Designation",
-   "read_only": 1
-  },
-  {
-   "fetch_from": "employee.branch",
-   "fieldname": "branch",
-   "fieldtype": "Link",
-   "in_standard_filter": 1,
-   "label": "Branch",
-   "oldfieldname": "branch",
-   "oldfieldtype": "Link",
-   "options": "Branch",
    "read_only": 1
   },
   {
@@ -763,13 +752,23 @@
    "fieldtype": "Data",
    "label": "ID IRS",
    "read_only": 1
+  },
+  {
+   "fetch_from": "employee.employment_type",
+   "fieldname": "employment_type",
+   "fieldtype": "Data",
+   "in_standard_filter": 1,
+   "label": "Employment Type",
+   "oldfieldname": "branch",
+   "oldfieldtype": "Link",
+   "read_only": 1
   }
  ],
  "icon": "fa fa-file-text",
  "idx": 9,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-12-18 17:35:45.243123",
+ "modified": "2025-12-22 15:49:54.450862",
  "modified_by": "Administrator",
  "module": "Payroll",
  "name": "Salary Slip",
