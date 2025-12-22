@@ -141,8 +141,21 @@ frappe.ui.form.on("Leave Application", {
 			});
 		}
 
+		frm.set_query("project_code", () => {
+			return {
+				filters: {
+					project: frm.doc.project
+				}
+			}
+		});
+
 		frm.trigger("attachment_filename");
 		frm.trigger("sync_photo_preview");
+
+	},
+
+	project(frm) {
+		frm.set_value("project_code", null);
 	},
 
 	sync_photo_preview: function (frm) {
