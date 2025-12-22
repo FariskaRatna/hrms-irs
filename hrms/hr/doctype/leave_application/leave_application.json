@@ -18,18 +18,24 @@
   "department",
   "leave_category",
   "section_break_5",
-  "purpose",
   "from_date",
   "to_date",
   "half_day",
   "half_day_date",
   "total_leave_days",
   "column_break1",
-  "job_description",
-  "description",
+  "reason",
   "leave_balance",
+  "purpose1",
   "photo_preview",
   "doctor_note",
+  "business_trip_details_section",
+  "project",
+  "project_code",
+  "purpose",
+  "column_break_goea",
+  "destination",
+  "description",
   "section_break_7",
   "leave_approver",
   "leave_approver_name",
@@ -152,10 +158,11 @@
    "width": "50%"
   },
   {
+   "depends_on": "eval:doc.leave_category==\"Dinas\"",
    "fieldname": "description",
    "fieldtype": "Small Text",
    "label": "Reason",
-   "reqd": 1
+   "mandatory_depends_on": "eval:doc.leave_category==\"Dinas\""
   },
   {
    "fieldname": "section_break_7",
@@ -284,9 +291,9 @@
   {
    "depends_on": "eval:doc.leave_category==\"Dinas\"",
    "fieldname": "purpose",
-   "fieldtype": "Data",
+   "fieldtype": "Small Text",
    "in_standard_filter": 1,
-   "label": "Destinasi",
+   "label": "Job Description",
    "mandatory_depends_on": "eval:doc.leave_category==\"Dinas\""
   },
   {
@@ -296,11 +303,50 @@
    "label": "Photo Preview"
   },
   {
-   "depends_on": "eval:doc.leave_category==\"Dinas\"",
-   "fieldname": "job_description",
+   "depends_on": "eval:doc.leave_category && [\"Izin Satu Hari\",\"Izin Setengah Hari\",\"Sakit\",\"Cuti\"].includes(doc.leave_category)",
+   "fieldname": "reason",
    "fieldtype": "Small Text",
-   "label": "Job Description",
-   "mandatory_depends_on": "eval:doc.leave_category==\"Dinas\""
+   "label": "Reason",
+   "mandatory_depends_on": "eval:doc.leave_category && [\"Izin Satu Hari\",\"Izin Setengah Hari\",\"Sakit\",\"Cuti\"].includes(doc.leave_category)"
+  },
+  {
+   "depends_on": "eval:doc.leave_category==\"Dinas\"",
+   "fieldname": "purpose1",
+   "fieldtype": "Data",
+   "hidden": 1,
+   "in_standard_filter": 1,
+   "label": "Purpose"
+  },
+  {
+   "depends_on": "eval:doc.leave_category==\"Dinas\"",
+   "fieldname": "business_trip_details_section",
+   "fieldtype": "Section Break",
+   "label": "Business Trip Details"
+  },
+  {
+   "fieldname": "project",
+   "fieldtype": "Link",
+   "label": "Project",
+   "mandatory_depends_on": "eval:doc.leave_category==\"Dinas\"",
+   "options": "Project"
+  },
+  {
+   "fieldname": "project_code",
+   "fieldtype": "Link",
+   "label": "Project Code",
+   "mandatory_depends_on": "eval:doc.leave_category==\"Dinas\"",
+   "options": "Project Code"
+  },
+  {
+   "fieldname": "column_break_goea",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "destination",
+   "fieldtype": "Select",
+   "label": "Destination",
+   "mandatory_depends_on": "eval:doc.leave_category==\"Dinas\"",
+   "options": "\nJabodetabek\nLuar Kota\nAsia\nJepang\nArab Saudi\nEropa\nAustralia\nUSA\nCanada"
   }
  ],
  "icon": "fa fa-calendar",
@@ -309,7 +355,7 @@
  "is_submittable": 1,
  "links": [],
  "max_attachments": 3,
- "modified": "2025-12-19 15:41:42.782957",
+ "modified": "2025-12-22 11:03:08.964285",
  "modified_by": "Administrator",
  "module": "HR",
  "name": "Leave Application",

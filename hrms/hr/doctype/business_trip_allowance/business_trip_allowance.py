@@ -9,7 +9,7 @@ from frappe.utils import getdate, add_days
 
 class BusinessTripAllowance(Document):
 	def validate(self):
-		if self.business_trip:
+		if self.leave_application:
 			self.calculate_allowance()
 
 	def is_holiday(self, date):

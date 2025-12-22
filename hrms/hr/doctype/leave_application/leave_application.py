@@ -130,6 +130,12 @@ class LeaveApplication(Document, PWANotificationsMixin):
 					self.notify_hrd()
 					self.notify_employee(sender_email=self.get_email_leave_approver())
 
+		if self.approval_status == "Approved" and self.leave_category == "Dinas":
+			if frappe.db.get_single_value("HR Settings", "send_business_trip_notification"):
+				bt = self.create_business_trip_allowance()
+				self.notify_hrd_bt(bt)
+			
+			
 		if self.approval_status in ["Rejected", "Cancelled"] and self.leave_category == "Dinas":
 			self.delete_employee_checkins()
 	def on_submit(self):
@@ -417,7 +423,7 @@ class LeaveApplication(Document, PWANotificationsMixin):
 				self.half_day,
 				self.half_day_date,
 			)
-
+ 
 			if self.total_leave_days <= 0:
 				frappe.throw(
 					_(
@@ -651,6 +657,32 @@ class LeaveApplication(Document, PWANotificationsMixin):
 				)
 			day = add_days(day, 1)
 
+	def create_business_trip_allowance(self):
+		if self.leave_category != "Dinas":
+			return
+		
+		existing_business_trip = frappe.db.exists("Business Trip Allowance", {"leave_application": self.name})
+		if existing_business_trip:
+			frappe.throw("Business Trip Allowance already exists for this Leave Application.")
+
+		bt_doc = frappe.new_doc("Business Trip Allowance")
+		bt_doc.employee = self.employee
+		bt_doc.leave_application = self.name
+		bt_doc.destination = self.destination
+		bt_doc.departure_date = self.from_date
+		bt_doc.return_date = self.to_date
+		bt_doc.total_days = self.total_leave_days
+		bt_doc.allowance_amount = 0
+		bt_doc.status = "Draft"
+
+		if bt_doc.meta.get_field("designation"):
+			bt_doc.designation = getattr(self, "designation", None) or frappe.db.get_value("Employee", self.employee, "designation")
+
+		bt_doc.insert(ignore_permissions=True)
+		return bt_doc
+	
+		# frappe.msgprint(f"Business Trip Allowance {bt_doc.name} created for Employee {self.employee_name}.")
+
 	def set_half_day_date(self):
 		if self.from_date == self.to_date and self.half_day == 1:
 			self.half_day_date = self.from_date
@@ -671,6 +703,39 @@ class LeaveApplication(Document, PWANotificationsMixin):
 		if self.hrd_user:
 			return frappe.get_value("User", self.hrd_user, "email")
 		return None
+	
+	def notify_hrd_bt(self, bt_doc):
+		if not self.hrd_user or not bt_doc:
+			return
+			
+		args = bt_doc.as_dict()
+
+		frappe.get_doc({
+			"doctype": "Notification Log",
+			"subject": f"Business Trip Allowance Request from {self.employee_name}",
+			"email_content": f"Employee {self.employee_name} has submitted a leave application for business trip",
+			"for_user": self.hrd_user,
+			"type": "Alert",
+			"document_type": "Business Trip Allowance",
+			"document_name": bt_doc.name
+		}).insert(ignore_permissions=True)
+
+		template = frappe.db.get_single_value("HR Settings", "business_trip_application_hr_template")
+		if not template:
+			frappe.msgprint(_("Please set default tempalte for Business Trip Application Notification fo HRD in HR Settings."))
+			return
+		email_template = frappe.get_doc("Email Template", template)
+		subject = frappe.render_template(email_template.subject, args)
+		message = frappe.render_template(email_template.response_, args)
+
+		self.notify(
+			{
+				"message": message,
+				"message_to": self.hrd_user,
+				"subject": subject,
+				"sender_email": self.get_requester(),
+			}
+		)
 
 	def notify_employee(self, sender_email=None):
 		employee_email = get_employee_email(self.employee)

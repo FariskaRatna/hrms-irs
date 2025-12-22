@@ -5,7 +5,7 @@ class CustomLeaveApplication(LeaveApplication):
 
     def on_submit(self):
         if getattr(self, "leave_category", None) == "Dinas":
-            frappe.msgprint("Attendance will NOT be created for Dinas.")
+            # frappe.msgprint("Attendance will NOT be created for Dinas.")
             return
         super().on_submit()
     

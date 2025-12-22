@@ -14,7 +14,7 @@
   "department",
   "designation",
   "allowance_details",
-  "business_trip",
+  "leave_application",
   "destination",
   "departure_date",
   "return_date",
@@ -108,14 +108,6 @@
    "label": "Return Date"
   },
   {
-   "fieldname": "business_trip",
-   "fieldtype": "Link",
-   "in_list_view": 1,
-   "label": "Business Trip Application",
-   "options": "Business Trip",
-   "reqd": 1
-  },
-  {
    "fieldname": "total_days",
    "fieldtype": "Data",
    "label": "Total Days"
@@ -165,13 +157,21 @@
    "fieldname": "designation",
    "fieldtype": "Data",
    "label": "Designation"
+  },
+  {
+   "fieldname": "leave_application",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Business Trip Application",
+   "options": "Leave Application",
+   "reqd": 1
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-12-11 09:53:02.700208",
+ "modified": "2025-12-22 11:21:21.907515",
  "modified_by": "Administrator",
  "module": "HR",
  "name": "Business Trip Allowance",
