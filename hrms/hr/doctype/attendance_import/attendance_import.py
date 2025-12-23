@@ -471,12 +471,6 @@ def process_file(docname):
                 status = "Absent"
                 attendance_reason = "Tidak Hadir"
                 daily_allowance_deducted = True
-
-        frappe.msgprint(
-            f"in_datetime={in_datetime} ({type(in_datetime)}), "
-            f"out_datetime={out_datetime} ({type(out_datetime)})"
-        )
-
         if in_datetime:
             create_checkin_if_not_exists(emp, in_datetime, "IN")
         if out_datetime:
@@ -507,7 +501,6 @@ def process_file(docname):
                 ["in_time", "out_time"],
                 as_dict=True
             )
-            frappe.msgprint(f"AFTER INSERT: {saved}")
 
             frappe.msgprint(f"✅ Attendance created for {row['Name']} {date_part}")
         else:
