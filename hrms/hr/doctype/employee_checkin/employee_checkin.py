@@ -580,7 +580,7 @@ def get_dinas_leave_list(doctype, txt, searchfield, start, page_len, filters):
     from datetime import datetime
     from dateutil.relativedelta import relativedelta
 
-    min_date = (datetime.today() - relativedelta(months=3)).date()
+    min_date = (datetime.today() - relativedelta(months=5)).date()
 
     return frappe.db.sql("""
         SELECT

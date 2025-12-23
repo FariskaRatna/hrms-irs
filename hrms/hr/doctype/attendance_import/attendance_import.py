@@ -5,7 +5,7 @@ import re
 from frappe.model.document import Document
 import frappe
 import pandas as pd
-from frappe.utils import getdate
+from frappe.utils import getdate, get_datetime
 from datetime import date, timedelta, datetime, time
 import calendar
 from difflib import get_close_matches
@@ -130,6 +130,57 @@ def process_file(docname):
     DEFAULT_LATITUDE = -6.2239100
     DEFAULT_LONGITUDE = 106.8290110
 
+    def get_existing_checkin_extremes(emp, date_part):
+        day_start = datetime.combine(date_part, time.min)
+        day_end = datetime.combine(date_part, time.max)
+
+        in_rows = frappe.get_all(
+            "Employee Checkin",
+            filters={
+                "employee": emp,
+                "log_type": "IN",
+                "time": ["between", [day_start, day_end]],
+            },
+            fields=["time"],
+            order_by="time asc",
+            limit=1,
+        )
+        earliest_in = in_rows[0].time if in_rows else None
+
+        out_rows = frappe.get_all(
+            "Employee Checkin",
+            filters={
+                "employee": emp,
+                "log_type": "OUT",
+                "time": ["between", [day_start, day_end]],
+            },
+            fields=["time"],
+            order_by="time desc",
+            limit=1,
+        )
+        latest_out = out_rows[0].time if out_rows else None
+
+        return earliest_in, latest_out
+    
+    def reconcile_with_existing_checkins(emp, date_part, excel_in_dt, excel_out_dt):
+        existing_in, existing_out = get_existing_checkin_extremes(emp, date_part)
+
+        # final IN = paling cepat (min)
+        if excel_in_dt and existing_in:
+            final_in = excel_in_dt if excel_in_dt <= existing_in else existing_in
+        else:
+            final_in = excel_in_dt or existing_in
+
+        # final OUT = paling lama (max)
+        if excel_out_dt and existing_out:
+            final_out = excel_out_dt if excel_out_dt >= existing_out else existing_out
+        else:
+            final_out = excel_out_dt or existing_out
+
+        return final_in, final_out
+
+    
+
     def create_checkin_if_not_exists(emp, timestamp, log_type):
         if not timestamp:
             return
@@ -183,6 +234,15 @@ def process_file(docname):
                 "holiday_date": date_part
             }
         )
+    
+    def att_in_time(value):
+        if not value:
+            return None
+        if isinstance(value, datetime):
+            return value.time()
+        if isinstance(value, time):
+            return value
+        return None
 
     for _, row in df_finger.iterrows():
         # emp = find_employee(row["Name"])
@@ -251,8 +311,13 @@ def process_file(docname):
         if date_part.day == 20 and out_time is None:
             out_time = time(18, 0, 0)
 
-        in_datetime = datetime.combine(date_part, in_time) if in_time else None
-        out_datetime = datetime.combine(date_part, out_time) if out_time else None
+        excel_in_datetime = datetime.combine(date_part, in_time) if in_time else None
+        excel_out_datetime = datetime.combine(date_part, out_time) if out_time else None
+
+        in_datetime, out_datetime = reconcile_with_existing_checkins(emp, date_part, excel_in_datetime, excel_out_datetime)
+
+        # in_datetime = datetime.combine(date_part, in_time) if in_time else None
+        # out_datetime = datetime.combine(date_part, out_time) if out_time else None
 
         # Ambil shift]\
         shift_assignment = frappe.db.get_value(
@@ -407,6 +472,11 @@ def process_file(docname):
                 attendance_reason = "Tidak Hadir"
                 daily_allowance_deducted = True
 
+        frappe.msgprint(
+            f"in_datetime={in_datetime} ({type(in_datetime)}), "
+            f"out_datetime={out_datetime} ({type(out_datetime)})"
+        )
+
         if in_datetime:
             create_checkin_if_not_exists(emp, in_datetime, "IN")
         if out_datetime:
@@ -423,13 +493,22 @@ def process_file(docname):
                 "employee": emp,
                 "attendance_date": date_part,
                 "status": status,
-                "in_time": in_datetime,
-                "out_time": out_datetime,
+                "in_time": get_datetime(in_datetime) if in_datetime else None,
+                "out_time": get_datetime(out_datetime) if out_datetime else None,
                 "shift": shift_assignment or None,
                 "daily_allowance_deducted": daily_allowance_deducted,
                 "attendance_reason": attendance_reason,
             })
             att_doc.insert(ignore_permissions=True)
+
+            saved = frappe.db.get_value(
+                "Attendance",
+                att_doc.name,
+                ["in_time", "out_time"],
+                as_dict=True
+            )
+            frappe.msgprint(f"AFTER INSERT: {saved}")
+
             frappe.msgprint(f"✅ Attendance created for {row['Name']} {date_part}")
         else:
             att = frappe.get_doc("Attendance", existing_att)
