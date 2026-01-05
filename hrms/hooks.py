@@ -24,7 +24,7 @@ add_to_apps_screen = [
 # app_include_css = "/assets/hrms/css/hrms.css"
 app_include_js = [
 	"hrms.bundle.js",
-	"/asstes/hrms/js/global_readonly.js",
+	"/assets/hrms/js/global_readonly.js",
 	# "/assets/hrms/js/frappe/ui/custom_sidebar.js"
 	# "/assets/hrms/js/hr_dashboard.js",
 ]
