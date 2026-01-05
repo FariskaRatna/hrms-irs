@@ -85,17 +85,20 @@
    "label": "Attendance Summary"
   },
   {
+   "depends_on": "eval: !doc.__islocal",
    "fieldname": "total_late_minutes",
    "fieldtype": "Int",
    "label": "Total Late (Minutes)"
   },
   {
+   "depends_on": "eval: !doc.__islocal",
    "fieldname": "late_days",
    "fieldtype": "Int",
    "label": "Late Days"
   },
   {
    "default": "0",
+   "depends_on": "eval: !doc.__islocal",
    "fieldname": "over_tolerance",
    "fieldtype": "Check",
    "label": "Over Tolerance"
@@ -105,11 +108,13 @@
    "fieldtype": "Column Break"
   },
   {
+   "depends_on": "eval: !doc.__islocal",
    "fieldname": "late_dates",
    "fieldtype": "Long Text",
    "label": "Late Dates"
   },
   {
+   "depends_on": "eval: !doc.__islocal",
    "fieldname": "last_updated_on",
    "fieldtype": "Datetime",
    "label": "Last Updated On"
@@ -120,6 +125,7 @@
    "label": "Generate Recap"
   },
   {
+   "depends_on": "eval: !doc.__islocal\r\n",
    "fieldname": "remarks",
    "fieldtype": "Small Text",
    "label": "Remarks"
@@ -137,6 +143,7 @@
    "set_only_once": 1
   },
   {
+   "depends_on": "eval: !doc.__islocal",
    "fieldname": "attendance_late_details_section",
    "fieldtype": "Section Break",
    "label": "Attendance Late Details"
@@ -161,16 +168,19 @@
    "reqd": 1
   },
   {
+   "depends_on": "eval: !doc.__islocal",
    "fieldname": "total_present",
    "fieldtype": "Int",
    "label": "Total Present"
   },
   {
+   "depends_on": "eval: !doc.__islocal",
    "fieldname": "total_absent",
    "fieldtype": "Int",
    "label": "Total Absent"
   },
   {
+   "depends_on": "eval: !doc.__islocal",
    "fieldname": "total_working_days",
    "fieldtype": "Int",
    "label": "Working Days"
@@ -179,7 +189,7 @@
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-12-08 16:32:21.703531",
+ "modified": "2026-01-05 12:06:51.444358",
  "modified_by": "Administrator",
  "module": "HR",
  "name": "Attendance Summary",

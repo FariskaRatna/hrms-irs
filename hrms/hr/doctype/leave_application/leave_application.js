@@ -411,7 +411,7 @@ frappe.ui.form.on("Leave Application", {
 
 frappe.ui.form.on("Leave Application", {
 	refresh(frm) {
-		if (frm.doc.status === "Approved") {
+		if (frm.doc.approval_status === "Approved") {
 			frappe.call({
 				method: "frappe.client.get_value",
 				args: {

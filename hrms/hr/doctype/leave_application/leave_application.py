@@ -66,6 +66,8 @@ class LeaveAcrossAllocationsError(frappe.ValidationError):
 
 from frappe.model.document import Document
 
+ALLOWED_ROLES = ["Administrator", "HR Manager", "HR User", "Project Manager", "System Manager"]
+
 
 class LeaveApplication(Document, PWANotificationsMixin):
 	def get_feed(self):
@@ -89,6 +91,7 @@ class LeaveApplication(Document, PWANotificationsMixin):
 		if frappe.db.get_value("Leave Type", self.leave_type, "is_optional_leave"):
 			self.validate_optional_leave()
 		self.validate_applicable_after()
+
 		
 
 	def delete_employee_checkins(self):
@@ -121,6 +124,8 @@ class LeaveApplication(Document, PWANotificationsMixin):
 		self.notify_approval_status()
 
 		if self.approval_status in ["Approved", "Rejected"] and self.docstatus < 1:
+			self.prevent_edit_after_approved()
+
 			if frappe.db.get_single_value("HR Settings", "send_leave_notification"):
 				if getattr(self.flags, "from_email_action", False):
 					self.notify_hrd()
@@ -897,6 +902,27 @@ class LeaveApplication(Document, PWANotificationsMixin):
 				frappe.msgprint(_("Email sent to {0}").format(contact))
 			except frappe.OutgoingEmailError:
 				pass
+
+	def prevent_edit_after_approved(self):
+		doc = frappe.get_doc("Leave Application", self.name)
+
+		if not hasattr(doc, "approval_status"):
+			return
+
+		if doc.approval_status != "Approved":
+			return
+
+		if doc.is_new():
+			return
+		
+		current_user = frappe.session.user
+		user_roles = frappe.get_roles(current_user)
+		if any(role in user_roles for role in ALLOWED_ROLES):
+			return
+
+		if current_user == doc.owner:
+			frappe.throw("This document has been approved and can no longer be edited by the requester.")
+
 
 	def create_leave_ledger_entry(self, submit=True):
 		if self.approval_status != "Approved" and submit:

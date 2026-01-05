@@ -122,6 +122,8 @@ def generate_recap(docname):
 	
 	day_records.sort(key=lambda x: x[0])
 
+	doc.set("late_details", [])
+
 	cumulative = 0
 	total_late_minutes = 0
 	late_days = 0
