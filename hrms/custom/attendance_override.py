@@ -1,6 +1,7 @@
 import frappe
 from frappe.utils import getdate, format_date
 from hrms.hr.doctype.attendance.attendance import Attendance as HRMSAttendance
+from frappe import _
 
 
 class CustomAttendance(HRMSAttendance):
@@ -41,7 +42,10 @@ def custom_check_leave_record(self):
             self.attendance_reason = "Dinas"
 
             frappe.msgprint(
-                f"Attendance: {self.employee_name} is marked Present (Dinas) on {format_date(self.attendance_date)}",
+                _("Attendance: {0} is marked Present (Dinas) on {1}").format(
+                    frappe.bold(self.employee_name),
+                    frappe.bold(format_date(self.attendance_date))
+                ),
                 indicator="green"
             )
             return
@@ -52,7 +56,10 @@ def custom_check_leave_record(self):
             self.leave_application = d.name
 
             frappe.msgprint(
-                f"Attendance: {self.employee_name} is marked Present (Izin Setengah Hari) on {format_date(self.attendance_date)}",
+                _("Attendance: {0} is marked Present (Izin Setengah Hari) on {1}").format(
+                    frappe.bold(self.employee_name),
+                    frappe.bold(format_date(self.attendance_date))
+                ),
                 indicator="green"
             )
 
@@ -65,12 +72,18 @@ def custom_check_leave_record(self):
         if d.half_day_date == getdate(self.attendance_date):
             self.status = "Half Day"
             frappe.msgprint(
-                f"{self.employee_name} is marked Half Day on {format_date(self.attendance_date)}",
+                _("Attendance: {0} is marked Half Day on {1}").format(
+                    frappe.bold(self.employee_name),
+                    frappe.bold(format_date(self.attendance_date))
+                ),
                 indicator="yellow"
             )
         else:
             self.status = "On Leave"
             frappe.msgprint(
-                f"Leave detected for {self.employee_name} on {format_date(self.attendance_date)} — attendance not created.",
+                _("Leave detected for {0} on {1} — attendance not created").format(
+                    frappe.bold(self.employee_name),
+                    frappe.bold(format_date(self.attendance_date))
+                ),
                 indicator="red"
             )

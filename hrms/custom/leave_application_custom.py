@@ -10,7 +10,7 @@ class CustomLeaveApplication(LeaveApplication):
         super().on_submit()
     
     def create_attendance(self):
-        frappe.logger().info("Attendance creation skipped (custom override)")
+        frappe.logger().info("Attendance creation skipped")
         return
     
     def get_title(self):

@@ -6,6 +6,7 @@ from frappe.model.document import Document
 from frappe.utils import getdate
 from datetime import datetime
 from frappe.utils import get_first_day, get_last_day, date_diff, cint, add_days
+from frappe import _
 
 from erpnext.setup.doctype.employee.employee import get_holiday_list_for_employee
 from hrms.utils.holiday_list import get_holiday_dates_between
@@ -46,7 +47,7 @@ def generate_recap(docname):
 	doc.total_present = present
 
 
-	frappe.msgprint(f"Attendance ditemukan: {len(attendances)} record")
+	frappe.msgprint(_("Attendance founded: {0} record").format(len(attendances)))
 	for a in attendances:
 		frappe.msgprint(str(a.attendance_date))
 
@@ -162,7 +163,7 @@ def generate_recap(docname):
 
 	doc.save()
 
-	frappe.msgprint(f"Recap for {doc.employee_name} - {doc.month} generated")
+	frappe.msgprint(_("Recap for {0} - {1} generated").format(doc.employee_name, doc.month))
 
 
 def get_holidays_for_employee(employee, start_date, end_date):

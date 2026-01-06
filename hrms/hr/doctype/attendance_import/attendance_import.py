@@ -9,6 +9,7 @@ from frappe.utils import getdate, get_datetime
 from datetime import date, timedelta, datetime, time
 import calendar
 from difflib import get_close_matches
+from frappe import _
 
 
 class AttendanceImport(Document):
@@ -216,7 +217,7 @@ def process_file(docname):
 
             doc.insert()
         else:
-            frappe.msgprint(f"Skipped duplicate checkin for {emp} at {timestamp}")
+            frappe.msgprint(_("Skipped duplicate checkin for {0} at {1}").format(emp, timestamp))
     
     created_attendance = set()
     # Dictionary untuk menyimpan data izin setengah hari yang sudah diproses
@@ -248,13 +249,13 @@ def process_file(docname):
         # emp = find_employee(row["Name"])
         emp = find_employee(row["Name"], source="finger")
         if not emp:
-            frappe.msgprint(f"Employee '{row['Name']}' not found, skipped.")
+            frappe.msgprint(_("Employee '{0}' not found, skipped.").format(row['Name']))
             continue
 
         try:
             weekday = row["Date"].weekday()
             if weekday in [5, 6]:
-                frappe.msgprint(f"Skipped weekend for {row['Name']} on {row['Date']}")
+                frappe.msgprint(_("Skipped weekend for {0} on {1}.").format(row['Name'], row['Date']))
                 continue
         except Exception:
             pass
@@ -262,11 +263,11 @@ def process_file(docname):
         try:
             date_part = row["Date"].date()
         except Exception:
-            frappe.msgprint(f"Invalid date for {row['Name']}, skipped.")
+            frappe.msgprint(_("Invalid date for {0}, skipped.").format(row['Name']))
             continue
         key = (emp, date_part)
         if key in created_attendance:
-            frappe.msgprint(f"Attendance for {row['Name']} on {date_part} already processed, skipped.")
+            frappe.msgprint(_("Attendance for {0} on {1} already processed, skipped.").format(row['Name'], date_part))
             continue
         created_attendance.add(key)
 
@@ -428,9 +429,9 @@ def process_file(docname):
                     if att.leave_application:
                         att.cancel()
                         att.delete(ignore_permissions=True)
-                        frappe.msgprint(f"Attendance from Izin Setengah Hari override for {row['Name']} on {date_part}")
+                        frappe.msgprint(_("Attendance from Izin Setengah Hari override for {0} on {1}").format(row['Name'], date_part))
                     else:
-                        frappe.msgprint(f"Attendance already exists for {row['Name']} {date_part}")
+                        frappe.msgprint(_("Attendance already exists for {0} on {1}").format(row['Name'], date_part))
                         continue
 
                 if valid_half_day_count > 2:
@@ -502,7 +503,7 @@ def process_file(docname):
                 as_dict=True
             )
 
-            frappe.msgprint(f"✅ Attendance created for {row['Name']} {date_part}")
+            frappe.msgprint(_("✅ Attendance created for {0} {1}").format(row['Name'], date_part))
         else:
             att = frappe.get_doc("Attendance", existing_att)
             if att.leave_application and att.attendance_reason in [
@@ -517,15 +518,15 @@ def process_file(docname):
                     "in_time": in_datetime,
                     "out_time": out_datetime
                 })
-                frappe.msgprint(f"Attendance from Setengah Hari Leave Application for {row['Name']} {date_part}")
+                frappe.msgprint(_("Attendance from Setengah Hari Leave Application for {0} {1}").format(row['Name'], date_part))
                 continue
             
-            frappe.msgprint(f"ℹ️ Attendance already exists for {row['Name']} {date_part}")
+            frappe.msgprint(_("ℹ️ Attendance already exists for {0} {1}").format(row['Name'], date_part))
 
     frappe.msgprint("Attendance import completed successfully!")
 
-    frappe.msgprint(f"Total Fingerprint Rows: {len(df_finger)}")
-    frappe.msgprint(f"Total Face Rows: {len(df_face)}")
-    frappe.msgprint(f"Total Attendance Created: {len(created_attendance)}")
+    frappe.msgprint(_("Total Fingerprint Rows: {0}").format(len(df_finger)))
+    frappe.msgprint(_("Total Face Rows: {0}").format(len(df_face)))
+    frappe.msgprint(_("Total Attendance Created: {0}").format(len(created_attendance)))
 
 

@@ -1,4 +1,5 @@
 import frappe
+from frappe import _
 
 COMMENTS_TARGET = {
     "Leave Application": {
@@ -54,7 +55,7 @@ def notify_comment(comment, event=None):
     for user in recipients:
         frappe.get_doc({
             "doctype": "Notification Log",
-            "subject": f"{sender_name} comment on {doctype} {docname}",
+            "subject": _("{0} commented on {1} {2}").format(sender_name, doctype, docname),
             "email_content": comment.content or "",
             "for_user": user,
             "document_type": doctype,
