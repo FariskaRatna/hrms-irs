@@ -258,6 +258,7 @@ doc_events = {
 	},
 	"Project": {
         "validate": "hrms.controllers.employee_boarding_controller.update_employee_boarding_status",
+        "before_insert": "hrms.custom.project_permission.set_default_project_manager",
         "after_insert": "hrms.custom.project_permission.sync_project_user_permissions",
         "on_update": "hrms.custom.project_permission.sync_project_user_permissions",
     },

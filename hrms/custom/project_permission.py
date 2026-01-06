@@ -20,3 +20,9 @@ def sync_project_user_permissions(doc, method):
             "for_value": doc.name,
             "apply_to_all_doctypes": 1,
         }).insert(ignore_permissions=True)
+
+
+def set_default_project_manager(doc, method=None):
+    if not getattr(doc, "project_manager", None):
+        doc.project_manager = frappe.session.user
+
