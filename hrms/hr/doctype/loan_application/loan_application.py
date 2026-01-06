@@ -13,6 +13,12 @@ class LoanApplication(Document):
 	def before_submit(self):
 		self.set_deduction_start_date()
 
+	def validate(self):
+		if self.total_loan and self.total_loan > 10000000:
+			frappe.throw(_("Loan amount exceeds the maximum limit of Rp10.000.000"))
+
+		self.validate_no_active_loan()
+
 	def on_update(self):
 		if self.approval_status == "Pending" and self.docstatus < 1:
 			if frappe.db.get_single_value("HR Settings", "send_loan_application_notification"):
@@ -32,12 +38,32 @@ class LoanApplication(Document):
 		if frappe.db.get_single_value("HR Settings", "send_loan_application_notification"):
 			self.notify_employee()
 			if self.approval_status == "Approved":
+				self.validate_no_active_loan()
 				self.update_employee_loan_application()
 				self.create_loan_record()
 
 	def on_cancel(self):
 		if frappe.db.get_single_value("HR Settings", "send_loan_application_notification"):
 			self.notify_employee()
+
+	def validate_no_active_loan(self):
+		if not self.employee:
+			return
+		
+		active_loan = frappe.db.exists(
+			"Loan",
+			{
+				"employee": self.employee,
+				"docstatus": 1,
+				"status": ["in", ["Active"]]
+			}
+		)
+
+		if active_loan:
+			frappe.throw(
+				_("Employee still has an active/unpaid loan ({0}). Please settle it before applying for a new loan.")
+				.format(active_loan)
+			)
 	
 	def set_deduction_start_date(self):
 		posting_day = getdate(self.posting_date).day
@@ -72,7 +98,7 @@ class LoanApplication(Document):
 	def create_loan_record(self):
 		existing_loan = frappe.db.exists("Loan", {"loan_application": self.name})
 		if existing_loan:
-			frappe,msgprint("Loan record already exists for this Loan Application.")
+			frappe.msgprint("Loan record already exists for this Loan Application.")
 			return
 
 		loan_doc = frappe.new_doc("Loan")
@@ -86,6 +112,7 @@ class LoanApplication(Document):
 		loan_doc.balance_amount = self.total_loan
 		loan_doc.repayment_status = "Unpaid"
 		loan_doc.status = "Active"
+
 
 		loan_doc.insert(ignore_permissions=True)
 		frappe.msgprint(f"Loan record {loan_doc.name} created for Employee {self.employee_name}.")
