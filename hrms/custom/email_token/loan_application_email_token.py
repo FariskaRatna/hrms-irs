@@ -1,5 +1,6 @@
 import frappe
 from frappe.utils import now_datetime, add_to_date, get_url
+from frappe import _
 
 def _make_token(loan_name: str, action: str, approver_user: str, hours_valid: int = 72) -> str:
     token = frappe.generate_hash(length=40)
@@ -62,7 +63,7 @@ def act(name: str, token: str):
 
     current = (loan.get("approval_status") or "").strip()
     if current in ("Approved", "Rejected"):
-        frappe.throw(f"Loan Application is already {current}.", frappe.PermissionError)
+        frappe.throw(_("Loan Application is already {0}").format(frappe.bold(current)), frappe.PermissionError)
 
     loan.flags.from_email_action = True
     loan.approval_status = action

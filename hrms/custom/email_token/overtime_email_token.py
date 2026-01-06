@@ -1,5 +1,6 @@
 import frappe
 from frappe.utils import now_datetime, add_to_date, get_url
+from frappe import _
 
 def _make_token(bt_name: str, action: str, approver_user: str, hours_valid: int = 72) -> str:
     token = frappe.generate_hash(length=40)
@@ -68,7 +69,7 @@ def act(name: str, token: str):
         bt.submit()
     elif action in ("Approved", "Rejected"):
         if current in ("Approved", "Rejected"):
-            frappe.throw(f"Overtime is already {current}.", frappe.PermissionError)
+            frappe.throw(_("Overtime is already {0}").format(frappe.bold(current)), frappe.PermissionError)
 
         bt.flags.from_email_action = True
         bt.approval_status = action

@@ -61,7 +61,7 @@ def act(name: str, token: str):
 
     current = (bt.get("approval_status") or "").strip()
     if current in ("Approved", "Rejected"):
-        frappe.throw(f"Business Trip is already {current}.", frappe.PermissionError)
+        frappe.throw(_("Business Trip is already {0}").format(frappe.bold(current)), frappe.PermissionError)
 
     bt.flags.from_email_action = True
     bt.approval_status = action
