@@ -176,7 +176,22 @@ frappe.ui.form.on("Leave Application", {
 	},
 
 	project(frm) {
-		frm.set_value("project_code", null);
+		frm.set_value("project_code", "");
+		frm.set_df_property("project_code", "options", []);
+		frm.refresh_field("project_code");
+
+		if (!frm.doc.project) return;
+
+		frappe.call({
+			method: "hrms.api.project_codes.get_project_codes",
+			args: { project: frm.doc.project },
+			callback: (r) => {
+				const codes = (r.message || []);
+
+				frm.set_df_property("project_code", "options", codes.join("\n"));
+				frm.refresh_field("project_code");
+			}
+		})
 	},
 
 	sync_photo_preview: function (frm) {
