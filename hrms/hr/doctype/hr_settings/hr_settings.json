@@ -392,7 +392,7 @@
    "default": "0",
    "fieldname": "unlink_payment_on_cancellation_of_employee_advance",
    "fieldtype": "Check",
-   "label": " Unlink Payment on Cancellation of Employee Advance"
+   "label": "Unlink Payment on Cancellation of Employee Advance"
   },
   {
    "fieldname": "business_trip_status_notification_template",
