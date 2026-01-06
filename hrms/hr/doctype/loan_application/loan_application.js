@@ -6,7 +6,7 @@ frappe.ui.form.on("Loan Application", {
         if (!frm.is_new() && frm.doc.docstatus === 0 && frm.perm[0].submit == 1) {
             frm.page.set_primary_action(__("Submit"), function () {
                 frappe.confirm(
-                    `Permanently submit Loan Application for ${frm.doc.employee_name || frm.doc.employee}?`,
+                    __("Permanently Loan Application for {0}?", [frm.doc.employee_name || frm.doc.employee]),
                     function () {
                         frappe.call({
                             method: "frappe.client.submit",

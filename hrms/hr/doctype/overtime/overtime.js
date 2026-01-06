@@ -44,7 +44,7 @@ frappe.ui.form.on("Overtime", {
 
             frm.page.set_primary_action(__("Submit"), function () {
                 frappe.confirm(
-                    `Permanently submit Overtime for ${frm.doc.employee_name || frm.doc.employee}?`,
+                    __("Permanently submit Overtime for {0}?", [frm.doc.employee_name || frm.doc.employee]),
                     function () {
                         frappe.call({
                             method: "frappe.client.submit",
