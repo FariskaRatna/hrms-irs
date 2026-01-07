@@ -6,7 +6,7 @@ frappe.ui.form.on("Overtime Slip", {
         if (!frm.is_new() && frm.doc.docstatus === 0) {
             frm.page.set_primaru_action(__("Submit"), function () {
                 frappe.confirm(
-                    `Permanently submit Overtime Slip ${frm.doc.name} for ${frm.doc.employee_name || frm.doc.employee}?`,
+                    __("Permanently submit Overtime Slip {0} for {1}?").format(frm.doc.name, frm.doc.employee_name || frm.doc.employee),
                     function () {
                         frappe.call({
                             method: "frappe.client.submit",

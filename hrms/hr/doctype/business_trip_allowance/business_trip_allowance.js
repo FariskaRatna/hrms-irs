@@ -6,7 +6,7 @@ frappe.ui.form.on("Business Trip Allowance", {
         if (!frm.is_new() && frm.doc.docstatus === 0) {
             frappe.page.set_primary_action(__("Submit"), function () {
                 frappe.confirm(
-                    `Permanently submit Business Trip Allowance ${frm.doc.name} for ${frm.doc.employee_name || frm.doc.employee}?`,
+                    __("Permanently submit Business Trip Allowance {0} for {1}?").format(frm.doc.name, frm.doc.employee_name || frm.doc.employee),
                     function () {
                         frappe.call({
                             method: "frappe.client.submit",

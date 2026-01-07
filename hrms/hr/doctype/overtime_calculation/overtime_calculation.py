@@ -49,6 +49,6 @@ class OvertimeCalculation(Document):
 	def create_overtime_record(self):
 		existing_overtime = frappe.db.exists("Overtime Calculation", {"reference_request": self.name})
 		if existing_overtime:
-			frappe.msgprint("Overtime record already exists for Overtime Application.")
+			frappe.msgprint("	")
 			return
 		overtime_doc = frappe.new_doc

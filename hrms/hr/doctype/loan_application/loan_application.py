@@ -93,7 +93,7 @@ class LoanApplication(Document):
 		employee.loan_balance = loan_balance
 		employee.save(ignore_permissions=True)
 
-		frappe.msgprint(f"Loan approved for {employee.employee_name}. Deduction starts at {self.deduction_start_date}")
+		frappe.msgprint(_("Loan approved for {0}. Deduction starts at {1}").format(employee.employee_name, self.deduction_start_date))
 	
 	def create_loan_record(self):
 		existing_loan = frappe.db.exists("Loan", {"loan_application": self.name})
@@ -115,7 +115,7 @@ class LoanApplication(Document):
 
 
 		loan_doc.insert(ignore_permissions=True)
-		frappe.msgprint(f"Loan record {loan_doc.name} created for Employee {self.employee_name}.")
+		frappe.msgprint(_("Loan record {0} created for Employee {1}.").format(loan_doc.name, self.employee_name))
 
 	
 	def get_requester(self):

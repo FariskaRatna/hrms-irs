@@ -1,6 +1,7 @@
 import frappe
 from frappe.model.document import Document
 from frappe.utils import add_months, getdate
+from frappe import _
 
 
 class OvertimeSlip(Document):
@@ -139,7 +140,7 @@ class OvertimeSlip(Document):
 		next_slip.total_amount = total_amount
 
 		next_slip.insert(ignore_permissions=True)
-		frappe.msgprint(f"{total_hours} excess hours moved to next month.")
+		frappe.msgprint(_("{0} excess hours moved to next month.").format(total_hours))
 
 
 	def apply_previous_overtime(self):

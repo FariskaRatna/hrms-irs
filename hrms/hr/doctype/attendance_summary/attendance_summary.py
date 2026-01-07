@@ -163,7 +163,7 @@ def generate_recap(docname):
 
 	doc.save()
 
-	frappe.msgprint(_("Recap for {0} - {1} generated").format(doc.employee_name, doc.month))
+	frappe.msgprint(_("Recap for {0} generated").format(doc.employee_name))
 
 
 def get_holidays_for_employee(employee, start_date, end_date):

@@ -60,7 +60,7 @@ class Overtime(Document):
 
 	def on_submit(self):
 		if self.approval_status in ["Pending"]:
-			frappe.throw(_("Only Overtime Applicaation with status 'Approved' and 'Rejected' can be submitted"))
+			frappe.throw(_("Only Overtime Application with status 'Approved' and 'Rejected' can be submitted"))
 		
 		if frappe.db.get_single_value("HR Settings", "send_overtime_application_notification"):
 			if getattr(self.flags, "from_email_action", False):
@@ -86,7 +86,7 @@ class Overtime(Document):
 		calculation.reference_request = self.name
 		calculation.approval_status = "Approved"
 		calculation.insert(ignore_permissions=True)
-		frappe.msgprint(f"Overtime calculation for {self.employee_name} successfully created.")
+		frappe.msgprint(_("Overtime calculation for {0} successfully created.").format(self.employee_name))
 	
 	def is_weekend(self):
 		if not self.date:

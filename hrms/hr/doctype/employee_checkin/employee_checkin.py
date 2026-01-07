@@ -38,7 +38,7 @@ class EmployeeCheckin(Document):
 			return
 
 		if not self.related_dinas_leave:
-			frappe.throw("Please choose Leave Application  for Dinas first.")
+			frappe.throw("Please choose Leave Application for Dinas first.")
 
 		two_months_ago = getdate(add_months(nowdate(), -4))
 		leave = frappe.get_doc("Leave Application", self.related_dinas_leave)
@@ -52,8 +52,8 @@ class EmployeeCheckin(Document):
 
 		if not (from_date <= checkin_date <= to_date):
 			frappe.throw(
-				f"Checkin Date ({formatdate(checkin_date)}) should be on the range "
-				f"Leave Dinas: {formatdate(from_date)} → {formatdate(to_date)}."
+				_("Checkin Date ({0}) should be on the range").format(formatdate(checkin_date)),
+				_("Leave Dinas: {0} → {1}.").format(formatdate(from_date), formatdate(to_date))
 			)
 
 	# employee don't have access to create employee checkin without leave application before
@@ -542,7 +542,7 @@ def sync_unlinked_attendances():
 	frappe.db.commit()
 
 
-	return f"{created} Attendance has successfully created."
+	return _("{0} Attendance has successfully created.").format(created)
 
 
 # Filter for choose leave application dinas for 2 months back

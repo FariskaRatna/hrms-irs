@@ -5,6 +5,7 @@ import frappe
 import requests
 from frappe.model.document import Document
 from frappe.utils import getdate, add_days
+from frappe import _
 
 
 class BusinessTripAllowance(Document):
@@ -76,10 +77,10 @@ class BusinessTripAllowance(Document):
 					data = response.json()
 					rate = data["data"]["IDR"]
 				else:
-					frappe.msgprint(f"Failed to get exchange rate from API ({response.status_code})")
+					frappe.msgprint(_("Failed to get exchange rate from API ({0})").format(response.status_code))
 					rate = 1
 			except Exception as e:
-				frappe.msgprint(f"Error to get exchange rate from API: {e}")
+				frappe.msgprint(_("Error to get exchange rate from API: {0}").format(e))
 				rate = 1
 
 			return (amount or 0) * rate

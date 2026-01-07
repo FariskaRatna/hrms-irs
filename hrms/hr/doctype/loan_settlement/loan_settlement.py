@@ -60,9 +60,9 @@ class LoanSettlement(Document):
         if loan.balance_amount <= 0:
             loan.repayment_status = "Paid"
             loan.status = "Closed"
-            frappe.msgprint(f"Loan {loan.name} has been fully settled.")
+            frappe.msgprint(_("Loan {0} has been fully settled.").format(loan.name))
         else:
-            frappe.msgprint(f"Loan {loan.name} has been partially settled. Remaining balance: {loan.balance_amount}")
+            frappe.msgprint(_("Loan {0} has been partially settled. Remaining balance: {1}").format(loan.name, loan.balance_amount))
 
         repayment = loan.append("repayment_tracking", {})
         repayment.payment_date = self.settlement_date
