@@ -23,6 +23,9 @@
   "section_break_7",
   "base",
   "column_break_9",
+  "zakat_mode",
+  "zakat_percentage",
+  "zakat_amount",
   "variable",
   "amended_from",
   "opening_balances_section",
@@ -118,6 +121,7 @@
   {
    "fieldname": "variable",
    "fieldtype": "Currency",
+   "hidden": 1,
    "label": "Variable",
    "options": "currency"
   },
@@ -206,11 +210,33 @@
    "fieldtype": "Section Break",
    "hidden": 1,
    "label": "Opening Balances"
+  },
+  {
+   "allow_on_submit": 1,
+   "fieldname": "zakat_mode",
+   "fieldtype": "Select",
+   "label": "Zakat Mode",
+   "options": "\nPercentage\nFixed Amount"
+  },
+  {
+   "allow_on_submit": 1,
+   "depends_on": "eval: doc.zakat_mode==\"Percentage\"",
+   "fieldname": "zakat_percentage",
+   "fieldtype": "Float",
+   "label": "Zakat Percentage",
+   "precision": "1"
+  },
+  {
+   "allow_on_submit": 1,
+   "depends_on": "eval:doc.zakat_mode==\"Fixed Amount\"",
+   "fieldname": "zakat_amount",
+   "fieldtype": "Currency",
+   "label": "Zakat Amount"
   }
  ],
  "is_submittable": 1,
  "links": [],
- "modified": "2024-10-18 18:06:42.013701",
+ "modified": "2026-01-08 14:54:24.284956",
  "modified_by": "Administrator",
  "module": "Payroll",
  "name": "Salary Structure Assignment",
@@ -257,6 +283,7 @@
    "write": 1
   }
  ],
+ "row_format": "Dynamic",
  "search_fields": "employee_name, salary_structure",
  "sort_field": "modified",
  "sort_order": "DESC",

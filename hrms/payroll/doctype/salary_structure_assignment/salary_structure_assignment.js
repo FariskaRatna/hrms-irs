@@ -54,6 +54,11 @@ frappe.ui.form.on("Salary Structure Assignment", {
 
 	refresh: function (frm) {
 		frm.trigger("toggle_opening_balances_section");
+		// if (!frm.doc.zakat_mode) {
+		// 	frm.set_value("zakat_mode", "Percentage");
+		// 	frm.set_value("zakat_percentage", 2.5);
+		// }
+		frm.trigger("zakat_mode");
 
 		if (frm.doc.docstatus != 1) return;
 
@@ -180,6 +185,14 @@ frappe.ui.form.on("Salary Structure Assignment", {
 	from_date: function (frm) {
 		if (frm.doc.from_date) {
 			frm.trigger("toggle_opening_balances_section");
+		}
+	},
+
+	zakat_mode: function(frm) {
+		if (frm.doc.zakat_mode == "Percentage") {
+			if (!frm.doc.zakat_percentage || frm.doc.zakat_percentage === 0) {
+				frm.set_value("zakat_percentage", 2.5);
+			}
 		}
 	},
 });
