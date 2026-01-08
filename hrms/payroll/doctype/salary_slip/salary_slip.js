@@ -222,7 +222,7 @@ frappe.ui.form.on("Salary Slip", {
 		if (!frm.is_new() && frm.doc.dosctatus === 0 && frm.perm[0].submit == 1) {
 			frm.page.set_primary_action(__("Submit"), function() {
 				frappe.confirm(
-					`Permanently submit Salary Slip ${frm.doc.name} for ${frm.doc.employee_name || frm.doc.employee}?`,
+					__("Permanently submit Salary Slip {0} for {1}?").format(frm.doc.name, frm.doc.employee_name || frm.doc.employee),
 					function () {
 						frappe.call({
 							method: "frappe.client.submit",
@@ -415,145 +415,271 @@ frappe.ui.form.on("Salary Detail", {
 	},
 });
 
+// frappe.ui.form.on("Salary Slip", {
+//     refresh(frm) {
+//         if (frm.doc.docstatus === 0 && frm.doc.employee) {
+//             frm.add_custom_button(__('Fetch Loan Installment'), function () {
+//                 frappe.call({
+//                     method: "hrms.payroll.doctype.salary_slip.salary_slip.fetch_loan_installment",
+//                     args: { employee: frm.doc.employee },
+//                     callback: function (r) {
+//                         if (r.message && r.message.total_installment) {
+//                             let total_installment = r.message.total_installment;
+//                             // frm.set_value("installment", total_installment);
+
+//                             let found = false;
+//                             (frm.doc.deductions || []).forEach(row => {
+//                                 if (row.salary_component === "Loan Repayment") {
+//                                     row.amount = total_installment;
+//                                     found = true;
+//                                 }
+//                             });
+//                             if (!found) {
+//                                 frm.add_child("deductions", {
+//                                     salary_component: "Loan Repayment",
+//                                     amount: total_installment
+//                                 });
+//                             }
+
+//                             frm.refresh_field("deductions");
+// 							set_totals(frm);
+//                             frappe.msgprint("Loan installment fetched successfully.");
+//                         } else {
+//                             frappe.msgprint("No active loan found for this employee.");
+//                         }
+//                     }
+//                 });
+//             });
+//         }
+
+//         // === Tombol Fetch Overtime ===
+// 		if (frm.doc.docstatus === 0 && frm.doc.employee) {
+// 			frm.add_custom_button("Fetch Overtime", function() {
+// 				if (!frm.doc.start_date || !frm.doc.end_date) {
+// 					frappe.msgprint("Fill Employee, Start Date, dan End Date first.");
+// 					return;
+// 				}
+
+// 				frappe.call({
+// 					method: "hrms.payroll.doctype.salary_slip.salary_slip.get_total_overtime",
+// 					args: {
+// 						employee: frm.doc.employee,
+// 						start_date: frm.doc.start_date,
+// 						end_date: frm.doc.end_date
+// 					},
+// 					callback: function(r) {
+// 						if (r.message && r.message.total_overtime) {
+// 							let total_overtime = r.message.total_overtime;
+
+// 							// let found = false;
+// 							// (frm.doc.earnings || []).forEach(row => {
+// 							// 	if (row.salary_component === "Overtime") {
+// 							// 		row.amount = total_overtime
+// 							// 		found = true
+// 							// 	}
+// 							// });
+// 							// if (!found) {
+// 							// 	frm.add_child("earnings", {
+// 							// 		salary_component: "Overtime",
+// 							// 		amount: total_overtime
+// 							// 	});
+// 							// }
+
+// 							let row = (frm.doc.earnings || []).find(r => r.salary_component === "Overtime");
+// 							if (!row) {
+// 							row = frm.add_child("earnings", { salary_component: "Overtime" });
+// 							}
+
+// 							row.amount = total_overtime;
+
+// 							if ("additional_amount" in row) {
+// 							row.additional_amount = total_overtime;
+// 							}
+// 							frm.refresh_field("earnings");
+
+// 							set_totals(frm);
+// 							frappe.msgprint("Total Overtime fetched successfully");
+// 						} else {
+// 							frappe.msgprint("No Overtime found in this period.");
+// 						}
+// 					}
+// 				});
+// 			});
+// 		}
+
+//         if (frm.doc.docstatus === 0 && frm.doc.employee && frm.doc.end_date) {
+//             frm.add_custom_button(__('Fetch Total Late Days'), function () {
+//                 frappe.call({
+//                     method: "hrms.payroll.doctype.salary_slip.salary_slip.update_total_late_days",
+//                     args: {
+//                         employee: frm.doc.employee,
+//                         end_date: frm.doc.end_date
+//                     },
+//                     freeze: true,
+//                     callback: function (r) {
+//                         if (r.message === undefined || r.message === null) {
+//                             frappe.msgprint(__("No late days data returned."));
+//                             return;
+//                         }
+
+//                         let total_late_days = Number(r.message) || 0;
+
+//                         frm.set_value("total_late_days", total_late_days);
+//                         frm.refresh_field("total_late_days");
+
+//                         let late_amount = total_late_days * 80000;
+
+//                         let found = false;
+//                         (frm.doc.deductions || []).forEach(row => {
+//                             if (row.salary_component === "Keterlambatan") {
+//                                 row.amount = late_amount;
+//                                 found = true;
+//                             }
+//                         });
+
+//                         if (!found) {
+//                             frm.add_child("deductions", {
+//                                 salary_component: "Keterlambatan",
+//                                 amount: late_amount
+//                             });
+//                         }
+
+//                         frm.refresh_field("deductions");
+// 						set_totals(frm)
+//                         frappe.msgprint(__("Total Late Days fetched successfully."));
+//                     }
+//                 });
+//             });
+//         }
+
+//     }
+// });
+
 frappe.ui.form.on("Salary Slip", {
-    refresh(frm) {
-        if (frm.doc.docstatus === 0 && frm.doc.employee) {
-            frm.add_custom_button(__('Fetch Loan Installment'), function () {
-                frappe.call({
-                    method: "hrms.payroll.doctype.salary_slip.salary_slip.fetch_loan_installment",
-                    args: { employee: frm.doc.employee },
-                    callback: function (r) {
-                        if (r.message && r.message.total_installment) {
-                            let total_installment = r.message.total_installment;
-                            // frm.set_value("installment", total_installment);
+  refresh(frm) {
+  },
 
-                            let found = false;
-                            (frm.doc.deductions || []).forEach(row => {
-                                if (row.salary_component === "Loan Repayment") {
-                                    row.amount = total_installment;
-                                    found = true;
-                                }
-                            });
-                            if (!found) {
-                                frm.add_child("deductions", {
-                                    salary_component: "Loan Repayment",
-                                    amount: total_installment
-                                });
-                            }
+  employee(frm) {
+    frm.trigger("auto_fetch_all");
+  },
+  start_date(frm) {
+    frm.trigger("auto_fetch_all");
+  },
+  end_date(frm) {
+    frm.trigger("auto_fetch_all");
+  },
 
-                            frm.refresh_field("deductions");
-							set_totals(frm);
-                            frappe.msgprint("Loan installment fetched successfully.");
-                        } else {
-                            frappe.msgprint("No active loan found for this employee.");
-                        }
-                    }
-                });
-            });
-        }
+  auto_fetch_all: frappe.utils.debounce(function(frm) {
+    if (frm.doc.docstatus !== 0) return;
+    if (!frm.doc.employee) return;
 
-        // === Tombol Fetch Overtime ===
-		if (frm.doc.docstatus === 0 && frm.doc.employee) {
-			frm.add_custom_button("Fetch Overtime", function() {
-				if (!frm.doc.start_date || !frm.doc.end_date) {
-					frappe.msgprint("Fill Employee, Start Date, dan End Date first.");
-					return;
-				}
+    // Loan bisa jalan tanpa tanggal
+    frm.trigger("auto_fetch_loan");
 
-				frappe.call({
-					method: "hrms.payroll.doctype.salary_slip.salary_slip.get_total_overtime",
-					args: {
-						employee: frm.doc.employee,
-						start_date: frm.doc.start_date,
-						end_date: frm.doc.end_date
-					},
-					callback: function(r) {
-						if (r.message && r.message.total_overtime) {
-							let total_overtime = r.message.total_overtime;
-
-							// let found = false;
-							// (frm.doc.earnings || []).forEach(row => {
-							// 	if (row.salary_component === "Overtime") {
-							// 		row.amount = total_overtime
-							// 		found = true
-							// 	}
-							// });
-							// if (!found) {
-							// 	frm.add_child("earnings", {
-							// 		salary_component: "Overtime",
-							// 		amount: total_overtime
-							// 	});
-							// }
-
-							let row = (frm.doc.earnings || []).find(r => r.salary_component === "Overtime");
-							if (!row) {
-							row = frm.add_child("earnings", { salary_component: "Overtime" });
-							}
-
-							row.amount = total_overtime;
-
-							if ("additional_amount" in row) {
-							row.additional_amount = total_overtime;
-							}
-							frm.refresh_field("earnings");
-
-							set_totals(frm);
-							frappe.msgprint("Total Overtime fetched successfully");
-						} else {
-							frappe.msgprint("No Overtime found in this period.");
-						}
-					}
-				});
-			});
-		}
-
-        if (frm.doc.docstatus === 0 && frm.doc.employee && frm.doc.end_date) {
-            frm.add_custom_button(__('Fetch Total Late Days'), function () {
-                frappe.call({
-                    method: "hrms.payroll.doctype.salary_slip.salary_slip.update_total_late_days",
-                    args: {
-                        employee: frm.doc.employee,
-                        end_date: frm.doc.end_date
-                    },
-                    freeze: true,
-                    callback: function (r) {
-                        if (r.message === undefined || r.message === null) {
-                            frappe.msgprint(__("No late days data returned."));
-                            return;
-                        }
-
-                        let total_late_days = Number(r.message) || 0;
-
-                        frm.set_value("total_late_days", total_late_days);
-                        frm.refresh_field("total_late_days");
-
-                        let late_amount = total_late_days * 80000;
-
-                        let found = false;
-                        (frm.doc.deductions || []).forEach(row => {
-                            if (row.salary_component === "Keterlambatan") {
-                                row.amount = late_amount;
-                                found = true;
-                            }
-                        });
-
-                        if (!found) {
-                            frm.add_child("deductions", {
-                                salary_component: "Keterlambatan",
-                                amount: late_amount
-                            });
-                        }
-
-                        frm.refresh_field("deductions");
-						set_totals(frm)
-                        frappe.msgprint(__("Total Late Days fetched successfully."));
-                    }
-                });
-            });
-        }
-
+    // Overtime butuh tanggal
+    if (frm.doc.start_date && frm.doc.end_date) {
+      frm.trigger("auto_fetch_overtime");
     }
+
+    // Late days butuh end_date
+    if (frm.doc.end_date) {
+      frm.trigger("auto_fetch_late");
+    }
+  }, 600),
+
+  auto_fetch_loan(frm) {
+    frappe.call({
+      method: "hrms.payroll.doctype.salary_slip.salary_slip.fetch_loan_installment",
+      args: { employee: frm.doc.employee },
+      callback: function (r) {
+        const total_installment = r.message?.total_installment || 0;
+
+        upsert_component_row(frm, "deductions", "Loan Repayment", total_installment);
+        frm.refresh_field("deductions");
+        set_totals(frm);
+      }
+    });
+  },
+
+  auto_fetch_overtime(frm) {
+    frappe.call({
+      method: "hrms.payroll.doctype.salary_slip.salary_slip.get_total_overtime",
+      args: {
+        employee: frm.doc.employee,
+        start_date: frm.doc.start_date,
+        end_date: frm.doc.end_date
+      },
+      callback: function (r) {
+        const total_overtime = r.message?.total_overtime || 0;
+
+        upsert_component_row(frm, "earnings", "Overtime", total_overtime);
+        frm.refresh_field("earnings");
+        set_totals(frm);
+      }
+    });
+  },
+
+  auto_fetch_late(frm) {
+    frappe.call({
+      method: "hrms.payroll.doctype.salary_slip.salary_slip.update_total_late_days",
+      args: {
+        employee: frm.doc.employee,
+        end_date: frm.doc.end_date
+      },
+      callback: function (r) {
+        const total_late_days = Number(r.message) || 0;
+        frm.set_value("total_late_days", total_late_days);
+
+        const late_amount = total_late_days * 80000;
+        upsert_component_row(frm, "deductions", "Keterlambatan", late_amount);
+
+        frm.refresh_field("deductions");
+        set_totals(frm);
+      }
+    });
+  },
+
+//   earnings_add(frm) {
+// 	frm.trigger("recalculate_zakat");
+//   },
+
+//   earnings_remove(frm) {
+// 	frm.trigger("recalculate_zakat");
+//   },
+
+//   deductions_add(frm) {
+// 	frm.trigger("recalculate_zakat");
+//   },
+
+//   deductions_remove(frm) {
+// 	frm.trigger("recalculate_zakat");
+//   },
+
+//   recalculate_zakat: frappe.utils.debounce(function (frm) {
+// 	if (frm.doc.docstatus !== 0) return;
+
+// 	set_totals(frm);
+
+// 	frm.refresh_field("earnings");
+// 	frm.refresh_field("deductions");
+//   }, 300),
+
 });
+
+
+
+function upsert_component_row(frm, child_table, component_name, amount) {
+  let row = (frm.doc[child_table] || []).find(d => d.salary_component === component_name);
+  if (!row) {
+    row = frm.add_child(child_table, { salary_component: component_name });
+  }
+  row.amount = amount || 0;
+
+  // kalau doctype child punya additional_amount, ikut isi (kadang ada di custom)
+  if ("additional_amount" in row) row.additional_amount = row.amount;
+
+  
+}
 
 
 
