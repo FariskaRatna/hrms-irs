@@ -5,7 +5,7 @@ import frappe
 from frappe.model.document import Document
 from datetime import datetime
 from frappe import _
-from frappe.utils import get_fullname, time_diff_in_hours, now_datetime
+from frappe.utils import get_fullname, time_diff_in_hours, now_datetime, getdate
 from hrms.utils import get_employee_email
 from hrms.custom.email_token.overtime_email_token import build_action_url
 
@@ -61,14 +61,13 @@ class Overtime(Document):
 	def on_submit(self):
 		if self.approval_status in ["Pending"]:
 			frappe.throw(_("Only Overtime Application with status 'Approved' and 'Rejected' can be submitted"))
-		
-		if frappe.db.get_single_value("HR Settings", "send_overtime_application_notification"):
-			if getattr(self.flags, "from_email_action", False):
-				self.notify_employee()
 
-				if self.approval_status == "Approved":
-					self.create_overtime_calculation()
-					# self.create_overtime_summary()
+		if self.approval_status == "Approved":
+			self.create_overtime_calculation()
+			# self.create_overtime_summary()
+
+		if frappe.db.get_single_value("HR Settings", "send_overtime_application_notification"):
+			self.notify_employee()
 
 	def create_overtime_calculation(self):
 		existing_calculation = frappe.db.exists("Overtime Calculation", {"reference_request": self.name})
@@ -76,11 +75,16 @@ class Overtime(Document):
 			frappe.msgprint("Overtime calculation already exists for this Overtime Request.")
 			return
 		
-		day_type = "Weekend" if self.is_weekend() else "Weekday"
+		if not self.start_time:
+			frappe.throw(_("Start time is required to create Overtime Calculation"))
+		
+		ot_date = getdate(self.start_time)
+		
+		day_type = "Weekend" if self.is_weekend(ot_date) else "Weekday"
 
 		calculation = frappe.new_doc("Overtime Calculation")
 		calculation.employee = self.employee
-		calculation.date = self.date
+		calculation.date = ot_date
 		calculation.total_hours = self.total_hours
 		calculation.day_type = day_type
 		calculation.reference_request = self.name
@@ -88,12 +92,11 @@ class Overtime(Document):
 		calculation.insert(ignore_permissions=True)
 		frappe.msgprint(_("Overtime calculation for {0} successfully created.").format(self.employee_name))
 	
-	def is_weekend(self):
-		if not self.date:
-			return False
-		# ubah dari string ke datetime
-		date_obj = datetime.strptime(str(self.date), "%Y-%m-%d").date()
-		# .weekday() -> 5 = Sabtu, 6 = Minggu
+	def is_weekend(self, dt):
+		date_obj = dt
+		if isinstance(dt, str):
+			date_obj = datetime.strptime(dt, "%Y-%m-%d").date()
+
 		return date_obj.weekday() in (5, 6)
 
 	# def create_overtime_summary(self):

@@ -10,7 +10,6 @@
   "naming_series",
   "employee",
   "employee_name",
-  "approval_status",
   "column_break_mmqx",
   "department",
   "designation",
@@ -24,8 +23,9 @@
   "amended_from",
   "section_break_xprp",
   "posting_date",
+  "hrd_user",
   "column_break_kqch",
-  "hrd_user"
+  "approval_status"
  ],
  "fields": [
   {
@@ -133,7 +133,6 @@
    "reqd": 1
   },
   {
-   "collapsible": 1,
    "fieldname": "section_break_xprp",
    "fieldtype": "Section Break",
    "label": "Approval"
@@ -164,7 +163,7 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-12-02 09:32:15.549721",
+ "modified": "2026-01-09 17:39:28.300060",
  "modified_by": "Administrator",
  "module": "HR",
  "name": "Reimbursement",
