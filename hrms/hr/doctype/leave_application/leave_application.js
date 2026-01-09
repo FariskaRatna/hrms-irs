@@ -13,9 +13,11 @@ frappe.ui.form.on("Leave Application", {
 			};
 		});
 		frm.set_query("employee", erpnext.queries.employee);
+		frm._last_project_for_code = null
 	},
 
 	onload: function (frm) {
+		frm._last_project_for_code = frm.doc.project || null;
 		// Ignore cancellation of doctype on cancel all.
 		frm.ignore_doctypes_on_cancel_all = ["Leave Ledger Entry"];
 
@@ -90,6 +92,7 @@ frappe.ui.form.on("Leave Application", {
 
 	refresh: function (frm) {
 		// frm.page.wrapper.find(".comment-box").css({"display": "none"});
+		frm.trigger("load_project_codes");
 		
 		hrms.leave_utils.add_view_ledger_button(frm);
 		if (frm.is_new()) {
@@ -177,21 +180,33 @@ frappe.ui.form.on("Leave Application", {
 
 	project(frm) {
 		frm.set_value("project_code", "");
+		frm.trigger("load_project_codes");
+	},
+
+	load_project_codes(frm) {
+		if (!frm.doc.project) {
 		frm.set_df_property("project_code", "options", []);
 		frm.refresh_field("project_code");
+		return;
+		}
 
-		if (!frm.doc.project) return;
+		const existing = frm.doc.project_code;
 
 		frappe.call({
-			method: "hrms.api.project_codes.get_project_codes",
-			args: { project: frm.doc.project },
-			callback: (r) => {
-				const codes = (r.message || []);
+		method: "hrms.api.project_codes.get_project_codes",
+		args: { project: frm.doc.project },
+		callback: (r) => {
+			const codes = r.message || [];
 
-				frm.set_df_property("project_code", "options", codes.join("\n"));
-				frm.refresh_field("project_code");
+			frm.set_df_property("project_code", "options", codes.join("\n"));
+			frm.refresh_field("project_code");
+
+			// Re-apply nilai tersimpan jika masih valid
+			if (existing && codes.includes(existing)) {
+			frm.set_value("project_code", existing);
 			}
-		})
+		}
+		});
 	},
 
 	sync_photo_preview: function (frm) {
@@ -426,6 +441,8 @@ frappe.ui.form.on("Leave Application", {
 
 frappe.ui.form.on("Leave Application", {
 	refresh(frm) {
+		frm.trigger("load_project_codes");
+
 		if (frm.doc.approval_status === "Approved") {
 			frappe.call({
 				method: "frappe.client.get_value",
