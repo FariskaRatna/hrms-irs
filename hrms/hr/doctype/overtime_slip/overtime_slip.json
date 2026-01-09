@@ -105,18 +105,21 @@
    "fieldtype": "Column Break"
   },
   {
+   "depends_on": "eval: !doc.__islocal",
    "fieldname": "total_hours",
    "fieldtype": "Float",
    "in_list_view": 1,
    "label": "Total Hours"
   },
   {
+   "depends_on": "eval: !doc.__islocal",
    "fieldname": "total_amount",
    "fieldtype": "Currency",
    "in_list_view": 1,
    "label": "Total Amount"
   },
   {
+   "depends_on": "eval: !doc.__islocal",
    "fieldname": "status",
    "fieldtype": "Select",
    "label": "Status",
@@ -138,7 +141,7 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-12-11 12:30:50.049307",
+ "modified": "2026-01-09 10:29:48.575711",
  "modified_by": "Administrator",
  "module": "HR",
  "name": "Overtime Slip",
