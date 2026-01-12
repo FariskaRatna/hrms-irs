@@ -150,6 +150,15 @@ before_app_uninstall = "hrms.setup.before_app_uninstall"
 
 has_upload_permission = {"Employee": "erpnext.setup.doctype.employee.employee.has_upload_permission"}
 
+has_permission = {
+    "Project": "hrms.custom.project_access.has_permission"
+}
+
+permission_query_conditions = {
+    "Project": "hrms.custom.project_access.permission_query_conditions"
+}
+
+
 # DocType Class
 # ---------------
 # Override standard doctype classes
@@ -198,6 +207,7 @@ doc_events = {
 			"hrms.payroll.doctype.salary_slip.salary_slip.adjust_payment_days",
 			# "hrms.payroll.doctype.salary_slip.salary_slip.update_total_late_days",
 		],
+        "before_submit": "hrms.payroll.doctype.salary_slip.salary_slip.update_total_late_days",
         "on_submit": "hrms.payroll.doctype.salary_slip.salary_slip.update_loan_repayment_from_salary",
     },
 	"Loan": {
@@ -258,9 +268,10 @@ doc_events = {
 	},
 	"Project": {
         "validate": "hrms.controllers.employee_boarding_controller.update_employee_boarding_status",
-        "before_insert": "hrms.custom.project_permission.set_default_project_manager",
-        "after_insert": "hrms.custom.project_permission.sync_project_user_permissions",
-        "on_update": "hrms.custom.project_permission.sync_project_user_permissions",
+        # "before_insert": "hrms.custom.project_permission.allow_create_bypass_user_permissions",
+        # "after_insert": "hrms.custom.project_permission.sync_project_user_permissions",
+        # "on_update": "hrms.custom.project_permission.sync_project_user_permissions",
+        # "before_validate": "hrms.custom.project_permission.set_default_project_manager",
     },
 	"Task": {"on_update": "hrms.controllers.employee_boarding_controller.update_task"},
 }
