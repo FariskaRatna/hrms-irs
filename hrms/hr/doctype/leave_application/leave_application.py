@@ -140,7 +140,6 @@ class LeaveApplication(Document, PWANotificationsMixin):
 				bt = self.create_business_trip_allowance()
 				self.notify_hrd_bt(bt)
 			
-			
 		if self.approval_status in ["Rejected", "Cancelled"] and self.leave_category == "Dinas":
 			self.delete_employee_checkins()
 	def on_submit(self):
@@ -155,6 +154,12 @@ class LeaveApplication(Document, PWANotificationsMixin):
 		if frappe.db.get_single_value("HR Settings", "send_leave_notification"):
 			if getattr(self.flags, "from_email_action", False):
 				self.notify_employee()
+
+		# if self.approval_status == "Approved" and self.leave_category == "Dinas":
+		# 	if frappe.db.get_single_value("HR Settings", "send_business_trip_notification"):
+		# 		bt = self.create_business_trip_allowance()
+		# 		self.notify_hrd_bt(bt)
+				
 
 		self.create_leave_ledger_entry()
 		self.reload()
@@ -668,7 +673,8 @@ class LeaveApplication(Document, PWANotificationsMixin):
 		
 		existing_business_trip = frappe.db.exists("Business Trip Allowance", {"leave_application": self.name})
 		if existing_business_trip:
-			frappe.throw("Business Trip Allowance already exists for this Leave Application.")
+			# frappe.throw("Business Trip Allowance already exists for this Leave Application.")
+			return frappe.get_doc("Business Trip Allowance", existing_business_trip)
 
 		bt_doc = frappe.new_doc("Business Trip Allowance")
 		bt_doc.employee = self.employee
