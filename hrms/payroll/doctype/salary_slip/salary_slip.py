@@ -2585,37 +2585,6 @@ def get_total_overtime(employee, start_date, end_date):
 	total_overtime = float(res[0][0] or 0)
 	return {"total_overtime": total_overtime}
 
-import frappe
-
-def apply_dynamic_components(doc, method=None):
-    if doc.docstatus != 0:
-        return
-
-    if not doc.employee or not doc.start_date or not doc.end_date:
-        return
-
-    res = frappe.call(
-        "hrms.payroll.doctype.salary_slip.salary_slip.get_total_overtime",
-        employee=doc.employee,
-        start_date=doc.start_date,
-        end_date=doc.end_date,
-    )
-    total_overtime = (res or {}).get("total_overtime") or 0
-
-    # cari row overtime di earnings
-    row = None
-    for e in doc.earnings:
-        if e.salary_component == "Overtime":
-            row = e
-            break
-
-    # kalau belum ada, tambahkan row (jaga-jaga)
-    if not row:
-        row = doc.append("earnings", {"salary_component": "Overtime"})
-
-    # KUNCI: isi additional_amount, bukan amount
-    row.additional_amount = total_overtime
-
 
 import frappe
 from frappe.utils import getdate
