@@ -34,6 +34,7 @@ from erpnext.setup.doctype.employee.employee import get_holiday_list_for_employe
 from erpnext.utilities.transaction_base import TransactionBase
 
 from hrms.hr.utils import validate_active_employee
+from hrms.payroll.doctype import salary_slip
 from hrms.payroll.doctype.additional_salary.additional_salary import get_additional_salaries
 from hrms.payroll.doctype.employee_benefit_application.employee_benefit_application import (
 	get_benefit_component_amount,
@@ -2585,26 +2586,61 @@ def get_total_overtime(employee, start_date, end_date):
 	return {"total_overtime": total_overtime}
 
 import frappe
+
+def apply_dynamic_components(doc, method=None):
+    if doc.docstatus != 0:
+        return
+
+    if not doc.employee or not doc.start_date or not doc.end_date:
+        return
+
+    res = frappe.call(
+        "hrms.payroll.doctype.salary_slip.salary_slip.get_total_overtime",
+        employee=doc.employee,
+        start_date=doc.start_date,
+        end_date=doc.end_date,
+    )
+    total_overtime = (res or {}).get("total_overtime") or 0
+
+    # cari row overtime di earnings
+    row = None
+    for e in doc.earnings:
+        if e.salary_component == "Overtime":
+            row = e
+            break
+
+    # kalau belum ada, tambahkan row (jaga-jaga)
+    if not row:
+        row = doc.append("earnings", {"salary_component": "Overtime"})
+
+    # KUNCI: isi additional_amount, bukan amount
+    row.additional_amount = total_overtime
+
+
+import frappe
 from frappe.utils import getdate
 
 def adjust_payment_days(salary_slip, method=None):
     if not salary_slip.employee or not salary_slip.start_date or not salary_slip.end_date:
         return
 
-    # === Ambil daftar kehadiran ===
+    start = getdate(salary_slip.start_date)
+    end = getdate(salary_slip.end_date)
+
+    # === Ambil attendance (submitted saja) ===
     attendances = frappe.get_all(
         "Attendance",
         filters={
             "employee": salary_slip.employee,
-            "attendance_date": ["between", [salary_slip.start_date, salary_slip.end_date]],
+            "attendance_date": ["between", [start, end]],
             "docstatus": 1
         },
         fields=["attendance_date", "status", "daily_allowance_deducted"]
     )
 
-    total_days = (getdate(salary_slip.end_date) - getdate(salary_slip.start_date)).days + 1
+    total_days = (end - start).days + 1
 
-    # === Cari hari libur dari Holiday List ===
+    # === Holidays ===
     holiday_list = frappe.db.get_value("Employee", salary_slip.employee, "holiday_list")
     holidays = []
     if holiday_list:
@@ -2612,31 +2648,21 @@ def adjust_payment_days(salary_slip, method=None):
             "Holiday",
             filters={
                 "parent": holiday_list,
-                "holiday_date": ["between", [salary_slip.start_date, salary_slip.end_date]]
+                "holiday_date": ["between", [start, end]]
             },
             pluck="holiday_date"
         )
-
     total_holidays = len(holidays)
 
-    # === Hitung kehadiran ===
-    working_days = 0
-    absent_days = 0
-
-    for att in attendances:
-        if att.status in ["Present", "Late", "Half Day"]:
-            working_days += 1
-        elif att.status in ["Absent", "On Leave"]:
-            if att.daily_allowance_deducted:
-                absent_days += 1
-
     effective_working_days = total_days - total_holidays
-    payment_days = effective_working_days - absent_days
+
+    deduct_days = sum(1 for att in attendances if att.daily_allowance_deducted)
+
+    payment_days = max(effective_working_days - deduct_days, 0)
 
     # === Simpan ke Salary Slip ===
     salary_slip.total_working_days = effective_working_days
-    salary_slip.absent_days = absent_days
-    salary_slip.payment_days = payment_days
+    salary_slip.absent_days = deduct_days
 
     # === Penyesuaian berdasarkan jabatan ===
     designation = frappe.db.get_value("Employee", salary_slip.employee, "designation")
@@ -2651,6 +2677,7 @@ def adjust_payment_days(salary_slip, method=None):
     for earning in salary_slip.earnings:
         if earning.salary_component == "Tunjangan Harian":
             earning.amount = base_rate * payment_days
+
 
 # def update_total_late_days_internal(salary_slip):
 #     if not salary_slip.employee or not salary_slip.end_date:
