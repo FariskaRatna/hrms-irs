@@ -245,7 +245,7 @@ def process_file(docname):
             return value
         return None
 
-    for _, row in df_finger.iterrows():
+    for idx, row in df_finger.iterrows():
         # emp = find_employee(row["Name"])
         emp = find_employee(row["Name"], source="finger")
         if not emp:
