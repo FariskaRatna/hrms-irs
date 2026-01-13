@@ -320,7 +320,7 @@ def process_file(docname):
         # in_datetime = datetime.combine(date_part, in_time) if in_time else None
         # out_datetime = datetime.combine(date_part, out_time) if out_time else None
 
-        # Ambil shift]\
+        # Ambil shift]
         shift_assignment = frappe.db.get_value(
             "Shift Assignment",
             {
@@ -410,7 +410,7 @@ def process_file(docname):
                     status = "Present"
                     attendance_reason = "Setengah Hari (waktu tidak sesuai)"
                     daily_allowance_deducted = True
-                    continue
+                    # continue
 
                 valid_half_day_count = frappe.db.count(
                     "Attendance",
@@ -517,6 +517,7 @@ def process_file(docname):
                     "daily_allowance_deducted": daily_allowance_deducted,
                     "in_time": in_datetime,
                     "out_time": out_datetime
+                    # is_halfday_leave = (leave_category == "Izin Setengah Hari")
                 })
                 frappe.msgprint(_("Attendance from Setengah Hari Leave Application for {0} {1}").format(row['Name'], date_part))
                 continue

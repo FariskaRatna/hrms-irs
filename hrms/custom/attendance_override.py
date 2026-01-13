@@ -5,6 +5,11 @@ from frappe import _
 
 
 class CustomAttendance(HRMSAttendance):
+    def before_submit(self):
+        if getattr(self, "needs_checkin_validation", 0):
+            frappe.throw("Attendance masih pending validasi checkin; tidak boleh submit dulu.")
+        return super().before_submit()
+    
     def check_leave_record(self):
         return custom_check_leave_record(self)
 

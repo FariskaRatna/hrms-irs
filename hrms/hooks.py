@@ -199,6 +199,7 @@ doc_events = {
 			"hrms.custom.patch_leave_attendance.create_attendance_from_leave",
 			"hrms.overrides.leave_sync.handle_leave_sync",
             "hrms.custom.override_attendance_leave.override_attendance_leave",
+            # "hrms.custom.leave_halfday_hooks.mark_halfday_attendance_pending",
 		],
         # "before_submit": "hrms.custom.override_attendance_leave.override_attendance_leave",
 	},
@@ -206,6 +207,7 @@ doc_events = {
 		"before_save": [
 			"hrms.payroll.doctype.salary_slip.salary_slip.adjust_payment_days",
 			# "hrms.payroll.doctype.salary_slip.salary_slip.update_total_late_days",
+			"hrms.payroll.doctype.salary_slip.salary_slip_hooks.apply_overtime",
 		],
         "before_submit": "hrms.payroll.doctype.salary_slip.salary_slip.update_total_late_days",
         "on_submit": "hrms.payroll.doctype.salary_slip.salary_slip.update_loan_repayment_from_salary",
