@@ -207,7 +207,7 @@ doc_events = {
 		"before_save": [
 			"hrms.payroll.doctype.salary_slip.salary_slip.adjust_payment_days",
 			# "hrms.payroll.doctype.salary_slip.salary_slip.update_total_late_days",
-			"hrms.payroll.doctype.salary_slip.salary_slip_hooks.apply_overtime",
+			# "hrms.payroll.doctype.salary_slip.salary_slip_hooks.apply_overtime",
 		],
         "before_submit": "hrms.payroll.doctype.salary_slip.salary_slip.update_total_late_days",
         "on_submit": "hrms.payroll.doctype.salary_slip.salary_slip.update_loan_repayment_from_salary",

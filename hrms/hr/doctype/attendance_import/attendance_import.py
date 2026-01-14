@@ -396,52 +396,56 @@ def process_file(docname):
                     attendance_reason = "Sakit tanpa Surat Dokter"
 
             elif leave_category == "Izin Setengah Hari":
-                att_exists = frappe.db.exists("Attendance", {
-                    "employee": emp,
-                    "attendance_date": date_part
-                })
+                # att_exists = frappe.db.exists("Attendance", {
+                #     "employee": emp,
+                #     "attendance_date": date_part
+                # })
 
                 current_date_valid = False
                 if in_datetime and out_datetime:
                     if in_datetime.time() <= time(11, 0) and out_datetime.time() >= time(15, 0):
                         current_date_valid = True
+                
+                status = "Present"
 
                 if not current_date_valid:
-                    status = "Present"
+                    # status = "Present"
                     attendance_reason = "Setengah Hari (waktu tidak sesuai)"
-                    daily_allowance_deducted = True
+                    daily_allowance_deducted = False
                     # continue
 
-                valid_half_day_count = frappe.db.count(
-                    "Attendance",
-                    filters={
-                        "employee": emp,
-                        "attendance_reason": "Setengah Hari (kurang dari 2 kali)",
-                        "attendance_date": ["<", date_part],
-                        "docstatus": ["in", [0, 1]]
-                    }
-                )
-
-                valid_half_day_count += 1
-
-                if att_exists:
-                    att = frappe.get_doc("Attendance", att_exists)
-                    if att.leave_application:
-                        att.cancel()
-                        att.delete(ignore_permissions=True)
-                        frappe.msgprint(_("Attendance from Izin Setengah Hari override for {0} on {1}").format(row['Name'], date_part))
-                    else:
-                        frappe.msgprint(_("Attendance already exists for {0} on {1}").format(row['Name'], date_part))
-                        continue
-
-                if valid_half_day_count > 2:
-                    status = "Present"
-                    daily_allowance_deducted = False
-                    attendance_reason = "Setengah Hari (lebih dari 2 kali)"
                 else:
-                    status = "Present"
-                    daily_allowance_deducted = False
-                    attendance_reason = "Setengah Hari (kurang dari 2 kali)"
+                    valid_half_day_count = frappe.db.count(
+                        "Attendance",
+                        filters={
+                            "employee": emp,
+                            "attendance_reason": "Setengah Hari (kurang dari 2 kali)",
+                            "attendance_date": ["<", date_part],
+                            "docstatus": ["in", [0, 1]]
+                        }
+                    )
+
+                    valid_half_day_count += 1
+
+                    if valid_half_day_count > 2:
+                        # status = "Present"
+                        daily_allowance_deducted = False
+                        attendance_reason = "Setengah Hari (lebih dari 2 kali)"
+                    else:
+                        # status = "Present"
+                        daily_allowance_deducted = False
+                        attendance_reason = "Setengah Hari (kurang dari 2 kali)"
+
+                # if att_exists:
+                #     att = frappe.get_doc("Attendance", att_exists)
+                #     if att.leave_application:
+                #         att.cancel()
+                #         att.delete(ignore_permissions=True)
+                #         frappe.msgprint(_("Attendance from Izin Setengah Hari override for {0} on {1}").format(row['Name'], date_part))
+                #     else:
+                #         frappe.msgprint(_("Attendance already exists for {0} on {1}").format(row['Name'], date_part))
+                #         continue
+
 
         # Cek ada cuti bersama
         elif is_mass_leave(emp, date_part):
@@ -460,7 +464,6 @@ def process_file(docname):
                 attendance_reason = "Izin"
         
         else:
-            # Tidak ada leave atau cuti bersama, tentukan berdasarkan clock-in/out
             if in_datetime and out_datetime:
                 status = "Present"
                 attendance_reason = "Hadir"
@@ -506,17 +509,14 @@ def process_file(docname):
             frappe.msgprint(_("✅ Attendance created for {0} {1}").format(row['Name'], date_part))
         else:
             att = frappe.get_doc("Attendance", existing_att)
-            if att.leave_application and att.attendance_reason in [
-                "Setengah Hari (kurang dari 2 kali)",
-                "Setengah Hari (lebih dari 2 kali)",
-                "Setengah Hari (waktu tidak sesuai)"
-            ]:
+
+            if leave_category == "Izin Setengah Hari":
                 frappe.db.set_value("Attendance", att.name, {
                     "status": "Present",
                     "attendance_reason": attendance_reason,
                     "daily_allowance_deducted": daily_allowance_deducted,
-                    "in_time": in_datetime,
-                    "out_time": out_datetime
+                    "in_time": get_datetime(in_datetime) if in_datetime else None,
+                    "out_time": get_datetime(out_datetime) if out_datetime else None
                     # is_halfday_leave = (leave_category == "Izin Setengah Hari")
                 })
                 frappe.msgprint(_("Attendance from Setengah Hari Leave Application for {0} {1}").format(row['Name'], date_part))
