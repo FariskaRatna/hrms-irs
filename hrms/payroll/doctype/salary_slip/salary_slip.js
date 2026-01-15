@@ -513,6 +513,7 @@ frappe.ui.form.on("Salary Detail", {
 //                     method: "hrms.payroll.doctype.salary_slip.salary_slip.update_total_late_days",
 //                     args: {
 //                         employee: frm.doc.employee,
+// 						start_date: frm.doc.start_date,
 //                         end_date: frm.doc.end_date
 //                     },
 //                     freeze: true,
@@ -582,7 +583,7 @@ frappe.ui.form.on("Salary Slip", {
     }
 
     // Late days butuh end_date
-    if (frm.doc.end_date) {
+    if (frm.doc.start_date && frm.doc.end_date) {
       frm.trigger("auto_fetch_late");
     }
   }, 600),
@@ -624,6 +625,7 @@ frappe.ui.form.on("Salary Slip", {
       method: "hrms.payroll.doctype.salary_slip.salary_slip.update_total_late_days",
       args: {
         employee: frm.doc.employee,
+		start_date: frm.doc.start_date,
         end_date: frm.doc.end_date
       },
       callback: function (r) {

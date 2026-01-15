@@ -2668,23 +2668,22 @@ def adjust_payment_days(salary_slip, method=None):
 
 
 @frappe.whitelist()
-def update_total_late_days(employee, end_date):
-    """Return only the late_days, no need to load Salary Slip doc."""
-    if not employee or not end_date:
-        return 0
+def update_total_late_days(employee, start_date, end_date):
+	"""Return only the late_days, no need to load Salary Slip doc."""
+	if not employee or not end_date:
+		return 0
+	
+	start_date = getdate(start_date)
+	end_date = getdate(end_date)
 
-    end_date = getdate(end_date)
-    month_str = end_date.strftime("%Y-%m")
+	total_late_days = frappe.db.sql("""
+		SELECT COALESCE (SUM(late_days), 0)
+		FROM `tabAttendance Summary`
+		WHERE employee = %s
+			AND from_date <= %s
+			AND to_date >= %s
+	""", (employee, end_date, start_date))[0][0]
 
-    late_days = frappe.db.get_value(
-        "Attendance Summary",
-        {
-            "employee": employee,
-            "month": ["like", f"{month_str}%"]
-        },
-        "late_days"
-    ) or 0
-
-    return late_days
+	return int(total_late_days or 0)
 
 
