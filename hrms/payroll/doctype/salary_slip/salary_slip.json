@@ -41,6 +41,7 @@
   "total_working_days",
   "unmarked_days",
   "leave_without_pay",
+  "custom_daily_allowance_deducted_days",
   "column_break_geio",
   "absent_days",
   "payment_days",
@@ -763,13 +764,18 @@
    "oldfieldname": "branch",
    "oldfieldtype": "Link",
    "read_only": 1
+  },
+  {
+   "fieldname": "custom_daily_allowance_deducted_days",
+   "fieldtype": "Int",
+   "label": "Daily Allowance Deducted Days"
   }
  ],
  "icon": "fa fa-file-text",
  "idx": 9,
  "is_submittable": 1,
  "links": [],
- "modified": "2026-01-07 11:43:42.853575",
+ "modified": "2026-01-18 18:10:45.189540",
  "modified_by": "Administrator",
  "module": "Payroll",
  "name": "Salary Slip",
