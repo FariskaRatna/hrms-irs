@@ -170,7 +170,8 @@ override_doctype_class = {
 	"Project": "hrms.overrides.employee_project.EmployeeProject",
 	"Leave Application": "hrms.custom.leave_application_custom.CustomLeaveApplication",
 	"Attendance": "hrms.custom.attendance_override.CustomAttendance",
-    "Leave Allocation": "hrms.custom.leave_allocation_mass_leave.CustomLeaveAllocation"
+    "Leave Allocation": "hrms.custom.leave_allocation_mass_leave.CustomLeaveAllocation",
+    "Salary Slip": "hrms.custom.custom_salary_slip.CustomSalarySlip",
 }
 
 # Document Events
@@ -204,11 +205,11 @@ doc_events = {
         # "before_submit": "hrms.custom.override_attendance_leave.override_attendance_leave",
 	},
 	"Salary Slip": {
-		"before_save": [
-			"hrms.payroll.doctype.salary_slip.salary_slip.adjust_payment_days",
-			# "hrms.payroll.doctype.salary_slip.salary_slip.update_total_late_days",
-			# "hrms.payroll.doctype.salary_slip.salary_slip_hooks.apply_overtime",
-		],
+		# "validate": [
+		# 	"hrms.payroll.doctype.salary_slip.salary_slip.adjust_payment_days",
+		# 	# "hrms.payroll.doctype.salary_slip.salary_slip.update_total_late_days",
+		# 	# "hrms.payroll.doctype.salary_slip.salary_slip_hooks.apply_overtime",
+		# ],
         "before_submit": "hrms.payroll.doctype.salary_slip.salary_slip.update_total_late_days",
         "on_submit": "hrms.payroll.doctype.salary_slip.salary_slip.update_loan_repayment_from_salary",
     },
