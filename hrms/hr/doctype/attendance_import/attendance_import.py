@@ -7,6 +7,7 @@ import frappe
 import pandas as pd
 from frappe.utils import getdate, get_datetime
 from datetime import date, timedelta, datetime, time
+from collections import defaultdict
 import calendar
 from difflib import get_close_matches
 from frappe import _
@@ -68,6 +69,22 @@ def process_file(docname):
         except Exception:
             return None
         return None  
+    
+    def find_employee(name, source="finger"):
+        if not name:
+            return None
+
+        name = str(name).strip()
+        field = "initial_name_finger" if source == "finger" else "initial_name_face"
+        emp = frappe.db.get_value("Employee", {field: name}, "name")
+
+        if not emp:
+            emp = frappe.db.get_value(
+                "Employee",
+                {field: ["like", f"%{name}%"]},
+                "name"
+            )
+        return emp
 
 
     if not df_finger.empty:
@@ -103,6 +120,26 @@ def process_file(docname):
         df_face["First-In"] = df_face["First-In"].apply(parse_time)
         df_face["Last-Out"] = df_face["Last-Out"].apply(parse_time)
 
+    employee_attendance_dates = defaultdict(set)
+
+    for idx, r in df_finger.iterrows():
+        emp = find_employee(r["Name"], source="finger")
+        if emp and pd.notna(r["Date"]):
+            employee_attendance_dates[emp].add(r["Date"])
+
+    for idx, r in df_face.iterrows():
+        emp = find_employee(r["Name"], source="face")
+        if emp and pd.notna(r["Date"]):
+            employee_attendance_dates[emp].add(r["Date"])
+
+    employee_last_date = {
+        emp: max(
+            d.date() if hasattr(d, "date") else d
+            for d in dates
+        )
+        for emp, dates in employee_attendance_dates.items()
+    }
+
 
     employees = frappe.db.get_all("Employee", fields=[
         "name",
@@ -111,22 +148,6 @@ def process_file(docname):
         "initial_name_face"
     ])
 
-
-    def find_employee(name, source="finger"):
-        if not name:
-            return None
-
-        name = str(name).strip()
-        field = "initial_name_finger" if source == "finger" else "initial_name_face"
-        emp = frappe.db.get_value("Employee", {field: name}, "name")
-
-        if not emp:
-            emp = frappe.db.get_value(
-                "Employee",
-                {field: ["like", f"%{name}%"]},
-                "name"
-            )
-        return emp
 
     DEFAULT_LATITUDE = -6.2239100
     DEFAULT_LONGITUDE = 106.8290110
@@ -166,17 +187,26 @@ def process_file(docname):
     def reconcile_with_existing_checkins(emp, date_part, excel_in_dt, excel_out_dt):
         existing_in, existing_out = get_existing_checkin_extremes(emp, date_part)
 
-        # final IN = paling cepat (min)
-        if excel_in_dt and existing_in:
-            final_in = excel_in_dt if excel_in_dt <= existing_in else existing_in
-        else:
-            final_in = excel_in_dt or existing_in
+        candidates_in = [dt for dt in [excel_in_dt, existing_in] if dt]
+        final_in = min(candidates_in) if candidates_in else None
 
-        # final OUT = paling lama (max)
-        if excel_out_dt and existing_out:
-            final_out = excel_out_dt if excel_out_dt >= existing_out else existing_out
-        else:
-            final_out = excel_out_dt or existing_out
+        candidates_out = [dt for dt in [excel_out_dt, existing_out] if dt]
+        final_out = max(candidates_out) if candidates_out else None
+
+        if final_in and final_out and final_out <= final_in:
+            final_out = None
+
+        # # final IN = paling cepat (min)
+        # if excel_in_dt and existing_in:
+        #     final_in = excel_in_dt if excel_in_dt <= existing_in else existing_in
+        # else:
+        #     final_in = excel_in_dt or existing_in
+
+        # # final OUT = paling lama (max)
+        # if excel_out_dt and existing_out:
+        #     final_out = excel_out_dt if excel_out_dt >= existing_out else existing_out
+        # else:
+        #     final_out = excel_out_dt or existing_out
 
         return final_in, final_out
 
@@ -244,6 +274,21 @@ def process_file(docname):
         if isinstance(value, time):
             return value
         return None
+    
+    def is_non_working_day(emp, date_part):
+        if is_mass_leave(emp, date_part):
+            return True
+        
+        leave = frappe.db.exists(
+            "Leave Application",
+            {
+                "employee": emp,
+                "from_date": ["<=", date_part],
+                "to_date": [">=", date_part],
+                "docstatus": 1
+            }
+        )
+        return bool(leave)
 
     for idx, row in df_finger.iterrows():
         # emp = find_employee(row["Name"])
@@ -309,7 +354,23 @@ def process_file(docname):
                                 if face_datetime > finger_datetime:
                                     out_time = face_out_time
 
-        if date_part.day == 20 and out_time is None:
+        # if date_part.day == 20 and out_time is None:
+        #     out_time = time(18, 0, 0)
+
+        if out_time and in_time and out_time <= in_time:
+            frappe.msgprint(f"⚠️ Out time ({out_time}) lebih awal dari in time ({in_time}) untuk {row['Name']}, di-reset ke None")
+            out_time = None
+
+        # Baru cek last_date
+        last_date = employee_last_date.get(emp)
+
+        if (
+            last_date
+            and date_part == last_date
+            and out_time is None
+            and not is_non_working_day(emp, date_part)
+        ):
+            frappe.msgprint(f"🔧 Auto-set out_time 18:00 untuk {row['Name']} pada {date_part}")
             out_time = time(18, 0, 0)
 
         excel_in_datetime = datetime.combine(date_part, in_time) if in_time else None
