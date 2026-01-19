@@ -364,13 +364,13 @@ def process_file(docname):
         # Baru cek last_date
         last_date = employee_last_date.get(emp)
 
+        # Auto-set out_time jam 18:00 untuk baris terakhir employee
         if (
             last_date
             and date_part == last_date
-            and out_time is None
             and not is_non_working_day(emp, date_part)
         ):
-            frappe.msgprint(f"🔧 Auto-set out_time 18:00 untuk {row['Name']} pada {date_part}")
+            frappe.msgprint(f"🔧 Override out_time ke 18:00 untuk {row['Name']} pada {date_part} (last date)")
             out_time = time(18, 0, 0)
 
         excel_in_datetime = datetime.combine(date_part, in_time) if in_time else None
