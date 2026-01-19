@@ -443,7 +443,7 @@ def process_file(docname):
 
             elif leave_category == "Izin Satu Hari":
                 status = "On Leave"
-                daily_allowance_deducted = True
+                daily_allowance_deducted = False
                 attendance_reason = "Izin"
 
             elif leave_category == "Sakit":
