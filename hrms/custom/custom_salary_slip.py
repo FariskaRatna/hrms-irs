@@ -5,15 +5,11 @@ from hrms.payroll.doctype.salary_slip.salary_slip import SalarySlip
 
 class CustomSalarySlip(SalarySlip):
 
-    def calculate_component_amounts(self, component_type=None):
-        # PENTING: teruskan argumen ke parent
-        super().calculate_component_amounts(component_type)
+    def calculate_net_pay(self):
+        super().calculate_net_pay()
+        self.adjust_attendance_effects()
 
-        # hanya adjust setelah earnings dihitung
-        if component_type == "earnings":
-            self.adjust_attendance_based_components()
-            
-    def adjust_attendance_based_components(self):
+    def adjust_attendance_effects(self):
         if not self.employee or not self.start_date or not self.end_date:
             return
 
@@ -30,26 +26,32 @@ class CustomSalarySlip(SalarySlip):
             fields=["status", "daily_allowance_deducted"]
         )
 
-        absent_days = sum(1 for a in attendances if a.status == "Absent")
-        allowance_deducted_days = sum(
-            1 for a in attendances
-            if a.status == "Absent" or a.daily_allowance_deducted
-        )
+        total_days = len(attendances)
 
-        # simpan
+        absent_days = sum(1 for a in attendances if a.status == "Absent")
+        allowance_deducted_days = sum(1 for a in attendances if a.daily_allowance_deducted)
+
+        payment_days = max(total_days - allowance_deducted_days, 0)
+
         self.absent_days = absent_days
         self.custom_daily_allowance_deducted_days = allowance_deducted_days
 
-        # === TUNJANGAN HARIAN ===
         designation = frappe.db.get_value("Employee", self.employee, "designation")
-        rate = 100000 if designation == "Staff" else 175000 if designation == "Project Manager" else 0
+        allowance_rate = 100000 if designation == "Staff" else 175000 if designation == "Project Manager" else 0
 
-        for e in self.earnings:
-            if e.salary_component == "Tunjangan Harian":
-                e.amount = max(0, e.amount - (rate * allowance_deducted_days))
+        allowance_amount = allowance_rate * payment_days
 
-        # === GAJI POKOK (ABSENT SAJA) ===
+        basic_adjustment = 0
         for e in self.earnings:
             if e.salary_component == "Gaji Pokok":
-                daily_rate = e.amount / 20
-                e.amount = e.amount - (daily_rate * absent_days)
+                base_amount = e.default_amount or e.amount
+                daily_rate = base_amount / 20
+                basic_adjustment = daily_rate * absent_days
+                e.amount = base_amount - basic_adjustment
+
+            if e.salary_component == "Tunjangan Harian":
+                e.amount = allowance_amount
+
+        # === KUNCI UTAMA ===
+        self.gross_pay = sum(e.amount for e in self.earnings)
+        self.net_pay = self.gross_pay - self.total_deduction
