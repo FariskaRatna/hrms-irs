@@ -63,8 +63,12 @@ class Overtime(Document):
 			frappe.throw(_("Only Overtime Application with status 'Approved' and 'Rejected' can be submitted"))
 
 		if self.approval_status == "Approved":
-			self.create_overtime_calculation()
+			calc = self.create_overtime_calculation()
+			# self.create_overtime_calculation()
 			# self.create_overtime_summary()
+
+			from hrms.hr.doctype.overtime_slip.overtime_slip import create_or_update_overtime_slip
+			create_or_update_overtime_slip(calc)
 
 		if frappe.db.get_single_value("HR Settings", "send_overtime_application_notification"):
 			self.notify_employee()
@@ -91,6 +95,7 @@ class Overtime(Document):
 		calculation.approval_status = "Approved"
 		calculation.insert(ignore_permissions=True)
 		frappe.msgprint(_("Overtime calculation for {0} successfully created.").format(self.employee_name))
+		return calculation
 	
 	def is_weekend(self, dt):
 		date_obj = dt
