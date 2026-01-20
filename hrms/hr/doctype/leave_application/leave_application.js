@@ -174,7 +174,7 @@ frappe.ui.form.on("Leave Application", {
 		});
 
 		frm.trigger("attachment_filename");
-		frm.trigger("sync_photo_preview");
+		// frm.trigger("sync_photo_preview");
 
 	},
 
@@ -230,7 +230,7 @@ frappe.ui.form.on("Leave Application", {
 
 	doctor_note(frm) {
 		frm.trigger("attachment_filename");
-		frm.trigger("sync_photo_preview");
+		// frm.trigger("sync_photo_preview");
 	},
 
 	attachment_filename: function (frm) {
