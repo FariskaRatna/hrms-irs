@@ -461,41 +461,26 @@ def process_file(docname):
                 #     "employee": emp,
                 #     "attendance_date": date_part
                 # })
+                valid_half_day_count = frappe.db.count(
+                    "Attendance",
+                    filters={
+                        "employee": emp,
+                        "attendance_reason": "Setengah Hari (kurang dari 2 kali)",
+                        "attendance_date": ["<", date_part],
+                        "docstatus": ["in", [0, 1]]
+                    }
+                )
 
-                current_date_valid = False
-                if in_datetime and out_datetime:
-                    if in_datetime.time() <= time(11, 0) and out_datetime.time() >= time(15, 0):
-                        current_date_valid = True
-                
-                status = "Present"
+                valid_half_day_count += 1
 
-                if not current_date_valid:
-                    # status = "Present"
-                    attendance_reason = "Setengah Hari (waktu tidak sesuai)"
+                if valid_half_day_count > 2:
+                    status = "Present"
                     daily_allowance_deducted = False
-                    # continue
-
+                    attendance_reason = "Setengah Hari (lebih dari 2 kali)"
                 else:
-                    valid_half_day_count = frappe.db.count(
-                        "Attendance",
-                        filters={
-                            "employee": emp,
-                            "attendance_reason": "Setengah Hari (kurang dari 2 kali)",
-                            "attendance_date": ["<", date_part],
-                            "docstatus": ["in", [0, 1]]
-                        }
-                    )
-
-                    valid_half_day_count += 1
-
-                    if valid_half_day_count > 2:
-                        # status = "Present"
-                        daily_allowance_deducted = False
-                        attendance_reason = "Setengah Hari (lebih dari 2 kali)"
-                    else:
-                        # status = "Present"
-                        daily_allowance_deducted = False
-                        attendance_reason = "Setengah Hari (kurang dari 2 kali)"
+                    status = "Present"
+                    daily_allowance_deducted = False
+                    attendance_reason = "Setengah Hari (kurang dari 2 kali)"
 
                 # if att_exists:
                 #     att = frappe.get_doc("Attendance", att_exists)
