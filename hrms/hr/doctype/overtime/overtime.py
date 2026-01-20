@@ -68,7 +68,7 @@ class Overtime(Document):
 			# self.create_overtime_summary()
 
 			from hrms.hr.doctype.overtime_slip.overtime_slip import create_or_update_overtime_slip
-			create_or_update_overtime_slip(calc)
+			create_or_update_overtime_slip(calc.employee, calc.date)
 
 		if frappe.db.get_single_value("HR Settings", "send_overtime_application_notification"):
 			self.notify_employee()

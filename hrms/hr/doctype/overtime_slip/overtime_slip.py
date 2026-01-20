@@ -256,70 +256,104 @@ class OvertimeSlip(Document):
 			self.total_hours = (self.total_hours or 0) + previous[0].total_hours
 			self.total_amount = (self.total_amount or 0) + previous[0].total_amount
 
-def create_or_update_overtime_slip(overtime_calculation):
-	employee = overtime_calculation.employee
-	date = getdate(overtime_calculation.date)
-	hours = overtime_calculation.total_hours
-	amount = overtime_calculation.total_amount
-
+def get_overtime_period(date):
+	date = getdate(date)
 	if date.day >= 21:
-		slip_from = date.replace(day=21)
-		slip_to = add_months(slip_from, 1).replace(day=20)
+		from_date = date.replace(day=21)
+		to_date = add_months(from_date, 1).replace(day=20)
 	else:
-		slip_to = date.replace(day=20)
-		slip_from = add_months(slip_to, -1).replace(day=21)
+		to_date = date.replace(day=20)
+		from_date = add_months(to_date, -1).replace(day=21)
+	return from_date, to_date
+
+def create_or_update_overtime_slip(employee, date):
+	from_date, to_date = get_overtime_period(date)
 
 	slip = frappe.get_doc({
 		"doctype": "Overtime Slip",
 		"employee": employee,
-		"from_date": slip_from,
-		"to_date": slip_to,
+		"from_date": from_date,
+		"to_date": to_date,
 	}) if not frappe.db.exists(
-		"Overtime Slip", {"employee": employee, "from_date": slip_from, "to_date": slip_to, "docstatus": 0}
-	) else frappe.get_doc("Overtime Slip", frappe.db.get_value("Overtime Slip", {"employee": employee, "from_date": slip_from, "to_date": slip_to, "docstatus": 0}, "name"))
+		"Overtime Slip", {
+			"employee": employee, 
+			"from_date": from_date, 
+			"to_date": to_date, 
+			"docstatus": 0
+		}
+	) else frappe.get_doc(
+		"Overtime Slip", 
+		frappe.db.get_value(
+			"Overtime Slip", {
+				"employee": employee, 
+				"from_date": from_date, 
+				"to_date": to_date, 
+				"docstatus": 0
+			}, "name"
+		)
+	)
 
-	used_hours = sum([r.total_hours for r in slip.overtime_summary])
-	remaining = 72 - used_hours
+	slip.set("overtime_summary", [])
+	total_hours = 0
+	total_amount = 0
+	has_carry = False
 
-	if remaining <= 0:
-		carry_hours = hours
-		carry_amount = amount
-	elif hours <= remaining:
+	calculations = frappe.get_all(
+		"Overtime Calculation",
+		filters={
+			"employee": employee,
+			"date": ["between", [from_date, to_date]]
+		},
+		fields = [
+			"name", "date", "day_type",
+			"total_hours", "total_amount",
+			"reference_request"
+		],
+		order_by = "date asc"
+	)
+
+	for calc in calculations:
+		if total_hours >= 72:
+			break
+
+		remaining = 72 - total_hours
+		use_hours = min(calc.total_hours, remaining)
+		use_amount = calc.total_amount * (use_hours / calc.total_hours)
+
 		slip.append("overtime_summary", {
-			"overtime_calculation": overtime_calculation.name,
-			"date": date,
-			"day_type": overtime_calculation.day_type,
-			"total_hours": hours,
-			"amount": amount
+			"overtime_calculation": calc.name,
+			"date": calc.date,
+			"day_type": calc.day_type,
+			"total_hours": use_hours,
+			"amount": use_amount
 		})
 
-		slip.total_hours = sum([r.total_hours for r in slip.overtime_summary])
-		slip.total_amount = sum([r.amount for r in slip.overtime_summary])
-		slip.insert() if slip.is_new() else slip.save()
-		return
-	else:
-		slip.append("overtime_summary", {
-			"overtime_calculation": overtime_calculation.name,
-			"date": date,
-			"day_type": overtime_calculation.day_type,
-			"total_hours": remaining,
-			"amount": amount * remaining / hours
-		})
-		slip.total_hours = sum([r.total_hours for r in slip.overtime_summary])
-		slip.total_amount = sum([r.amount for r in slip.overtime_summary])
-		slip.insert() if slip.is_new() else slip.save()
-		carry_hours = hours - remaining
-		carry_amount = amount - (amount * remaining / hours)
+		total_hours += use_hours
+		total_amount += use_amount
 
-		calc_carry = frappe.new_doc("Overtime Calculation")
-		calc_carry.employee = employee
-		calc_carry.date = date
-		calc_carry.total_hours = carry_hours
-		calc_carry.total_amount = carry_amount
-		calc_carry.day_type = overtime_calculation.day_type
-		calc_carry.reference_request = overtime_calculation.reference_request
-		calc_carry.approval_status = "Approved"
-		calc_carry.insert(ignore_permissions=True)
+		if calc.total_hours > use_hours:
+			carry_hours = calc.total_hours - use_hours
+			carry_amount = calc.total_amount - use_amount
 
-		create_or_update_overtime_slip(calc_carry)
+			next_from, idx = get_overtime_period(add_months(to_date, 1))
+
+			calc_carry = frappe.new_doc("Overtime Calculation")
+			calc_carry.employee = employee
+			calc_carry.date = next_from
+			calc_carry.total_hours = carry_hours
+			calc_carry.total_amount = carry_amount
+			calc_carry.day_type = calc.day_type
+			calc_carry.reference_request = calc.reference_request
+			calc_carry.approval_status = "Approved"
+			calc_carry.insert(ignore_permissions=True)
+
+	slip.total_hours = total_hours
+	slip.total_amount = total_amount
+
+	slip.insert() if slip.is_new() else slip.save()
+
+	if has_carry:
+		next_period_trigger = add_months(to_date, 1)
+		create_or_update_overtime_slip(employee, next_period_trigger)
+			
 
