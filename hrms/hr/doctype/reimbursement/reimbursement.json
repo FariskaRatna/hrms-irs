@@ -18,6 +18,7 @@
   "outpatient_date",
   "diagnosis",
   "column_break_yscg",
+  "balance",
   "amount",
   "document_photo",
   "amended_from",
@@ -157,13 +158,19 @@
    "label": "Approval Status",
    "options": "Pending\nApproved\nRejected\nCancelled",
    "permlevel": 1
+  },
+  {
+   "fieldname": "balance",
+   "fieldtype": "Currency",
+   "label": "Balance of Reimbursement",
+   "read_only": 1
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2026-01-09 17:39:28.300060",
+ "modified": "2026-01-20 17:54:27.034963",
  "modified_by": "Administrator",
  "module": "HR",
  "name": "Reimbursement",
