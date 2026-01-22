@@ -7,6 +7,7 @@
  "field_order": [
   "salary_component",
   "abbr",
+  "is_manual_override",
   "column_break_3",
   "amount",
   "year_to_date",
@@ -262,11 +263,20 @@
    "fieldname": "do_not_include_in_accounts",
    "fieldtype": "Check",
    "label": "Do Not Include in Accounting Entries"
+  },
+  {
+   "bold": 1,
+   "columns": 1,
+   "default": "0",
+   "fieldname": "is_manual_override",
+   "fieldtype": "Check",
+   "in_list_view": 1,
+   "label": "Manual Override"
   }
  ],
  "istable": 1,
  "links": [],
- "modified": "2025-07-14 19:52:46.260616",
+ "modified": "2026-01-22 11:37:46.546100",
  "modified_by": "Administrator",
  "module": "Payroll",
  "name": "Salary Detail",

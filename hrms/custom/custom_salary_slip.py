@@ -5,11 +5,90 @@ from hrms.payroll.doctype.salary_slip.salary_slip import SalarySlip
 
 class CustomSalarySlip(SalarySlip):
 
-    def calculate_net_pay(self):
-        super().calculate_net_pay()
-        self.adjust_attendance_effects()
+    def validate(self):
+        """Override validate dengan proteksi manual override"""
+        
+        # STEP 1: Simpan semua perubahan manual SEBELUM parent validate
+        self.preserve_manual_overrides()
+        
+        # STEP 2: Panggil parent validate (ini akan recalculate semua)
+        super().validate()
+        
+        # STEP 3: RESTORE nilai manual override yang sudah disimpan
+        self.restore_manual_overrides()
+        
+        # STEP 4: Jalankan custom attendance adjustment (skip yang manual override)
+        if self.earnings:
+            self.store_default_amounts()
+            self.adjust_attendance_effects()
+            self.recalculate_totals()
+
+    def preserve_manual_overrides(self):
+        """Simpan nilai manual override SEBELUM parent validate menimpanya"""
+        # Simpan di temporary variable (tidak persistent ke DB)
+        self._manual_earnings = {}
+        self._manual_deductions = {}
+        
+        # Simpan earning yang di-override manual
+        for e in self.earnings:
+            if e.get("is_manual_override") == 1 or e.get("is_manual_override") is True:
+                # Simpan dengan key salary_component untuk restore nanti
+                self._manual_earnings[e.salary_component] = {
+                    'amount': e.amount,
+                    'default_amount': e.get('default_amount')
+                }
+        
+        # Simpan deduction yang di-override manual
+        for d in self.deductions:
+            if d.get("is_manual_override") == 1 or d.get("is_manual_override") is True:
+                self._manual_deductions[d.salary_component] = {
+                    'amount': d.amount,
+                    'default_amount': d.get('default_amount')
+                }
+
+    def restore_manual_overrides(self):
+        """RESTORE nilai manual override SETELAH parent validate"""
+        # Restore earnings yang di-override manual
+        if hasattr(self, '_manual_earnings'):
+            for e in self.earnings:
+                if e.salary_component in self._manual_earnings:
+                    saved = self._manual_earnings[e.salary_component]
+                    e.amount = saved['amount']
+                    e.is_manual_override = 1
+                    if saved.get('default_amount'):
+                        e.default_amount = saved['default_amount']
+        
+        # Restore deductions yang di-override manual
+        if hasattr(self, '_manual_deductions'):
+            for d in self.deductions:
+                if d.salary_component in self._manual_deductions:
+                    saved = self._manual_deductions[d.salary_component]
+                    d.amount = saved['amount']
+                    d.is_manual_override = 1
+                    if saved.get('default_amount'):
+                        d.default_amount = saved['default_amount']
+
+    def store_default_amounts(self):
+        """Simpan nilai default untuk tracking perubahan manual"""
+        for e in self.earnings:
+            # Jangan overwrite default_amount jika sudah ada
+            if not e.get("default_amount") and e.amount > 0:
+                e.default_amount = e.amount
+        
+        for d in self.deductions:
+            if not d.get("default_amount") and d.amount > 0:
+                d.default_amount = d.amount
+
+    def recalculate_totals(self):
+        """Recalculate totals"""
+        self.gross_pay = sum(e.amount for e in self.earnings)
+        self.total_deduction = sum(d.amount for d in self.deductions)
+        self.net_pay = self.gross_pay - self.total_deduction
+        self.set_net_total_in_words()
 
     def adjust_attendance_effects(self):
+        """Hitung attendance effects dengan respect manual override"""
+        
         if not self.employee or not self.start_date or not self.end_date:
             return
 
@@ -26,11 +105,12 @@ class CustomSalarySlip(SalarySlip):
             fields=["status", "daily_allowance_deducted"]
         )
 
-        total_days = len(attendances)
+        if not attendances:
+            return
 
+        total_days = len(attendances)
         absent_days = sum(1 for a in attendances if a.status == "Absent")
         allowance_deducted_days = sum(1 for a in attendances if a.daily_allowance_deducted)
-
         payment_days = max(total_days - allowance_deducted_days, 0)
 
         self.absent_days = absent_days
@@ -38,20 +118,32 @@ class CustomSalarySlip(SalarySlip):
 
         designation = frappe.db.get_value("Employee", self.employee, "designation")
         allowance_rate = 100000 if designation == "Staff" else 175000 if designation == "Project Manager" else 0
-
         allowance_amount = allowance_rate * payment_days
 
-        basic_adjustment = 0
+        # Process earnings - SKIP yang manual override
         for e in self.earnings:
-            if e.salary_component == "Gaji Pokok":
-                base_amount = e.default_amount or e.amount
-                daily_rate = base_amount / 20
-                basic_adjustment = daily_rate * absent_days
-                e.amount = base_amount - basic_adjustment
+            # CRITICAL: Cek manual override
+            if e.get("is_manual_override") == 1 or e.get("is_manual_override") is True:
+                continue
 
-            if e.salary_component == "Tunjangan Harian":
+            # Simpan default amount jika belum ada
+            if not e.get("default_amount") and e.amount > 0:
+                e.default_amount = e.amount
+
+            if e.salary_component == "Gaji Pokok":
+                base_amount = e.default_amount if e.get("default_amount") else e.amount
+                if base_amount > 0:
+                    daily_rate = base_amount / 20
+                    basic_adjustment = daily_rate * absent_days
+                    e.amount = base_amount - basic_adjustment
+
+            elif e.salary_component == "Tunjangan Harian":
                 e.amount = allowance_amount
 
-        # === KUNCI UTAMA ===
-        self.gross_pay = sum(e.amount for e in self.earnings)
-        self.net_pay = self.gross_pay - self.total_deduction
+        # Process deductions - SKIP yang manual override
+        for d in self.deductions:
+            if d.get("is_manual_override") == 1 or d.get("is_manual_override") is True:
+                continue
+            
+            if not d.get("default_amount") and d.amount > 0:
+                d.default_amount = d.amount
