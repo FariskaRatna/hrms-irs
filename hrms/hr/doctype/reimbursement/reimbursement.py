@@ -40,22 +40,22 @@ class Reimbursement(Document):
 		employee = frappe.get_doc("Employee", self.employee)
 
 		total_reimbursement = employee.total_reimbursement or 0
-		# reimbursement_used = employee.reimbursement_used or 0
+		reimbursement_used = employee.reimbursement_used or 0
 
-		reimbursement_used = frappe.db.sql("""
-			SELECT COLESCE(SUM(amount), 0) FROM `tabReimbursement`
-			WHERE employee = %s 
-				AND approval_status = 'Approved'
-				AND docstatus = 1
-		""", self.employee)[0][0]
+		# reimbursement_used = frappe.db.sql("""
+		# 	SELECT COLESCE(SUM(amount), 0) FROM `tabReimbursement`
+		# 	WHERE employee = %s 
+		# 		AND approval_status = 'Approved'
+		# 		AND docstatus = 1
+		# """, self.employee)[0][0]
 
-		employee.reimbursement_used = reimbursement_used
-
-		# reimbursement_used += self.amount
-		# balance = total_reimbursement - reimbursement_used
-
-		# employee.total_reimbursement = total_reimbursement
 		# employee.reimbursement_used = reimbursement_used
+
+		reimbursement_used += self.amount
+		balance = total_reimbursement - reimbursement_used
+
+		employee.total_reimbursement = total_reimbursement
+		employee.reimbursement_used = reimbursement_used
 		employee.balance = total_reimbursement - reimbursement_used
 		employee.save(ignore_permissions=True)
 
