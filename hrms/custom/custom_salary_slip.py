@@ -1,5 +1,5 @@
 import frappe
-from frappe.utils import getdate
+from frappe.utils import getdate, rounded, flt
 from hrms.payroll.doctype.salary_slip.salary_slip import SalarySlip
 
 
@@ -84,7 +84,23 @@ class CustomSalarySlip(SalarySlip):
         self.gross_pay = sum(e.amount for e in self.earnings)
         self.total_deduction = sum(d.amount for d in self.deductions)
         self.net_pay = self.gross_pay - self.total_deduction
+        self.set_rounded_total()
         self.set_net_total_in_words()
+
+    def set_rounded_total(self):
+        if self.is_rounding_total_disabled():
+            self.rounded_total = self.net_pay
+            self.base_rounded_total = self.base_net_pay
+        else:
+            self.rounded_total = rounded(self.net_pay, 0)
+
+        if self.currency == frappe.get_cached_value("Company", self.company, "default_currency"):
+            self.base_rounded_total = self.rounded_total
+        else:
+            self.base_rounded_total = rounded(
+                flt(self.rounded_total * self.exchange_rate),
+                self.precision("base_rounded_total")
+            )
 
     def adjust_attendance_effects(self):
         """Hitung attendance effects dengan respect manual override"""
