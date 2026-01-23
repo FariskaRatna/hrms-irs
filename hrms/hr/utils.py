@@ -73,6 +73,22 @@ def format_date_id(value):
 
     return f"{hari[d.weekday()]}, {d.day} {bulan[d.month]} {d.year}"
 
+def set_attachments_private(doc, method=None):
+	files = frappe.get_all(
+		"File",
+		filters={
+			"attached_to_doctype": doc.doctype,
+			"attached_to_name": doc.name
+		},
+		fields=["name", "is_private"]
+	)
+
+	for file in files:
+		if not file.is_private:
+			frappe.db.set_value("File", file.name, "is_private", 1) 
+
+	frappe.db.commit()
+
 def _to_datetime(value):
 	if isinstance(value, datetime.datetime):
 		return value

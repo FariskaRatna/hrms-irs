@@ -20,7 +20,9 @@ class AttendanceImport(Document):
 @frappe.whitelist()
 def process_file(docname):
     doc = frappe.get_doc("Attendance Import", docname)
+    _process_attendance_import(doc)
 
+def _process_attendance_import(doc):
     if not doc.upload_file_finger and not doc.upload_file_face:
         frappe.throw("Please input both file fingerprint and face recognition before processing!")
     
@@ -152,6 +154,13 @@ def process_file(docname):
     DEFAULT_LATITUDE = -6.2239100
     DEFAULT_LONGITUDE = 106.8290110
 
+    # skipped_employees = set()
+    # skipped_weekends = 0
+    # created_attendance_count = 0
+    # updated_attendance_count = 0
+    # duplicate_checkins = 0
+    # warnings = []
+
     def get_existing_checkin_extremes(emp, date_part):
         day_start = datetime.combine(date_part, time.min)
         day_end = datetime.combine(date_part, time.max)
@@ -213,6 +222,8 @@ def process_file(docname):
     
 
     def create_checkin_if_not_exists(emp, timestamp, log_type):
+        # nonlocal duplicate_checkins
+
         if not timestamp:
             return
 
@@ -248,6 +259,7 @@ def process_file(docname):
             doc.insert()
         else:
             frappe.msgprint(_("Skipped duplicate checkin for {0} at {1}").format(emp, timestamp))
+            # duplicate_checkins += 1
     
     created_attendance = set()
     # Dictionary untuk menyimpan data izin setengah hari yang sudah diproses
@@ -262,6 +274,18 @@ def process_file(docname):
         return frappe.db.exists(
             "Holiday", {
                 "parent": mass_list,
+                "holiday_date": date_part
+            }
+        )
+    
+    def is_holiday(employee, date_part):
+        holiday_list = frappe.db.get_value("Employee", employee, "holiday_list")
+        if not holiday_list:
+            return False
+        
+        return frappe.db.exists(
+            "Holiday", {
+                "parent": holiday_list,
                 "holiday_date": date_part
             }
         )
@@ -289,18 +313,20 @@ def process_file(docname):
             }
         )
         return bool(leave)
+    
+    
 
     for idx, row in df_finger.iterrows():
         # emp = find_employee(row["Name"])
         emp = find_employee(row["Name"], source="finger")
         if not emp:
-            frappe.msgprint(_("Employee '{0}' not found, skipped.").format(row['Name']))
+            # skipped_employees.add(row["Name"])
             continue
 
         try:
             weekday = row["Date"].weekday()
             if weekday in [5, 6]:
-                frappe.msgprint(_("Skipped weekend for {0} on {1}.").format(row['Name'], row['Date']))
+                # skipped_weekends += 1
                 continue
         except Exception:
             pass
@@ -319,7 +345,7 @@ def process_file(docname):
         in_time, out_time = row["Clock In"], row["Clock Out"]
 
         if not df_face.empty:
-            emp_face = find_employee(row["Name"], source="finger")
+            emp_face = find_employee(row["Name"], source="face")
             if emp_face:
                 emp_face_initial = frappe.db.get_value("Employee", emp_face, "initial_name_face")
                 
@@ -381,7 +407,10 @@ def process_file(docname):
         # in_datetime = datetime.combine(date_part, in_time) if in_time else None
         # out_datetime = datetime.combine(date_part, out_time) if out_time else None
 
-        # Ambil shift]
+        if is_holiday(emp, date_part) and not is_mass_leave(emp, date_part):
+            continue
+
+        # Ambil shift
         shift_assignment = frappe.db.get_value(
             "Shift Assignment",
             {
@@ -553,6 +582,7 @@ def process_file(docname):
             )
 
             frappe.msgprint(_("✅ Attendance created for {0} {1}").format(row['Name'], date_part))
+            # created_attendance_count += 1
         else:
             att = frappe.get_doc("Attendance", existing_att)
 
@@ -569,11 +599,28 @@ def process_file(docname):
                 continue
             
             frappe.msgprint(_("ℹ️ Attendance already exists for {0} {1}").format(row['Name'], date_part))
+            # updated_attendance_count += 1
 
     frappe.msgprint("Attendance import completed successfully!")
 
     frappe.msgprint(_("Total Fingerprint Rows: {0}").format(len(df_finger)))
     frappe.msgprint(_("Total Face Rows: {0}").format(len(df_face)))
     frappe.msgprint(_("Total Attendance Created: {0}").format(len(created_attendance)))
+
+    # messages = []
+
+    # messages.append(f"Attendance created: {created_attendance_count}")
+    # messages.append(f"Attendance updated: {updated_attendance_count}")
+    # messages.append(f"⏭Weekend skipped: {skipped_weekends}")
+    # messages.append(f"Duplicate checkins skipped: {duplicate_checkins}")
+
+    # if skipped_employees:
+    #     messages.append(
+    #         f"⚠️ Employee not found ({len(skipped_employees)}): "
+    #         + ", ".join(sorted(skipped_employees))
+    #     )
+
+    # frappe.msgprint("<br>".join(messages), title="Attendance Import Summary")
+
 
 

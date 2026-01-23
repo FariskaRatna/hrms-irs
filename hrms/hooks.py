@@ -182,6 +182,9 @@ doc_events = {
 	"*": {
 		"validate": "hrms.events.global_lock.prevent_edit_after_approved"
 	},
+    "Attendance Import": {
+        "on_update": "hrms.hr.utils.set_attachments_private",
+	},
     "Employee Checkin": {
         "after_insert": "hrms.custom.employee_checkin_lock.lock_employee_checkin",
         "before_save": "hrms.custom.employee_checkin_lock.prevent_edit_if_locked",
