@@ -23,6 +23,13 @@ def process_file(docname):
     _process_attendance_import(doc)
 
 def _process_attendance_import(doc):
+    logs = {
+        'success': [],
+        'warnings': [],
+        'errors': [],
+        'skipped': [],
+        'stats': {}
+    }
     if not doc.upload_file_finger and not doc.upload_file_face:
         frappe.throw("Please input both file fingerprint and face recognition before processing!")
     
@@ -154,12 +161,12 @@ def _process_attendance_import(doc):
     DEFAULT_LATITUDE = -6.2239100
     DEFAULT_LONGITUDE = 106.8290110
 
-    # skipped_employees = set()
-    # skipped_weekends = 0
-    # created_attendance_count = 0
-    # updated_attendance_count = 0
-    # duplicate_checkins = 0
-    # warnings = []
+    created_count = 0
+    updated_count = 0
+    skipped_count = 0
+    weekend_skipped = 0
+    duplicate_checkins = 0
+    employee_not_found = set()
 
     def get_existing_checkin_extremes(emp, date_part):
         day_start = datetime.combine(date_part, time.min)
@@ -222,7 +229,7 @@ def _process_attendance_import(doc):
     
 
     def create_checkin_if_not_exists(emp, timestamp, log_type):
-        # nonlocal duplicate_checkins
+        nonlocal duplicate_checkins
 
         if not timestamp:
             return
@@ -258,12 +265,10 @@ def _process_attendance_import(doc):
 
             doc.insert()
         else:
-            frappe.msgprint(_("Skipped duplicate checkin for {0} at {1}").format(emp, timestamp))
-            # duplicate_checkins += 1
+            # frappe.msgprint(_("Skipped duplicate checkin for {0} at {1}").format(emp, timestamp))
+            duplicate_checkins += 1
     
     created_attendance = set()
-    # Dictionary untuk menyimpan data izin setengah hari yang sudah diproses
-    # Key: (employee, date), Value: True jika valid (checkin <= 11 dan checkout >= 15)
     processed_half_day_leaves = {}
 
     def is_mass_leave(employee, date_part):
@@ -320,13 +325,13 @@ def _process_attendance_import(doc):
         # emp = find_employee(row["Name"])
         emp = find_employee(row["Name"], source="finger")
         if not emp:
-            # skipped_employees.add(row["Name"])
+            employee_not_found.add(row["Name"])
             continue
 
         try:
             weekday = row["Date"].weekday()
             if weekday in [5, 6]:
-                # skipped_weekends += 1
+                weekend_skipped += 1
                 continue
         except Exception:
             pass
@@ -334,11 +339,14 @@ def _process_attendance_import(doc):
         try:
             date_part = row["Date"].date()
         except Exception:
-            frappe.msgprint(_("Invalid date for {0}, skipped.").format(row['Name']))
+            # frappe.msgprint(_("Invalid date for {0}, skipped.").format(row['Name']))
+            logs['errors'].append(f"Invalid date for {row['Name']}")
             continue
+
         key = (emp, date_part)
         if key in created_attendance:
-            frappe.msgprint(_("Attendance for {0} on {1} already processed, skipped.").format(row['Name'], date_part))
+            # frappe.msgprint(_("Attendance for {0} on {1} already processed, skipped.").format(row['Name'], date_part))
+            skipped_count += 1
             continue
         created_attendance.add(key)
 
@@ -384,7 +392,8 @@ def _process_attendance_import(doc):
         #     out_time = time(18, 0, 0)
 
         if out_time and in_time and out_time <= in_time:
-            frappe.msgprint(f"⚠️ Out time ({out_time}) lebih awal dari in time ({in_time}) untuk {row['Name']}, di-reset ke None")
+            # frappe.msgprint(f"⚠️ Out time ({out_time}) lebih awal dari in time ({in_time}) untuk {row['Name']}, di-reset ke None")
+            logs['warnings'].append(f"Out time earlier than in time for {row['Name']} on {date_part}")
             out_time = None
 
         # Baru cek last_date
@@ -396,7 +405,7 @@ def _process_attendance_import(doc):
             and date_part == last_date
             and not is_non_working_day(emp, date_part)
         ):
-            frappe.msgprint(f"🔧 Override out_time ke 18:00 untuk {row['Name']} pada {date_part} (last date)")
+            # frappe.msgprint(f"🔧 Override out_time ke 18:00 untuk {row['Name']} pada {date_part} (last date)")
             out_time = time(18, 0, 0)
 
         excel_in_datetime = datetime.combine(date_part, in_time) if in_time else None
@@ -581,8 +590,8 @@ def _process_attendance_import(doc):
                 as_dict=True
             )
 
-            frappe.msgprint(_("✅ Attendance created for {0} {1}").format(row['Name'], date_part))
-            # created_attendance_count += 1
+            # frappe.msgprint(_("✅ Attendance created for {0} {1}").format(row['Name'], date_part))
+            created_count += 1
         else:
             att = frappe.get_doc("Attendance", existing_att)
 
@@ -595,32 +604,76 @@ def _process_attendance_import(doc):
                     "out_time": get_datetime(out_datetime) if out_datetime else None
                     # is_halfday_leave = (leave_category == "Izin Setengah Hari")
                 })
-                frappe.msgprint(_("Attendance from Setengah Hari Leave Application for {0} {1}").format(row['Name'], date_part))
+                # frappe.msgprint(_("Attendance from Setengah Hari Leave Application for {0} {1}").format(row['Name'], date_part))
+                updated_count += 1
                 continue
             
-            frappe.msgprint(_("ℹ️ Attendance already exists for {0} {1}").format(row['Name'], date_part))
-            # updated_attendance_count += 1
+            # frappe.msgprint(_("ℹ️ Attendance already exists for {0} {1}").format(row['Name'], date_part))
+            updated_count += 1
 
-    frappe.msgprint("Attendance import completed successfully!")
+    logs['stats'] = {
+        'fingerprint_rows': len(df_finger),
+        'face_rows': len(df_face),
+        'created': created_count,
+        'updated': updated_count,
+        'skipped': skipped_count,
+        'weekend_skipped': weekend_skipped,
+        'duplicate_checkins': duplicate_checkins,
+        'employee_not_found': len(employee_not_found)
+    }
 
-    frappe.msgprint(_("Total Fingerprint Rows: {0}").format(len(df_finger)))
-    frappe.msgprint(_("Total Face Rows: {0}").format(len(df_face)))
-    frappe.msgprint(_("Total Attendance Created: {0}").format(len(created_attendance)))
+    # Build summary message
+    summary_html = f"""
+    <div style="font-family: monospace;">
+        <h3>📊 Attendance Import Summary</h3>
+        <table style="border-collapse: collapse; width: 100%;">
+            <tr><td><b>Total Fingerprint Rows:</b></td><td>{logs['stats']['fingerprint_rows']}</td></tr>
+            <tr><td><b>Total Face Recognition Rows:</b></td><td>{logs['stats']['face_rows']}</td></tr>
+            <tr><td><b>✅ Attendance Created:</b></td><td style="color: green;">{logs['stats']['created']}</td></tr>
+            <tr><td><b>🔄 Attendance Updated:</b></td><td style="color: blue;">{logs['stats']['updated']}</td></tr>
+            <tr><td><b>⏭ Weekend Skipped:</b></td><td>{logs['stats']['weekend_skipped']}</td></tr>
+            <tr><td><b>⏩ Duplicate Skipped:</b></td><td>{logs['stats']['skipped']}</td></tr>
+            <tr><td><b>🔁 Duplicate Checkins:</b></td><td>{logs['stats']['duplicate_checkins']}</td></tr>
+            <tr><td><b>⚠️ Employee Not Found:</b></td><td style="color: orange;">{logs['stats']['employee_not_found']}</td></tr>
+        </table>
+    """
 
-    # messages = []
+    # Tambahkan warnings jika ada
+    if logs['warnings']:
+        summary_html += "<br><h4>⚠️ Warnings:</h4><ul>"
+        # Limit to 10 warnings
+        for warning in logs['warnings'][:10]:
+            summary_html += f"<li>{warning}</li>"
+        if len(logs['warnings']) > 10:
+            summary_html += f"<li>... and {len(logs['warnings']) - 10} more warnings</li>"
+        summary_html += "</ul>"
 
-    # messages.append(f"Attendance created: {created_attendance_count}")
-    # messages.append(f"Attendance updated: {updated_attendance_count}")
-    # messages.append(f"⏭Weekend skipped: {skipped_weekends}")
-    # messages.append(f"Duplicate checkins skipped: {duplicate_checkins}")
+    # Tambahkan errors jika ada
+    if logs['errors']:
+        summary_html += "<br><h4>❌ Errors:</h4><ul>"
+        for error in logs['errors'][:10]:
+            summary_html += f"<li>{error}</li>"
+        if len(logs['errors']) > 10:
+            summary_html += f"<li>... and {len(logs['errors']) - 10} more errors</li>"
+        summary_html += "</ul>"
 
-    # if skipped_employees:
-    #     messages.append(
-    #         f"⚠️ Employee not found ({len(skipped_employees)}): "
-    #         + ", ".join(sorted(skipped_employees))
-    #     )
+    # Tambahkan employee not found jika ada
+    if employee_not_found:
+        summary_html += "<br><h4>👤 Employee Not Found:</h4><ul>"
+        for emp_name in list(employee_not_found)[:10]:
+            summary_html += f"<li>{emp_name}</li>"
+        if len(employee_not_found) > 10:
+            summary_html += f"<li>... and {len(employee_not_found) - 10} more</li>"
+        summary_html += "</ul>"
 
-    # frappe.msgprint("<br>".join(messages), title="Attendance Import Summary")
+    summary_html += "</div>"
 
+    # Tampilkan SATU kali saja di akhir
+    frappe.msgprint(
+        summary_html,
+        title="Attendance Import Completed",
+        indicator="green",
+        wide=True
+    )
 
 
