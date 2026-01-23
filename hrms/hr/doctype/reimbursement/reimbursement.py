@@ -2,6 +2,8 @@
 # For license information, please see license.txt
 
 import frappe
+from frappe.utils import fmt_money
+from frappe.defaults import get_global_default
 from frappe.model.document import Document
 from frappe.utils import nowdate, getdate
 from frappe import _
@@ -76,7 +78,14 @@ class Reimbursement(Document):
 		approver_user = self.hrd_user or parent_doc.owner
 		args = parent_doc.as_dict()
 
+		currency = get_global_default("currency") or "IDR"
+
 		args.update({
+			"amount_formatted": frappe.utils.fmt_money(
+				parent_doc.amount,
+				currency=currency,
+				precision=0,
+			),
 			"approve_url": build_action_url_reimburse(
 				parent_doc.name,
 				"Approved",
@@ -114,7 +123,7 @@ class Reimbursement(Document):
 				"message_to": self.hrd_user,
 				"subject": subject,
 				"sender_email": self.get_requester(),
-				"atatchments": attachments,
+				"attachments": attachments,
 			}
 		)
 
