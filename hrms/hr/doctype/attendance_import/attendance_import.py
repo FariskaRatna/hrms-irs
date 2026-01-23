@@ -42,10 +42,17 @@ def _process_attendance_import(doc):
     else:
         end_date = date(today.year, today.month + 1, 20)
 
+    # def get_file_path(file_url):
+    #     filename = file_url.split("/")[-1]
+    #     file_path = frappe.utils.get_files_path(filename)
+    #     return file_path
+
     def get_file_path(file_url):
-        filename = file_url.split("/")[-1]
-        file_path = frappe.utils.get_files_path(filename)
-        return file_path
+        if not file_url:
+            return None
+
+        file_doc = frappe.get_doc("File", {"file_url": file_url})
+        return file_doc.get_full_path()
 
     finger_path = get_file_path(doc.upload_file_finger) if doc.upload_file_finger else None
     face_path = get_file_path(doc.upload_file_face) if doc.upload_file_face else None
