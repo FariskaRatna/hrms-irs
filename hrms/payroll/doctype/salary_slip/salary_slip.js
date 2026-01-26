@@ -562,12 +562,21 @@ frappe.ui.form.on("Salary Slip", {
 
   employee(frm) {
     frm.trigger("auto_fetch_all");
+	if (frm.doc.employee && frm.doc.start_date && frm.doc.end_date) {
+		calculate_attendance_summary(frm);
+	}
   },
   start_date(frm) {
     frm.trigger("auto_fetch_all");
+	if (frm.doc.employee && frm.doc.start_date && frm.doc.end_date) {
+		calculate_attendance_summary(frm);
+	}
   },
   end_date(frm) {
     frm.trigger("auto_fetch_all");
+	if (frm.doc.employee && frm.doc.start_date && frm.doc.end_date) {
+		calculate_attendance_summary(frm);
+	}
   },
 
   auto_fetch_all: frappe.utils.debounce(function(frm) {
@@ -681,6 +690,25 @@ function upsert_component_row(frm, child_table, component_name, amount) {
   if ("additional_amount" in row) row.additional_amount = row.amount;
 
   
+}
+
+function calculate_attendance_summary(frm) {
+	frappe.call({
+		method: "hrms.custom.custom_salary_slip.get_attendance_summary",
+		args: {
+			employee: frm.doc.employee,
+			start_date: frm.doc.start_date,
+			end_date: frm.doc.end_date
+		},
+		callback: function (r) {
+			if (r.message) {
+				frm.set_value("absent_days", r.message.absent_days);
+				frm.set_value("custom_daily_allowance_deducted_days", r.message.allowance_deducted_days);
+				frm.set_value("payment_days", r.message.payment_days);
+				frm.refresh_fields();
+			}
+		}
+	})
 }
 
 

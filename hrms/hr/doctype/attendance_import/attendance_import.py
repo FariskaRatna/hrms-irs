@@ -555,7 +555,7 @@ def _process_attendance_import(doc):
 
             if eligible: 
                 status = "Present"
-                daily_allowance_deducted = True
+                daily_allowance_deducted = False
                 attendance_reason = "Cuti Bersama"
             else:
                 status = "On Leave"

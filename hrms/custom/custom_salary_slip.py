@@ -14,7 +14,68 @@ class CustomSalarySlip(SalarySlip):
         if self.earnings:
             self.store_default_amounts()
             self.adjust_attendance_effects()
+            self.calculate_zakat()
             self.recalculate_totals()
+
+    def calculate_zakat(self, max_iterations=5, tolerance=1):
+        zakat_row = None
+        for d in self.deductions:
+            if d.salary_component == "Potongan Zakat":
+                zakat_row = d
+                break
+
+        if not zakat_row:
+            return
+        
+        if zakat_row.get("is_manual_override") == 1 or zakat_row.get("is_manual_override") is True:
+            return
+        
+        assignment = frappe.get_all(
+            "Salary Structure Assignment",
+            filters={
+                "employee": self.employee,
+                "docstatus": 1,
+                "from_date": ["<=", self.start_date]
+            },
+            fields=["zakat_mode", "zakat_amount"],
+            order_by="from_date desc",
+            limit=1
+        )
+
+        if not assignment:
+            zakat_row.amount = 0
+            return
+        
+        zakat_mode = assignment[0].get("zakat_mode") or ""
+        zakat_amount = assignment[0].get("zakat_amount") or 0
+
+        if zakat_mode == "":
+            zakat_row.amount = 0
+        elif zakat_mode == "Fixed Amount":
+            zakat_row.amount = zakat_amount
+        elif zakat_mode != "Percentage":
+            zakat_row.amount = 0
+            return
+        
+        previous_zakat = 0
+
+        for i in range(max_iterations):
+            gross_pay = sum(e.amount for e in self.earnings)
+            total_deduction = sum(d.amount for d in self.deductions)
+            net_pay = gross_pay - total_deduction
+
+            new_zakat = (0.34 * (2.5 / 100)) * net_pay
+
+            if abs(new_zakat - previous_zakat) < tolerance:
+                zakat_row.amount = round(new_zakat, 2)
+                break
+
+            zakat_row.amount = new_zakat
+            previous_zakat = new_zakat
+
+        if zakat_row.amount < 0:
+            zakat_row.amount = 0
+        
 
     def preserve_manual_overrides(self):
         """Simpan nilai manual override SEBELUM parent validate menimpanya"""
@@ -112,6 +173,7 @@ class CustomSalarySlip(SalarySlip):
             return
 
         total_days = len(attendances)
+        self.payment_days = total_days
         absent_days = sum(1 for a in attendances if a.status == "Absent")
         allowance_deducted_days = sum(1 for a in attendances if a.daily_allowance_deducted)
         payment_days = max(total_days - allowance_deducted_days, 0)
@@ -143,8 +205,87 @@ class CustomSalarySlip(SalarySlip):
 
         # Process deductions - SKIP yang manual override
         for d in self.deductions:
+            if d.salary_component == "Potongan Zakat":
+                continue
+            
             if d.get("is_manual_override") == 1 or d.get("is_manual_override") is True:
                 continue
             
             if not d.get("default_amount") and d.amount > 0:
                 d.default_amount = d.amount
+
+
+@frappe.whitelist()
+def get_attendance_summary(employee, start_date, end_date):
+    """Method untuk dipanggil dari client script"""
+    start = getdate(start_date)
+    end = getdate(end_date)
+    
+    # Ambil payroll settings
+    payroll_settings = frappe.get_cached_value(
+        "Payroll Settings",
+        None,
+        (
+            "payroll_based_on",
+            "include_holidays_in_total_working_days",
+        ),
+        as_dict=1,
+    )
+    
+    # Hitung working days (gunakan method dari SalarySlip)
+    salary_slip = frappe.get_doc({
+        "doctype": "Salary Slip",
+        "employee": employee,
+        "start_date": start_date,
+        "end_date": end_date
+    })
+    
+    working_days = salary_slip.get_payment_days(
+        payroll_settings.include_holidays_in_total_working_days
+    ) or 0
+    
+    # Kurangi dengan holiday nasional
+    holiday_list = frappe.db.get_value("Employee", employee, "holiday_list")
+    if not holiday_list:
+        company = frappe.db.get_value("Employee", employee, "company")
+        holiday_list = frappe.get_cached_value("Company", company, "default_holiday_list")
+    
+    if holiday_list:
+        holidays_data = frappe.db.sql("""
+            SELECT 
+                holiday_date,
+                DAYOFWEEK(holiday_date) as day_of_week,
+                weekly_off
+            FROM `tabHoliday`
+            WHERE parent = %s
+            AND holiday_date >= %s
+            AND holiday_date <= %s
+        """, (holiday_list, start, end), as_dict=1)
+        
+        national_holidays = [
+            h for h in holidays_data 
+            if h.weekly_off == 0 and h.day_of_week not in [1, 7]
+        ]
+        
+        working_days = max(working_days - len(national_holidays), 0)
+    
+    # Ambil attendance
+    attendances = frappe.get_all(
+        "Attendance",
+        filters={
+            "employee": employee,
+            "attendance_date": ["between", [start, end]],
+            "docstatus": 1
+        },
+        fields=["status", "daily_allowance_deducted"]
+    )
+    
+    total_days = len(attendances)
+    absent_days = sum(1 for a in attendances if a.status == "Absent")
+    allowance_deducted_days = sum(1 for a in attendances if a.daily_allowance_deducted)
+    
+    return {
+        "absent_days": absent_days,
+        "allowance_deducted_days": allowance_deducted_days,
+        "payment_days": working_days
+    }
