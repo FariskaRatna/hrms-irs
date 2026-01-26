@@ -7,17 +7,10 @@ class CustomSalarySlip(SalarySlip):
 
     def validate(self):
         """Override validate dengan proteksi manual override"""
-        
-        # STEP 1: Simpan semua perubahan manual SEBELUM parent validate
         self.preserve_manual_overrides()
-        
-        # STEP 2: Panggil parent validate (ini akan recalculate semua)
         super().validate()
-        
-        # STEP 3: RESTORE nilai manual override yang sudah disimpan
         self.restore_manual_overrides()
-        
-        # STEP 4: Jalankan custom attendance adjustment (skip yang manual override)
+
         if self.earnings:
             self.store_default_amounts()
             self.adjust_attendance_effects()
@@ -25,20 +18,16 @@ class CustomSalarySlip(SalarySlip):
 
     def preserve_manual_overrides(self):
         """Simpan nilai manual override SEBELUM parent validate menimpanya"""
-        # Simpan di temporary variable (tidak persistent ke DB)
         self._manual_earnings = {}
         self._manual_deductions = {}
         
-        # Simpan earning yang di-override manual
         for e in self.earnings:
             if e.get("is_manual_override") == 1 or e.get("is_manual_override") is True:
-                # Simpan dengan key salary_component untuk restore nanti
                 self._manual_earnings[e.salary_component] = {
                     'amount': e.amount,
                     'default_amount': e.get('default_amount')
                 }
-        
-        # Simpan deduction yang di-override manual
+
         for d in self.deductions:
             if d.get("is_manual_override") == 1 or d.get("is_manual_override") is True:
                 self._manual_deductions[d.salary_component] = {
@@ -48,7 +37,6 @@ class CustomSalarySlip(SalarySlip):
 
     def restore_manual_overrides(self):
         """RESTORE nilai manual override SETELAH parent validate"""
-        # Restore earnings yang di-override manual
         if hasattr(self, '_manual_earnings'):
             for e in self.earnings:
                 if e.salary_component in self._manual_earnings:
@@ -58,7 +46,7 @@ class CustomSalarySlip(SalarySlip):
                     if saved.get('default_amount'):
                         e.default_amount = saved['default_amount']
         
-        # Restore deductions yang di-override manual
+
         if hasattr(self, '_manual_deductions'):
             for d in self.deductions:
                 if d.salary_component in self._manual_deductions:
@@ -71,7 +59,6 @@ class CustomSalarySlip(SalarySlip):
     def store_default_amounts(self):
         """Simpan nilai default untuk tracking perubahan manual"""
         for e in self.earnings:
-            # Jangan overwrite default_amount jika sudah ada
             if not e.get("default_amount") and e.amount > 0:
                 e.default_amount = e.amount
         
@@ -138,11 +125,9 @@ class CustomSalarySlip(SalarySlip):
 
         # Process earnings - SKIP yang manual override
         for e in self.earnings:
-            # CRITICAL: Cek manual override
             if e.get("is_manual_override") == 1 or e.get("is_manual_override") is True:
                 continue
 
-            # Simpan default amount jika belum ada
             if not e.get("default_amount") and e.amount > 0:
                 e.default_amount = e.amount
 

@@ -42,6 +42,8 @@ def _process_attendance_import(doc):
     else:
         end_date = date(today.year, today.month + 1, 20)
 
+    one_year_before_period = date(start_date.year - 1, start_date.month, start_date.day)
+
     # def get_file_path(file_url):
     #     filename = file_url.split("/")[-1]
     #     file_path = frappe.utils.get_files_path(filename)
@@ -332,6 +334,9 @@ def _process_attendance_import(doc):
         # emp = find_employee(row["Name"])
         emp = find_employee(row["Name"], source="finger")
         if not emp:
+            emp = find_employee(row["Name"], source="face")
+        
+        if not emp:
             employee_not_found.add(row["Name"])
             continue
 
@@ -406,14 +411,17 @@ def _process_attendance_import(doc):
         # Baru cek last_date
         last_date = employee_last_date.get(emp)
 
-        # Auto-set out_time jam 18:00 untuk baris terakhir employee
-        if (
-            last_date
-            and date_part == last_date
-            and not is_non_working_day(emp, date_part)
-        ):
-            # frappe.msgprint(f"🔧 Override out_time ke 18:00 untuk {row['Name']} pada {date_part} (last date)")
-            out_time = time(18, 0, 0)
+        if last_date and date_part == last_date:
+            is_weekend = date_part.weekday() in [5, 6]
+            is_company_holiday = is_holiday(emp, date_part) and not is_mass_leave(emp, date_part)
+
+            if not is_weekend and not is_company_holiday:
+                if in_time and not out_time:
+                    out_time = time(18, 0, 0)
+                    logs['warnings'].append(f"Auto-set out time to 18:00 for {row['Name']} on {date_part}")
+
+        if is_holiday(emp, date_part) and not is_mass_leave(emp, date_part):
+            continue
 
         excel_in_datetime = datetime.combine(date_part, in_time) if in_time else None
         excel_out_datetime = datetime.combine(date_part, out_time) if out_time else None
@@ -543,11 +551,11 @@ def _process_attendance_import(doc):
             join_date = frappe.db.get_value("Employee", emp, "date_of_joining")
             eligible = False
             if join_date:
-                eligible = (date_part - getdate(join_date)).days >= 365
+                eligible = getdate(join_date) <= one_year_before_period
 
             if eligible: 
                 status = "Present"
-                daily_allowance_deducted = False
+                daily_allowance_deducted = True
                 attendance_reason = "Cuti Bersama"
             else:
                 status = "On Leave"
@@ -631,7 +639,7 @@ def _process_attendance_import(doc):
 
     # Build summary message
     summary_html = f"""
-    <div style="font-family: monospace;">
+    <div style="font-family: arial;">
         <h3>📊 Attendance Import Summary</h3>
         <table style="border-collapse: collapse; width: 100%;">
             <tr><td><b>Total Fingerprint Rows:</b></td><td>{logs['stats']['fingerprint_rows']}</td></tr>
