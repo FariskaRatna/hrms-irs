@@ -711,6 +711,58 @@ function calculate_attendance_summary(frm) {
 	})
 }
 
+frappe.ui.form.on('Salary Detail', {
+	amount: function(frm, cdt, cdn) {
+	let row = locals[cdt][cdn];
+
+	if (row.__system_update || row.__resetting_amount) {
+        return;
+    }
+
+	if (!row.is_manual_override) {
+		row.__system_update = true;
+
+		frappe.model.set_value(cdt, cdn, 'is_manual_override', 1);
+
+		frappe.show_alert({
+			message: __('Manual Override enabled for {0}', [row.salary_component]),
+			indicator: 'orange'
+		}, 3);
+
+		setTimeout(() => {
+			row.__system_update = false;
+		}, 100);
+	}
+  },
+
+  is_manual_override: function(frm, cdt, cdn) {
+	let row = locals[cdt][cdn];
+
+	if (row.__system_update) {
+		return;
+	}
+
+	if (!row.is_manual_override && row.default_amount != null) {
+		row.__resetting_amount = true;
+		row.__system_update = true;
+
+		frappe.model.set_value(
+			cdt, cdn, 'amount', row.default_amount
+		);
+		
+		frappe.show_alert({
+			message: __('Amount reset to default for {0}', [row.salary_component]),
+			indicator: 'blue'
+		}, 3);
+
+		setTimeout(() => {
+			row.__resetting_amount = false;
+			row.__system_update = false;
+		}, 100);
+	}
+  },
+})
+
 
 
 
