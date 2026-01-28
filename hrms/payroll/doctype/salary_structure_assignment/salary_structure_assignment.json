@@ -22,10 +22,17 @@
   "currency",
   "section_break_7",
   "base",
+  "potongan_disiplin",
+  "tunjangan_harian",
+  "bpjs_kesehatan",
+  "bpjs_tenaga_kerja",
+  "pensiun",
   "column_break_9",
   "zakat_mode",
   "zakat_percentage",
   "zakat_amount",
+  "incentive",
+  "saving_percentage",
   "variable",
   "amended_from",
   "opening_balances_section",
@@ -232,11 +239,58 @@
    "fieldname": "zakat_amount",
    "fieldtype": "Currency",
    "label": "Zakat Amount"
+  },
+  {
+   "allow_on_submit": 1,
+   "fieldname": "incentive",
+   "fieldtype": "Currency",
+   "label": "Incentive"
+  },
+  {
+   "allow_on_submit": 1,
+   "default": "80000",
+   "fieldname": "potongan_disiplin",
+   "fieldtype": "Currency",
+   "label": "Potongan Disiplin"
+  },
+  {
+   "allow_on_submit": 1,
+   "fieldname": "tunjangan_harian",
+   "fieldtype": "Currency",
+   "label": "Tunjangan Harian"
+  },
+  {
+   "allow_on_submit": 1,
+   "default": "1",
+   "fieldname": "bpjs_kesehatan",
+   "fieldtype": "Check",
+   "label": "BPJS Kesehatan"
+  },
+  {
+   "allow_on_submit": 1,
+   "default": "1",
+   "fieldname": "bpjs_tenaga_kerja",
+   "fieldtype": "Check",
+   "label": "BPJS Ketenangakerjaan"
+  },
+  {
+   "allow_on_submit": 1,
+   "default": "1",
+   "fieldname": "pensiun",
+   "fieldtype": "Check",
+   "label": "Pensiun"
+  },
+  {
+   "allow_on_submit": 1,
+   "fieldname": "saving_percentage",
+   "fieldtype": "Float",
+   "label": "Saving Percentage",
+   "precision": "1"
   }
  ],
  "is_submittable": 1,
  "links": [],
- "modified": "2026-01-08 14:54:24.284956",
+ "modified": "2026-01-28 17:44:57.603316",
  "modified_by": "Administrator",
  "module": "Payroll",
  "name": "Salary Structure Assignment",

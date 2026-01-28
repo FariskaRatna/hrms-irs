@@ -64,6 +64,8 @@
   "totals",
   "net_pay",
   "rounded_total",
+  "total_saving",
+  "total_salary",
   "column_break_brfw",
   "total_in_words",
   "totals_1",
@@ -769,13 +771,23 @@
    "fieldname": "custom_daily_allowance_deducted_days",
    "fieldtype": "Int",
    "label": "Daily Allowance Deducted Days"
+  },
+  {
+   "fieldname": "total_saving",
+   "fieldtype": "Currency",
+   "label": "Total Saving"
+  },
+  {
+   "fieldname": "total_salary",
+   "fieldtype": "Currency",
+   "label": "Total Salary"
   }
  ],
  "icon": "fa fa-file-text",
  "idx": 9,
  "is_submittable": 1,
  "links": [],
- "modified": "2026-01-22 11:40:09.725048",
+ "modified": "2026-01-28 17:06:24.322436",
  "modified_by": "Administrator",
  "module": "Payroll",
  "name": "Salary Slip",

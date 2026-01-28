@@ -37,7 +37,7 @@ class CustomSalarySlip(SalarySlip):
                 "docstatus": 1,
                 "from_date": ["<=", self.start_date]
             },
-            fields=["zakat_mode", "zakat_amount"],
+            fields=["zakat_mode", "zakat_amount", "zakat_percentage"],
             order_by="from_date desc",
             limit=1
         )
@@ -48,6 +48,7 @@ class CustomSalarySlip(SalarySlip):
         
         zakat_mode = assignment[0].get("zakat_mode") or ""
         zakat_amount = assignment[0].get("zakat_amount") or 0
+        zakat_percentage = assignment[0].get("zakat_percentage") or 0
 
         if zakat_mode == "":
             zakat_row.amount = 0
@@ -67,7 +68,7 @@ class CustomSalarySlip(SalarySlip):
             )
             net_pay_before_zakat = gross_pay - total_deduction_no_zakat
 
-            new_zakat = (0.34 * (2.5 / 100)) * net_pay_before_zakat
+            new_zakat = (0.34 * (zakat_percentage / 100)) * net_pay_before_zakat
 
             if abs(new_zakat - previous_zakat) < tolerance:
                 zakat_row.amount = round(new_zakat, 2)
@@ -132,9 +133,23 @@ class CustomSalarySlip(SalarySlip):
 
     def recalculate_totals(self):
         """Recalculate totals"""
+        saving_percentage = frappe.db.get_value(
+            "Salary Structure Assignment",
+            {
+                "employee": self.employee,
+                "docstatus": 1,
+                "from_date": ("<=", self.start_date)
+            },
+            "saving_percentage",
+            order_by="from_date desc"
+        ) or 0
+        
+        saving_percentage = flt(saving_percentage)
         self.gross_pay = sum(e.amount for e in self.earnings)
         self.total_deduction = sum(d.amount for d in self.deductions)
         self.net_pay = self.gross_pay - self.total_deduction
+        self.total_saving = self.net_pay * (saving_percentage / 100)
+        self.total_salary = self.net_pay - self.total_saving
         self.set_rounded_total()
         self.set_net_total_in_words()
 
@@ -184,8 +199,8 @@ class CustomSalarySlip(SalarySlip):
         self.absent_days = absent_days
         self.custom_daily_allowance_deducted_days = allowance_deducted_days
 
-        designation = frappe.db.get_value("Employee", self.employee, "designation")
-        allowance_rate = 100000 if designation == "Staff" else 175000 if designation == "Project Manager" else 0
+        allowance_rate = frappe.db.get_value("Salary Structure Assignment", self.employee, "tunjangan_harian")
+        allowance_rate = flt(allowance_rate)
         allowance_amount = allowance_rate * payment_days
 
         # Process earnings - SKIP yang manual override
