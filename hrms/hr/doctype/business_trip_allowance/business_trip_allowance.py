@@ -64,7 +64,7 @@ class BusinessTripAllowance(Document):
 			["travel_cost", "currency"], as_dict=True
 		)
 
-		API_KEY = "YOUR_API_KEY"
+		API_KEY = "fca_live_JsNej4uCFlI3tdMpxW46hqTH2OjXlUISp9jAOuAE"
 
 		def convert_to_idr(amount, currency):
 			if not amount or not currency or currency == "IDR":

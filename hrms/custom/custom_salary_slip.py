@@ -61,10 +61,13 @@ class CustomSalarySlip(SalarySlip):
 
         for i in range(max_iterations):
             gross_pay = sum(e.amount for e in self.earnings)
-            total_deduction = sum(d.amount for d in self.deductions)
-            net_pay = gross_pay - total_deduction
+            total_deduction_no_zakat = sum(
+                d.amount for d in self.deductions 
+                if d.salary_component != "Potongan Zakat"
+            )
+            net_pay_before_zakat = gross_pay - total_deduction_no_zakat
 
-            new_zakat = (0.34 * (2.5 / 100)) * net_pay
+            new_zakat = (0.34 * (2.5 / 100)) * net_pay_before_zakat
 
             if abs(new_zakat - previous_zakat) < tolerance:
                 zakat_row.amount = round(new_zakat, 2)
