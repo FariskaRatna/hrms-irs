@@ -3,6 +3,7 @@
 
 import frappe
 from frappe.model.document import Document
+from frappe.utils import rounded
 
 
 class OvertimeCalculation(Document):
@@ -44,7 +45,8 @@ class OvertimeCalculation(Document):
 			elif total_hours > 9:
 				total_coef += (8 * 2) + 3 + (total_hours - 9) * 4
 
-		self.total_amount = total_coef * hourly_rate if total_coef > 0 else 0
+		total_amount = total_coef * hourly_rate if total_coef > 0 else 0
+		self.total_amount = rounded(total_amount)
 
 	def create_overtime_record(self):
 		existing_overtime = frappe.db.exists("Overtime Calculation", {"reference_request": self.name})

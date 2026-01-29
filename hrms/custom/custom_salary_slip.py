@@ -1,6 +1,9 @@
 import frappe
-from frappe.utils import getdate, rounded, flt
+from frappe.utils import getdate, rounded, flt, money_in_words
 from hrms.payroll.doctype.salary_slip.salary_slip import SalarySlip
+import erpnext
+# from hrms.utils.terbilang_id import terbilang_id
+from num2words import num2words
 
 
 class CustomSalarySlip(SalarySlip):
@@ -70,6 +73,8 @@ class CustomSalarySlip(SalarySlip):
 
             new_zakat = (0.34 * (zakat_percentage / 100)) * net_pay_before_zakat
 
+            new_zakat = rounded(new_zakat)
+
             if abs(new_zakat - previous_zakat) < tolerance:
                 zakat_row.amount = round(new_zakat, 2)
                 break
@@ -131,6 +136,15 @@ class CustomSalarySlip(SalarySlip):
             if not d.get("default_amount") and d.amount > 0:
                 d.default_amount = d.amount
 
+    def set_net_total_in_words(self):
+        doc_currency = self.currency
+        company_currency = erpnext.get_company_currency(self.company)
+        total = self.total_salary if self.total_salary is not None else self.net_pay
+        res = num2words(int(total), lang="id").strip()
+
+        self.total_in_words = f"{res.title()} Rupiah"
+        self.base_total_in_words = self.total_in_words
+
     def recalculate_totals(self):
         """Recalculate totals"""
         saving_percentage = frappe.db.get_value(
@@ -148,7 +162,7 @@ class CustomSalarySlip(SalarySlip):
         self.gross_pay = sum(e.amount for e in self.earnings)
         self.total_deduction = sum(d.amount for d in self.deductions)
         self.net_pay = self.gross_pay - self.total_deduction
-        self.total_saving = self.net_pay * (saving_percentage / 100)
+        self.total_saving = rounded(self.net_pay * (saving_percentage / 100))
         self.total_salary = self.net_pay - self.total_saving
         self.set_rounded_total()
         self.set_net_total_in_words()
@@ -199,7 +213,17 @@ class CustomSalarySlip(SalarySlip):
         self.absent_days = absent_days
         self.custom_daily_allowance_deducted_days = allowance_deducted_days
 
-        allowance_rate = frappe.db.get_value("Salary Structure Assignment", self.employee, "tunjangan_harian")
+        # allowance_rate = frappe.db.get_value("Salary Structure Assignment", self.employee, "tunjangan_harian")
+        allowance_rate = frappe.db.get_value(
+            "Salary Structure Assignment",
+            {
+                "employee": self.employee,
+                "docstatus": 1,
+                "from_date": ("<=", self.start_date)
+            },
+            "tunjangan_harian",
+            order_by="from_date desc"
+        ) or 0
         allowance_rate = flt(allowance_rate)
         allowance_amount = allowance_rate * payment_days
 

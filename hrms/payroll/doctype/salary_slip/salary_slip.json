@@ -346,13 +346,14 @@
   {
    "fieldname": "net_pay",
    "fieldtype": "Currency",
-   "label": "Net Pay",
+   "label": "Total Salary",
    "read_only": 1
   },
   {
    "bold": 1,
    "fieldname": "rounded_total",
    "fieldtype": "Currency",
+   "hidden": 1,
    "label": "Rounded Total",
    "read_only": 1
   },
@@ -773,21 +774,26 @@
    "label": "Daily Allowance Deducted Days"
   },
   {
+   "bold": 1,
    "fieldname": "total_saving",
    "fieldtype": "Currency",
-   "label": "Total Saving"
+   "label": "Total Saving",
+   "read_only": 1
   },
   {
+   "bold": 1,
    "fieldname": "total_salary",
    "fieldtype": "Currency",
-   "label": "Total Salary"
+   "label": "Net Pay",
+   "options": "currency",
+   "read_only": 1
   }
  ],
  "icon": "fa fa-file-text",
  "idx": 9,
  "is_submittable": 1,
  "links": [],
- "modified": "2026-01-28 17:06:24.322436",
+ "modified": "2026-01-29 11:31:26.577172",
  "modified_by": "Administrator",
  "module": "Payroll",
  "name": "Salary Slip",
