@@ -1,0 +1,35 @@
+{
+ "chart_name": "Leave Application by Category",
+ "chart_type": "Report",
+ "creation": "2026-01-27 12:41:11.042217",
+ "currency": "IDR",
+ "docstatus": 0,
+ "doctype": "Dashboard Chart",
+ "dynamic_filters_json": "{}",
+ "filters_json": "{}",
+ "group_by_type": "Count",
+ "idx": 0,
+ "is_public": 1,
+ "is_standard": 1,
+ "modified": "2026-01-27 12:41:28.355909",
+ "modified_by": "Administrator",
+ "module": "HR",
+ "name": "Leave Application by Category",
+ "number_of_groups": 0,
+ "owner": "Administrator",
+ "report_name": "Leave Application by Category",
+ "roles": [],
+ "show_values_over_chart": 0,
+ "time_interval": "Yearly",
+ "timeseries": 0,
+ "timespan": "Last Year",
+ "type": "Bar",
+ "use_report_chart": 0,
+ "x_field": "leave_category",
+ "y_axis": [
+  {
+   "color": "#CB2929",
+   "y_field": "total"
+  }
+ ]
+}

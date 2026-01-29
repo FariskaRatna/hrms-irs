@@ -1,6 +1,11 @@
 {
- "charts": [],
- "content": "[{\"id\":\"1t8F2fq84e\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">HR for Employee</span>\",\"col\":12}},{\"id\":\"D5XtTTb4XT\",\"type\":\"custom_block\",\"data\":{\"custom_block_name\":\"Announcement\",\"col\":12}},{\"id\":\"3YUQSPHzfy\",\"type\":\"card\",\"data\":{\"card_name\":\"Overtime\",\"col\":4}},{\"id\":\"B7zOHF0tZE\",\"type\":\"card\",\"data\":{\"card_name\":\"Business Trip\",\"col\":4}},{\"id\":\"yI1rS3Z55G\",\"type\":\"card\",\"data\":{\"card_name\":\"Loan\",\"col\":4}}]",
+ "charts": [
+  {
+   "chart_name": "Attendance Count",
+   "label": "Employee's Attendance"
+  }
+ ],
+ "content": "[{\"id\":\"1t8F2fq84e\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">HR for Employee</span>\",\"col\":12}},{\"id\":\"ABcbc_l9OK\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Absent's Employee\",\"col\":4}},{\"id\":\"T4NmoD7PLB\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Present's Employee\",\"col\":4}},{\"id\":\"Iz4PDdOBk8\",\"type\":\"chart\",\"data\":{\"chart_name\":\"Employee's Attendance\",\"col\":12}},{\"id\":\"D5XtTTb4XT\",\"type\":\"custom_block\",\"data\":{\"custom_block_name\":\"Announcement\",\"col\":12}},{\"id\":\"3YUQSPHzfy\",\"type\":\"card\",\"data\":{\"card_name\":\"Overtime\",\"col\":4}},{\"id\":\"B7zOHF0tZE\",\"type\":\"card\",\"data\":{\"card_name\":\"Business Trip\",\"col\":4}},{\"id\":\"yI1rS3Z55G\",\"type\":\"card\",\"data\":{\"card_name\":\"Loan\",\"col\":4}}]",
  "creation": "2025-11-06 16:22:17.073000",
  "custom_blocks": [
   {
@@ -136,11 +141,20 @@
    "type": "Link"
   }
  ],
- "modified": "2025-11-06 16:36:45.842128",
+ "modified": "2026-01-26 12:03:11.674264",
  "modified_by": "Administrator",
  "module": "HR",
  "name": "HR for Employee",
- "number_cards": [],
+ "number_cards": [
+  {
+   "label": "Absent's Employee",
+   "number_card_name": "Total Absent (This Month)"
+  },
+  {
+   "label": "Present's Employee",
+   "number_card_name": "Total Present (This Month)"
+  }
+ ],
  "owner": "Administrator",
  "parent_page": "",
  "public": 1,

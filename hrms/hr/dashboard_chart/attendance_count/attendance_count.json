@@ -11,7 +11,7 @@
  "idx": 0,
  "is_public": 1,
  "is_standard": 1,
- "modified": "2022-08-21 14:25:01.608941",
+ "modified": "2026-01-26 12:00:03.306847",
  "modified_by": "Administrator",
  "module": "HR",
  "name": "Attendance Count",
@@ -19,10 +19,11 @@
  "owner": "Administrator",
  "report_name": "Monthly Attendance Sheet",
  "roles": [],
+ "show_values_over_chart": 0,
  "time_interval": "Yearly",
  "timeseries": 0,
  "timespan": "Last Year",
- "type": "Line",
+ "type": "Bar",
  "use_report_chart": 1,
  "y_axis": []
 }
