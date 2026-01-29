@@ -5,7 +5,7 @@ import frappe
 from frappe.utils import fmt_money
 from frappe.defaults import get_global_default
 from frappe.model.document import Document
-from frappe.utils import nowdate, getdate
+from frappe.utils import nowdate, getdate, add_months
 from frappe import _
 from hrms.utils import get_employee_email
 from hrms.custom.email_token.reimbursement_email_token import build_action_url_reimburse
@@ -20,6 +20,7 @@ class Reimbursement(Document):
 			self.notify_employee()
 			if self.approval_status == "Approved":
 				self.update_employee_reimbursement()
+				self.create_reimbursement_summary()
 				# self.create_additional_salary()
 
 	def on_update(self):
@@ -41,7 +42,18 @@ class Reimbursement(Document):
 	def update_employee_reimbursement(self):
 		employee = frappe.get_doc("Employee", self.employee)
 
-		total_reimbursement = employee.total_reimbursement or 0
+		total_reimbursement = frappe.db.get_value(
+			"Salary Structure Assignment",
+			{
+				"employee": self.employee,
+				"docstatus": 1,
+				"from_date": ("<=", self.posting_date)
+			},
+			"base",
+			order_by="from_date desc"
+		) or 0
+
+		# total_reimbursement = employee.total_reimbursement or 0
 		reimbursement_used = employee.reimbursement_used or 0
 
 		# reimbursement_used = frappe.db.sql("""
@@ -56,10 +68,61 @@ class Reimbursement(Document):
 		reimbursement_used += self.amount
 		balance = total_reimbursement - reimbursement_used
 
-		employee.total_reimbursement = total_reimbursement
+		# employee.total_reimbursement = total_reimbursement
 		employee.reimbursement_used = reimbursement_used
 		employee.balance = total_reimbursement - reimbursement_used
 		employee.save(ignore_permissions=True)
+
+	def create_reimbursement_summary(self):
+		if not self.employee or not self.posting_date:
+			return
+		
+		apply_date = getdate(self.posting_date)
+
+		if apply_date.day >= 21:
+			period_start = apply_date.replace(day=21)
+			period_end = add_months(period_start, 1).replace(day=20)
+			reimbursement_date = period_end.replace(day=25)
+		else:
+			period_end = apply_date.replace(day=20)
+			period_start = add_months(period_end, -1).replace(day=21)
+			reimbursement_date = period_end.replace(day=25)
+
+		summary_name = frappe.db.get_value(
+			"Reimbursement Summary",
+			{
+				"employee": self.employee,
+				"period_start": period_start,
+				"period_end": period_end,
+				"docstatus": 0
+			},
+			"name"
+		)
+
+		if summary_name:
+			summary = frappe.get_doc("Reimbursement Summary", summary_name)
+		else:
+			summary = frappe.new_doc("Reimbursement Summary")
+			summary.employee = self.notify_employee
+			summary.period_start = period_start
+			summary.period_end = period_end
+			summary.reimbursement_date = reimbursement_date
+
+		if any(d.reimbursement_document == self.name for d in summary.reimbursement_detail):
+			return
+		
+		summary.append("reimbursement_detail", {
+			"reimbursement_document": self.name,
+			"patient_name": self.patient_name,
+			"date": apply_date,
+			"amount": self.amount
+		})
+
+		summary.total_amount = sum(
+			d.amount or 0 for d in summary.reimbursement_detail
+		)
+
+		summary.save(ignore_permissions=True)
 
 	def get_requester(self):
 		user_id = frappe.db.get_value("Employee", self.employee, "user_id") or self.owner

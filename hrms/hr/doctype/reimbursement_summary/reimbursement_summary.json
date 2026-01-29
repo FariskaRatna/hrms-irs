@@ -15,9 +15,11 @@
   "department",
   "designation",
   "section_break_bofz",
-  "reimbursement_date",
+  "period_start",
+  "period_end",
   "column_break_ojom",
-  "amount",
+  "reimbursement_date",
+  "total_amount",
   "reimbursement_information",
   "reimbursement_detail"
  ],
@@ -40,7 +42,6 @@
   {
    "fieldname": "naming_series",
    "fieldtype": "Select",
-   "in_list_view": 1,
    "label": "Series",
    "options": "REIM-SUM-",
    "reqd": 1
@@ -84,16 +85,12 @@
   {
    "fieldname": "reimbursement_date",
    "fieldtype": "Date",
+   "in_list_view": 1,
    "label": "Reimbursement Date"
   },
   {
    "fieldname": "column_break_ojom",
    "fieldtype": "Column Break"
-  },
-  {
-   "fieldname": "amount",
-   "fieldtype": "Currency",
-   "label": "Amount"
   },
   {
    "fieldname": "reimbursement_information",
@@ -105,13 +102,28 @@
    "fieldtype": "Table",
    "label": "Reimbursement Detail",
    "options": "Reimbursement Summary Detail"
+  },
+  {
+   "fieldname": "period_start",
+   "fieldtype": "Date",
+   "label": "From Date"
+  },
+  {
+   "fieldname": "period_end",
+   "fieldtype": "Date",
+   "label": "To Date"
+  },
+  {
+   "fieldname": "total_amount",
+   "fieldtype": "Currency",
+   "label": "Total Amount"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2026-01-29 17:57:12.940551",
+ "modified": "2026-01-29 21:53:52.453105",
  "modified_by": "Administrator",
  "module": "HR",
  "name": "Reimbursement Summary",
@@ -136,5 +148,6 @@
  "rows_threshold_for_grid_search": 20,
  "sort_field": "modified",
  "sort_order": "DESC",
- "states": []
+ "states": [],
+ "title_field": "employee_name"
 }
