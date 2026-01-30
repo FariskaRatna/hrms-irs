@@ -1,0 +1,124 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "naming_series:",
+ "creation": "2026-01-30 09:38:24.922957",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "section_break_eo7b",
+  "naming_series",
+  "employee",
+  "employee_name",
+  "column_break_axzi",
+  "department",
+  "designation",
+  "section_break_ercb",
+  "percentage_saving",
+  "column_break_ihlx",
+  "total_saving",
+  "section_break_hjle",
+  "saving_sumamry"
+ ],
+ "fields": [
+  {
+   "fieldname": "section_break_eo7b",
+   "fieldtype": "Section Break",
+   "label": "Employment Details"
+  },
+  {
+   "fieldname": "naming_series",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Select",
+   "options": "HR-SVG-",
+   "reqd": 1
+  },
+  {
+   "fieldname": "employee",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Employee",
+   "options": "Employee",
+   "reqd": 1
+  },
+  {
+   "fetch_from": "employee.employee_name",
+   "fieldname": "employee_name",
+   "fieldtype": "Data",
+   "label": "Employee Name"
+  },
+  {
+   "fieldname": "column_break_axzi",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fetch_from": "employee.department",
+   "fieldname": "department",
+   "fieldtype": "Data",
+   "label": "Department"
+  },
+  {
+   "fetch_from": "employee.designation",
+   "fieldname": "designation",
+   "fieldtype": "Data",
+   "label": "Designation"
+  },
+  {
+   "fieldname": "section_break_ercb",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "percentage_saving",
+   "fieldtype": "Float",
+   "label": "Percentage Saving"
+  },
+  {
+   "fieldname": "column_break_ihlx",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "total_saving",
+   "fieldtype": "Currency",
+   "label": "Total Saving"
+  },
+  {
+   "fieldname": "section_break_hjle",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "saving_sumamry",
+   "fieldtype": "Table",
+   "label": "Saving Summary",
+   "options": "Saving Summary"
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2026-01-30 09:57:36.778275",
+ "modified_by": "Administrator",
+ "module": "HR",
+ "name": "Saving",
+ "naming_rule": "By \"Naming Series\" field",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "rows_threshold_for_grid_search": 20,
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}
