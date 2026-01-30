@@ -14,11 +14,12 @@
   "department",
   "designation",
   "section_break_ercb",
-  "percentage_saving",
+  "saving_percentage",
+  "status",
   "column_break_ihlx",
   "total_saving",
   "section_break_hjle",
-  "saving_sumamry"
+  "saving_summary"
  ],
  "fields": [
   {
@@ -29,9 +30,9 @@
   {
    "fieldname": "naming_series",
    "fieldtype": "Select",
-   "in_list_view": 1,
    "label": "Select",
    "options": "HR-SVG-",
+   "read_only": 1,
    "reqd": 1
   },
   {
@@ -46,7 +47,8 @@
    "fetch_from": "employee.employee_name",
    "fieldname": "employee_name",
    "fieldtype": "Data",
-   "label": "Employee Name"
+   "label": "Employee Name",
+   "read_only": 1
   },
   {
    "fieldname": "column_break_axzi",
@@ -56,22 +58,19 @@
    "fetch_from": "employee.department",
    "fieldname": "department",
    "fieldtype": "Data",
-   "label": "Department"
+   "label": "Department",
+   "read_only": 1
   },
   {
    "fetch_from": "employee.designation",
    "fieldname": "designation",
    "fieldtype": "Data",
-   "label": "Designation"
+   "label": "Designation",
+   "read_only": 1
   },
   {
    "fieldname": "section_break_ercb",
    "fieldtype": "Section Break"
-  },
-  {
-   "fieldname": "percentage_saving",
-   "fieldtype": "Float",
-   "label": "Percentage Saving"
   },
   {
    "fieldname": "column_break_ihlx",
@@ -80,6 +79,7 @@
   {
    "fieldname": "total_saving",
    "fieldtype": "Currency",
+   "in_list_view": 1,
    "label": "Total Saving"
   },
   {
@@ -87,7 +87,19 @@
    "fieldtype": "Section Break"
   },
   {
-   "fieldname": "saving_sumamry",
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Status",
+   "options": "Active\nInactive"
+  },
+  {
+   "fieldname": "saving_percentage",
+   "fieldtype": "Float",
+   "label": "Saving Percentage"
+  },
+  {
+   "fieldname": "saving_summary",
    "fieldtype": "Table",
    "label": "Saving Summary",
    "options": "Saving Summary"
@@ -96,7 +108,7 @@
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-01-30 09:57:36.778275",
+ "modified": "2026-01-30 10:42:07.751132",
  "modified_by": "Administrator",
  "module": "HR",
  "name": "Saving",
@@ -118,7 +130,9 @@
  ],
  "row_format": "Dynamic",
  "rows_threshold_for_grid_search": 20,
+ "show_title_field_in_link": 1,
  "sort_field": "modified",
  "sort_order": "DESC",
- "states": []
+ "states": [],
+ "title_field": "employee_name"
 }

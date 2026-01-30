@@ -8,6 +8,10 @@ from num2words import num2words
 
 class CustomSalarySlip(SalarySlip):
 
+    def on_submit(self):
+        super().validate()
+        self.update_saving_employee()
+
     def validate(self):
         """Override validate dengan proteksi manual override"""
         self.preserve_manual_overrides()
@@ -162,7 +166,17 @@ class CustomSalarySlip(SalarySlip):
         self.gross_pay = sum(e.amount for e in self.earnings)
         self.total_deduction = sum(d.amount for d in self.deductions)
         self.net_pay = self.gross_pay - self.total_deduction
-        self.total_saving = rounded(self.net_pay * (saving_percentage / 100))
+
+        has_withdrawal = any(
+            e.salary_component == "Pencairan Tabungan"
+            for e in self.earnings
+        )
+
+        if has_withdrawal:
+            self.total_saving = 0
+        else:
+            self.total_saving = rounded(self.net_pay * (saving_percentage / 100))
+            
         self.total_salary = self.net_pay - self.total_saving
         self.set_rounded_total()
         self.set_net_total_in_words()
@@ -255,6 +269,70 @@ class CustomSalarySlip(SalarySlip):
             
             if not d.get("default_amount") and d.amount > 0:
                 d.default_amount = d.amount
+
+    def update_saving_employee(self):
+        if self.total_saving is None:
+            return
+        
+        employee = self.employee
+        posting_date = getdate(self.posting_date)
+
+        savings = frappe.get_all(
+            "Saving",
+            filters={
+                "employee": employee,
+                "status": "Active"
+            },
+            fields={
+                "name", "saving_percentage", "total_saving"
+            }
+        )
+
+        if not savings:
+            return
+        
+
+        withdrawal_row = [
+            e for e in self.earnings
+            if e.salary_component == "Pencairan Tabungan" and e.amount
+        ]
+
+        has_withdrawal = bool(withdrawal_row)
+
+        if has_withdrawal:
+            for saving in savings:
+                saving_doc = frappe.get_doc("Saving", saving.name)
+
+                for e in withdrawal_row:
+                    withdrawal = flt(e.amount)
+                    if withdrawal <= 0:
+                        continue
+                withdrawal = e.amount
+
+                saving_doc.total_saving -= withdrawal
+                
+                summary = saving_doc.append("saving_summary", {})
+                summary.date = posting_date
+                summary.amount = withdrawal
+                summary.type = "Withdrawal"
+
+                saving_doc.save(ignore_permissions=True)
+        else:
+            deposit = flt(self.total_saving)
+            if deposit <= 0:
+                return
+            
+            for saving in savings:
+                saving_doc = frappe.get_doc("Saving", saving.name)
+
+                saving_doc.total_saving += deposit
+                
+                summary = saving_doc.append("saving_summary", {})
+                summary.date = posting_date
+                summary.amount = self.total_saving
+                summary.type = "Deposit"
+
+                saving_doc.save(ignore_permissions=True)
 
 
 @frappe.whitelist()
