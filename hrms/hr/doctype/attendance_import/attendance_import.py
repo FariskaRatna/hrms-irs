@@ -496,7 +496,7 @@ def _process_attendance_import(doc):
 
             elif leave_category == "Izin Satu Hari":
                 status = "On Leave"
-                daily_allowance_deducted = False
+                daily_allowance_deducted = True
                 attendance_reason = "Izin"
 
             elif leave_category == "Sakit":
