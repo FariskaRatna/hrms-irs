@@ -416,7 +416,7 @@ def _process_attendance_import(doc):
             is_company_holiday = is_holiday(emp, date_part) and not is_mass_leave(emp, date_part)
 
             if not is_weekend and not is_company_holiday:
-                if in_time and not out_time:
+                if in_time:
                     out_time = time(18, 0, 0)
                     logs['warnings'].append(f"Auto-set out time to 18:00 for {row['Name']} on {date_part}")
 
