@@ -1,9 +1,10 @@
 import frappe
-from frappe.utils import getdate, rounded, flt, money_in_words
+from frappe.utils import getdate, rounded, flt, money_in_words, add_months
 from hrms.payroll.doctype.salary_slip.salary_slip import SalarySlip
 import erpnext
 # from hrms.utils.terbilang_id import terbilang_id
 from num2words import num2words
+from datetime import timedelta
 
 
 class CustomSalarySlip(SalarySlip):
@@ -196,6 +197,30 @@ class CustomSalarySlip(SalarySlip):
                 self.precision("base_rounded_total")
             )
 
+    def get_late_streak(employee, month_end_date):
+        streak = 0
+        current_month = getdate(month_end_date)
+
+        while True:
+            month_start = current_month.replace(day=1)
+            prev_month_end = add_months(month_start, 1) - timedelta(days=1)
+
+            total_late = frappe.db.sql("""
+                SELECT COALESCE(SUM(total_late_minutes), 0)
+                FROM `tabAttendance Summary`
+                WHERE employee = %s
+                    AND from_date >= %s
+                    AND to_date <= %s
+            """, (employee, month_start, prev_month_end))[0][0]
+
+            if total_late > 180:
+                streak += 1
+                current_month = add_months(current_month, -1)
+            else:
+                break
+        
+        return streak
+
     def adjust_attendance_effects(self):
         """Hitung attendance effects dengan respect manual override"""
         
@@ -260,7 +285,34 @@ class CustomSalarySlip(SalarySlip):
                 e.amount = allowance_amount
 
         # Process deductions - SKIP yang manual override
+        base = frappe.db.get_value(
+            "Salary Structure Assignment",
+            {
+                "employee": self.employee,
+                "docstatus": 1,
+                "from_date": ("<=", self.start_date)
+            },
+            "base",
+            order_by="from_date desc"
+        ) or 0
+
+        employee = frappe.get_doc("Employee", self.employee)
+        branch = employee.branch
+        
         for d in self.deductions:
+            if d.salary_component == "Keterlambatan":
+                if branch == "Headquarters":
+                    d.amount = 80000 * self.total_late_days
+                
+                elif branch == "Haas":
+                    streak = self.get_late_streak(self.employee, self.start_date)
+                    if streak >= 6:
+                        d.amount = base * 0.15
+                    elif streak >= 3:
+                        d.amount = base * 0.10
+                    elif streak >= 1:
+                        d.amount = base * 0.5
+
             if d.salary_component == "Potongan Zakat":
                 continue
             
