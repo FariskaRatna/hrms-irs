@@ -30,10 +30,6 @@
    "width": "Half"
   },
   {
-   "chart": "Employees by Type",
-   "width": "Half"
-  },
-  {
    "chart": "Employees by Grade",
    "width": "Half"
   },
@@ -46,18 +42,22 @@
    "width": "Half"
   },
   {
+   "chart": "Employees by Type",
+   "width": "Full"
+  },
+  {
    "chart": "Department Wise Employee Count",
-   "width": "Half"
+   "width": "Full"
   }
  ],
  "creation": "2023-11-17 14:10:56.741833",
  "dashboard_name": "Human Resource",
  "docstatus": 0,
  "doctype": "Dashboard",
- "idx": 0,
+ "idx": 2,
  "is_default": 0,
  "is_standard": 1,
- "modified": "2024-01-08 14:06:32.104261",
+ "modified": "2026-02-05 14:02:25.564683",
  "modified_by": "Administrator",
  "module": "HR",
  "name": "Human Resource",
