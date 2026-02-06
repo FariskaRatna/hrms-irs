@@ -285,21 +285,69 @@ class CustomSalarySlip(SalarySlip):
                 e.amount = allowance_amount
 
         # Process deductions - SKIP yang manual override
-        base = frappe.db.get_value(
+
+        assignment = frappe.get_all(
             "Salary Structure Assignment",
-            {
+            filters={
                 "employee": self.employee,
                 "docstatus": 1,
                 "from_date": ("<=", self.start_date)
             },
-            "base",
-            order_by="from_date desc"
-        ) or 0
+            fields=[
+                "base",
+                "tunjangan_harian",
+                "bpjs_kesehatan",
+                "bpjs_tenaga_kerja",
+                "pensiun"
+            ],
+            order_by="from_date desc",
+            limit=1
+        )
+
+        if not assignment:
+            return 0
+        
+        assignment = assignment[0]
+
+        THP = (assignment.base or 0) + ((assignment.tunjangan_harian or 0) * 20)
 
         employee = frappe.get_doc("Employee", self.employee)
         branch = employee.branch
         
         for d in self.deductions:
+            if d.salary_component == "BPJS Kesehatan":
+                if (assignment.bpjs_kesehatan or 0) == 0:
+                    d.amount = 0
+                else:
+                    if THP < 5729876:
+                        d.amount = rounded(0.01 * 5729876)
+                    elif THP > 12000000:
+                        d.amount = rounded(0.01 * 12000000)
+                    else:
+                        d.amount = rounded(0.01 * THP)
+            
+            if d.salary_component == "BPJS Tenaga Kerja":
+                if (assignment.bpjs_tenaga_kerja or 0) == 0:
+                    d.amount = 0
+                else:
+                    if THP < 5729876:
+                        d.amount = rounded(0.02 * 5729876)
+                    elif THP > 10547400:
+                        d.amount = rounded(0.02 * 10547400)
+                    else:
+                        d.amount = rounded(0.02 * THP)
+                    
+            if d.salary_component == "Pensiun":
+                if (assignment.pensiun or 0) == 0:
+                    d.amount = 0
+                else:
+                    if THP < 5729876:
+                        d.amount = rounded(0.01 * 5729876)
+                    elif THP > 10547400:
+                        d.amount = rounded(0.01 * 10547400)
+                    else:
+                        d.amount = rounded(0.01 * THP)
+                    
             if d.salary_component == "Keterlambatan":
                 if branch == "Headquarters":
                     d.amount = 80000 * self.total_late_days
@@ -307,11 +355,11 @@ class CustomSalarySlip(SalarySlip):
                 elif branch == "Haas":
                     streak = self.get_late_streak(self.employee, self.start_date)
                     if streak >= 6:
-                        d.amount = base * 0.15
+                        d.amount = (assignment.base or 0) * 0.15
                     elif streak >= 3:
-                        d.amount = base * 0.10
+                        d.amount = (assignment.base or 0) * 0.10
                     elif streak >= 1:
-                        d.amount = base * 0.5
+                        d.amount = (assignment.base or 0) * 0.05
 
             if d.salary_component == "Potongan Zakat":
                 continue
