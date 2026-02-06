@@ -58,7 +58,7 @@ class CustomSalarySlip(SalarySlip):
         zakat_amount = assignment[0].get("zakat_amount") or 0
         zakat_percentage = assignment[0].get("zakat_percentage") or 0
 
-        if zakat_mode == "":
+        if zakat_mode == "None":
             zakat_row.amount = 0
         elif zakat_mode == "Fixed Amount":
             zakat_row.amount = zakat_amount
