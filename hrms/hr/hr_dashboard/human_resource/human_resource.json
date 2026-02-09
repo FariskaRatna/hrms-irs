@@ -68,6 +68,10 @@
   {
    "chart": "Employee with Overtime",
    "width": "Half"
+  },
+  {
+   "chart": "Designation vs Age",
+   "width": "Half"
   }
  ],
  "creation": "2023-11-17 14:10:56.741833",
@@ -77,7 +81,7 @@
  "idx": 2,
  "is_default": 0,
  "is_standard": 1,
- "modified": "2026-02-09 10:56:20.556385",
+ "modified": "2026-02-09 15:49:49.496077",
  "modified_by": "Administrator",
  "module": "HR",
  "name": "Human Resource",

@@ -1,7 +1,7 @@
 {
- "chart_name": "Leave by Category",
+ "chart_name": "Designation vs Age",
  "chart_type": "Report",
- "creation": "2026-02-09 11:20:13.566741",
+ "creation": "2026-02-09 15:49:42.593291",
  "currency": "",
  "docstatus": 0,
  "doctype": "Dashboard Chart",
@@ -11,13 +11,13 @@
  "idx": 0,
  "is_public": 0,
  "is_standard": 1,
- "modified": "2026-02-09 15:53:16.269746",
+ "modified": "2026-02-09 15:52:31.425994",
  "modified_by": "Administrator",
  "module": "HR",
- "name": "Leave by Category",
+ "name": "Designation vs Age",
  "number_of_groups": 0,
  "owner": "Administrator",
- "report_name": "Leave Application by Category",
+ "report_name": "Designation vs Age",
  "roles": [],
  "show_values_over_chart": 0,
  "time_interval": "Yearly",
@@ -25,11 +25,11 @@
  "timespan": "Last Year",
  "type": "Bar",
  "use_report_chart": 1,
- "x_field": "leave_category",
+ "x_field": "age_group",
  "y_axis": [
   {
-   "color": "#CB2929",
-   "y_field": "total_applications"
+   "color": "#EC864B",
+   "y_field": "count"
   }
  ]
 }
