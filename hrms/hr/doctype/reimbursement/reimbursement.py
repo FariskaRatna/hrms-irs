@@ -12,6 +12,9 @@ from hrms.custom.email_token.reimbursement_email_token import build_action_url_r
 
 
 class Reimbursement(Document):
+	def validate(self):
+		self.validate_reimbursement_balance()
+		
 	def on_submit(self):
 		if self.approval_status in ['Pending', 'Cancelled']:
 			frappe.throw(_("Only Reimbursement Application with approval status 'Approved' and 'Rejected' can be submitted"))
@@ -39,6 +42,25 @@ class Reimbursement(Document):
 		if frappe.db.get_single_value("HR Settings", "send_reimbursement_application_notification"):
 			self.notify_employee()
 	
+	def validate_reimbursement_balance(self):
+		employee = frappe.get_doc("Employee", self.employee)
+
+		total_reimbursement = frappe.db.get_value(
+			"Salary Structure Assignment",
+			{
+				"employee": self.employee,
+				"docstatus": 1,
+				"from_date": ("<=", self.posting_date)
+			},
+			"base",
+			order_by="from_date desc"
+		) or 0
+
+		reimbursement_used = employee.reimbursement_used or 0
+
+		if reimbursement_used + self.amount > total_reimbursement:
+			frappe.throw(f"The reimbursement request exceeds the available balance!")
+
 	def update_employee_reimbursement(self):
 		employee = frappe.get_doc("Employee", self.employee)
 
