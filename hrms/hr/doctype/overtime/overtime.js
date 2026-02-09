@@ -36,6 +36,10 @@ frappe.ui.form.on("Overtime", {
         }
     },
 
+    onload(frm) {
+        frm.trigger("render_attachment_preview");
+    },
+
     refresh(frm) {
         frm.trigger("toggle_employee_read_only")
         frm.trigger("toggle_approval_editable")
@@ -82,9 +86,24 @@ frappe.ui.form.on("Overtime", {
 		    }
 		}, 50)
 
+        // frm.trigger("set_employee");
+        // frm.trigger("render_attachment_preview");
+        // frm.trigger("sync_photo_preview");
         frm.trigger("set_employee");
+    
+        // Panggil dengan delay bertingkat
+        setTimeout(() => {
+            frm.trigger("render_attachment_preview");
+            frm.trigger("sync_photo_preview");
+        }, 100);
+        
+        setTimeout(() => {
+            frm.trigger("render_attachment_preview");
+        }, 300);
+    },
+
+    after_save(frm) {
         frm.trigger("render_attachment_preview");
-        frm.trigger("sync_photo_preview");
     },
 
     photo(frm) {
@@ -150,18 +169,106 @@ frappe.ui.form.on("Overtime", {
         frm.set_df_property("approval_status", "read_only", !(is_assigned_by || override));
     },
 
+    // render_attachment_preview: function(frm) {
+    //     setTimeout(() => {
+    //         const url = frm.doc.photo;
+    //         const field = frm.fields_dict.photo;
+    //         if (!field) return;
+
+    //         const $a = $(field.$wrapper).find("a.attached-file-link");
+    //         if (!url || !$a.length) return;
+
+    //         const filename = url.split("/").pop();
+    //         $a.text(filename);
+    //         $a.attr("title", filename);
+    //     }, 50);
+    // },
+
     render_attachment_preview: function(frm) {
         const url = frm.doc.photo;
         const field = frm.fields_dict.photo;
         if (!field) return;
 
-        const $a = $(field.$wrapper).find("a.attached-file-link");
-        if (!url || !$a.length) return;
+        if (frm._photo_render_interval) {
+            clearInterval(frm._photo_render_interval);
+        }
 
-        const filename = url.split("/").pop();
-        $a.text(filename);    
-        $a.attr("title", filename);
+        const forceRender = () => {
+            const $wrapper = $(field.$wrapper);
+            const $controlValue = $wrapper.find('.control-value');
+            
+            if (!$controlValue.length) return;
+
+            $controlValue.empty();
+            
+            if (!url) {
+                if (frm.doc.docstatus !== 1) {
+                    $controlValue.html(`
+                        <div class="control-input" style="display: block;">
+                            <div class="file-upload-area padding"></div>
+                        </div>
+                    `);
+                    field.df.options = field.df.options || {};
+                    field.refresh();
+                }
+                return;
+            }
+            
+            const filename = url.split("/").pop();
+            
+            let html = '';
+            
+            if (frm.doc.docstatus !== 1) {
+                html += `
+                    <div class="attached-file" style="margin-bottom: 8px;">
+                        <div class="ellipsis">
+                            <i class="fa fa-paperclip"></i>
+                            <a href="${url}" target="_blank" class="attached-file-link">${filename}</a>
+                        </div>
+                        <div class="btn-group pull-right">
+                            <a class="btn btn-xs btn-default remove-attach-btn" data-file-url="${url}">
+                                <i class="fa fa-times"></i>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="clearfix"></div>
+                    <div class="control-input" style="display: block;">
+                        <div class="file-upload-area padding" style="margin-top: 10px;"></div>
+                    </div>
+                `;
+            } else {
+                html += `
+                    <div class="attached-file">
+                        <div class="ellipsis">
+                            <i class="fa fa-paperclip"></i>
+                            <a href="${url}" target="_blank" class="attached-file-link">${filename}</a>
+                        </div>
+                    </div>
+                `;
+            }
+            
+            $controlValue.html(html);
+            
+            $controlValue.find('.remove-attach-btn').on('click', function(e) {
+                e.preventDefault();
+                frm.set_value('photo', '');
+            });
+            
+            if (frm.doc.docstatus !== 1) {
+                const $uploadArea = $controlValue.find('.file-upload-area');
+                if ($uploadArea.length) {
+                    field.setup_attach();
+                }
+            }
+        };
+
+        frm._photo_render_interval = setInterval(forceRender, 200);
+        
+        setTimeout(forceRender, 0);
+        setTimeout(forceRender, 100);
+        setTimeout(forceRender, 300);
     },
+
 
     sync_photo_preview: function(frm) {
         const url = frm.doc.photo;
