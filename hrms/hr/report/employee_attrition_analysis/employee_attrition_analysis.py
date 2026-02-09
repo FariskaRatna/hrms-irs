@@ -54,6 +54,8 @@ def execute(filters=None):
 		else:
 			key = bucket
 
+		result[key] = result.get(key, 0) + 1
+
 	columns = [
 		{
 			"label": group_by.replace("_", " ").title(),

@@ -1,35 +1,34 @@
 {
- "chart_name": "Leave Application by Category",
+ "chart_name": "Total Overtime per Month",
  "chart_type": "Report",
- "creation": "2026-01-27 12:41:11.042217",
+ "creation": "2026-02-09 10:39:10.305298",
  "currency": "",
  "docstatus": 0,
  "doctype": "Dashboard Chart",
  "dynamic_filters_json": "{}",
- "filters_json": "{}",
+ "filters_json": "{\"year\":2026,\"metric\":\"total_hours\"}",
  "group_by_type": "Count",
  "idx": 0,
- "is_public": 1,
+ "is_public": 0,
  "is_standard": 1,
- "modified": "2026-02-09 10:53:33.507148",
+ "modified": "2026-02-09 10:41:04.566893",
  "modified_by": "Administrator",
  "module": "HR",
- "name": "Leave Application by Category",
+ "name": "Total Overtime per Month",
  "number_of_groups": 0,
  "owner": "Administrator",
- "report_name": "Leave Application by Category",
+ "report_name": "Overtime Trend",
  "roles": [],
  "show_values_over_chart": 0,
  "time_interval": "Yearly",
  "timeseries": 0,
  "timespan": "Last Year",
- "type": "Bar",
+ "type": "Line",
  "use_report_chart": 0,
- "x_field": "leave_category",
+ "x_field": "month",
  "y_axis": [
   {
-   "color": "#CB2929",
-   "y_field": "total"
+   "y_field": "total_hours"
   }
  ]
 }

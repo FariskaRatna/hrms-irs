@@ -8,26 +8,26 @@ frappe.query_reports["Employee Attrition Analysis"] = {
 			label: "Group By",
 			fieldtype: "Select",
 			options: [
-			"department",
-			"designation",
-			"masa_kerja"
+			"Department",
+			"Designation",
+			"Masa Kerja"
 			],
-			default: "department",
+			default: "Department",
 			reqd: 1
 		},
-		{
-			fieldname: "department",
-			label: "Department",
-			fieldtype: "Link",
-			options: "Department",
-			reqd: 0
-		},
-		{
-			fieldname: "designation",
-			label: "Designation",
-			fieldtype: "Link",
-			options: "Designation",
-			reqd: 0
-		},
+		// {
+		// 	fieldname: "department",
+		// 	label: "Department",
+		// 	fieldtype: "Link",
+		// 	options: "Department",
+		// 	reqd: 0
+		// },
+		// {
+		// 	fieldname: "designation",
+		// 	label: "Designation",
+		// 	fieldtype: "Link",
+		// 	options: "Designation",
+		// 	reqd: 0
+		// },
 	]
 };

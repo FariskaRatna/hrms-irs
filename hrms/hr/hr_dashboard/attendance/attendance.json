@@ -16,13 +16,21 @@
    "card": "Business Trip"
   },
   {
-   "card": "Category Employee"
+   "card": "Total Leave Application"
   }
  ],
  "charts": [
   {
    "chart": "Attendance Count",
    "width": "Full"
+  },
+  {
+   "chart": "Leave by Category",
+   "width": "Half"
+  },
+  {
+   "chart": "Dinas Leave for Employee",
+   "width": "Half"
   },
   {
    "chart": "Timesheet Activity Breakup",
@@ -35,14 +43,6 @@
   {
    "chart": "Department wise Timesheet Hours",
    "width": "Full"
-  },
-  {
-   "chart": "Leave Application by Category",
-   "width": "Half"
-  },
-  {
-   "chart": "Dinas Leave",
-   "width": "Half"
   }
  ],
  "creation": "2022-08-21 14:13:18.835357",
@@ -52,7 +52,7 @@
  "idx": 0,
  "is_default": 0,
  "is_standard": 1,
- "modified": "2026-01-27 15:46:12.799617",
+ "modified": "2026-02-09 12:12:11.982834",
  "modified_by": "Administrator",
  "module": "HR",
  "name": "Attendance",
