@@ -37,6 +37,8 @@ frappe.ui.form.on("Leave Application", {
 				},
 			});
 		}
+
+		frm.trigger("attachment_filename");
 	},
 
 	validate: function (frm) {
@@ -175,6 +177,13 @@ frappe.ui.form.on("Leave Application", {
 
 		frm.trigger("attachment_filename");
 		// frm.trigger("sync_photo_preview");
+		setTimeout(() => {
+            frm.trigger("attachment_filename");
+        }, 100);
+        
+        setTimeout(() => {
+            frm.trigger("attachment_filename");
+        }, 300);
 
 	},
 
@@ -228,22 +237,125 @@ frappe.ui.form.on("Leave Application", {
 		`);
 	},
 
+	after_save(frm) {
+		frm.trigger("attachment_filename");
+	},
+
 	doctor_note(frm) {
 		frm.trigger("attachment_filename");
 		// frm.trigger("sync_photo_preview");
 	},
 
-	attachment_filename: function (frm) {
+	// attachment_filename: function (frm) {
+	// 	const url = frm.doc.doctor_note;
+	// 	const field = frm.fields_dict.doctor_note;
+	// 	if (!field) return;
+
+	// 	const $attach = $(field.$wrapper).find("a.attached-file-link");
+	// 	if (!url || $attach.lenth) return;
+
+	// 	const filename = url.split("/").pop();
+	// 	$attach.text(filename);
+	// 	$attach.attr("title", filename);
+	// },
+
+	attachment_filename: function(frm) {
 		const url = frm.doc.doctor_note;
 		const field = frm.fields_dict.doctor_note;
 		if (!field) return;
 
-		const $attach = $(field.$wrapper).find("a.attached-file-link");
-		if (!url || $attach.lenth) return;
+		if (frm._photo_render_interval) {
+			clearInterval(frm._photo_render_interval);
+		}
 
-		const filename = url.split("/").pop();
-		$attach.text(filename);
-		$attach.attr("title", filename);
+		const forceRender = () => {
+			const $wrapper = $(field.$wrapper);
+			const $controlValue = $wrapper.find('.control-value');
+
+			if (!$controlValue.length) return;
+
+			if (url) {
+				const filename = url.split("/").pop();
+
+				$wrapper.find('a').each(function() {
+					const $link = $(this);
+					const text = $link.text().trim();
+
+					if (text.includes('/') || text.includes('private') || text.includes('files')) {
+						$link.text(filename);
+						$link.attr('title', filename);
+					}
+				});
+			}
+
+			$controlValue.empty();
+
+			if (!url) {
+				if (frm.doc.docstatus !== 1) {
+                    $controlValue.html(`
+                        <div class="control-input" style="display: block;">
+                            <div class="file-upload-area padding"></div>
+                        </div>
+                    `);
+                    field.df.options = field.df.options || {};
+                    field.refresh();
+                }
+                return;
+			}
+
+			const filename = url.split("/").pop();
+            
+            let html = '';
+            
+            if (frm.doc.docstatus !== 1) {
+                html += `
+                    <div class="attached-file" style="margin-bottom: 8px;">
+                        <div class="ellipsis">
+                            <i class="fa fa-paperclip"></i>
+                            <a href="${url}" target="_blank" class="attached-file-link">${filename}</a>
+                        </div>
+                        <div class="btn-group pull-right">
+                            <a class="btn btn-xs btn-default remove-attach-btn" data-file-url="${url}">
+                                <i class="fa fa-times"></i>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="clearfix"></div>
+                    <div class="control-input" style="display: block;">
+                        <div class="file-upload-area padding" style="margin-top: 10px;"></div>
+                    </div>
+                `;
+            } else {
+                html += `
+                    <div class="attached-file">
+                        <div class="ellipsis">
+                            <i class="fa fa-paperclip"></i>
+                            <a href="${url}" target="_blank" class="attached-file-link">${filename}</a>
+                        </div>
+                    </div>
+                `;
+            }
+
+			$controlValue.html(html);
+
+			$controlValue.find('.remove-attach-btn').on('click', function(e) {
+				e.preventDefault();
+				frm.set_value('doctor_note', '');
+			});
+
+			if (frm.doc.docstatus !== 1) {
+                const $uploadArea = $controlValue.find('.file-upload-area');
+                if ($uploadArea.length) {
+                    field.setup_attach();
+                }
+            }
+		};
+
+		frm._photo_render_interval = setInterval(forceRender, 200);
+        
+        setTimeout(forceRender, 0);
+        setTimeout(forceRender, 100);
+        setTimeout(forceRender, 300);
 	},
 
 	async set_employee(frm) {
