@@ -349,10 +349,10 @@ class CustomSalarySlip(SalarySlip):
                         d.amount = rounded(0.01 * THP)
                     
             if d.salary_component == "Keterlambatan":
-                if branch == "Headquarters":
+                if branch == "Infiniti Reka Solusi":
                     d.amount = 80000 * self.total_late_days
                 
-                elif branch == "Haas":
+                elif branch in ("Asesmatik Edukasi", "Sinergi Rekatama", "Gafin Mitra Solusindo"):
                     streak = self.get_late_streak(self.employee, self.start_date)
                     if streak >= 6:
                         d.amount = (assignment.base or 0) * 0.15
