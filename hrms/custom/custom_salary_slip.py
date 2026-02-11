@@ -197,25 +197,29 @@ class CustomSalarySlip(SalarySlip):
                 self.precision("base_rounded_total")
             )
 
-    def get_late_streak(employee, month_end_date):
+    def get_late_streak(self, employee, start_date):
         streak = 0
-        current_month = getdate(month_end_date)
+        current_date = getdate(start_date)
 
         while True:
-            month_start = current_month.replace(day=1)
-            prev_month_end = add_months(month_start, 1) - timedelta(days=1)
-
-            total_late = frappe.db.sql("""
-                SELECT COALESCE(SUM(total_late_minutes), 0)
+            period = frappe.db.sql("""
+                SELECT name, from_date, to_date, total_late_minutes
                 FROM `tabAttendance Summary`
                 WHERE employee = %s
-                    AND from_date >= %s
-                    AND to_date <= %s
-            """, (employee, month_start, prev_month_end))[0][0]
+                    AND from_date <= %s
+                    AND to_date >= %s
+                ORDER BY from_date DESC
+                LIMIT 1
+            """, (employee, current_date, current_date), as_dict=True)
+
+            if not period:
+                break
+
+            total_late = period[0].total_late_minutes or 0
 
             if total_late > 180:
                 streak += 1
-                current_month = add_months(current_month, -1)
+                current_date = period[0].from_date - timedelta(days=1)
             else:
                 break
         
@@ -354,6 +358,7 @@ class CustomSalarySlip(SalarySlip):
                 
                 elif branch in ("Asesmatik Edukasi", "Sinergi Rekatama", "Gafin Mitra Solusindo"):
                     streak = self.get_late_streak(self.employee, self.start_date)
+
                     if streak >= 6:
                         d.amount = (assignment.base or 0) * 0.15
                     elif streak >= 3:

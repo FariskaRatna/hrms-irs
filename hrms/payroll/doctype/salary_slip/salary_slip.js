@@ -641,8 +641,7 @@ frappe.ui.form.on("Salary Slip", {
         const total_late_days = Number(r.message) || 0;
         frm.set_value("total_late_days", total_late_days);
 
-        const late_amount = total_late_days * 80000;
-        upsert_component_row(frm, "deductions", "Keterlambatan", late_amount);
+        // upsert_component_row(frm, "deductions", "Keterlambatan", late_amount);
 
         frm.refresh_field("deductions");
         set_totals(frm);
