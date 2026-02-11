@@ -12,6 +12,7 @@
   "employee_name",
   "id_irs",
   "company",
+  "branch",
   "department",
   "designation",
   "employment_type",
@@ -787,13 +788,19 @@
    "label": "Net Pay",
    "options": "currency",
    "read_only": 1
+  },
+  {
+   "fetch_from": "employee.branch",
+   "fieldname": "branch",
+   "fieldtype": "Data",
+   "label": "Branch"
   }
  ],
  "icon": "fa fa-file-text",
  "idx": 9,
  "is_submittable": 1,
  "links": [],
- "modified": "2026-01-29 11:31:26.577172",
+ "modified": "2026-02-11 14:41:06.026302",
  "modified_by": "Administrator",
  "module": "Payroll",
  "name": "Salary Slip",
