@@ -172,6 +172,7 @@ override_doctype_class = {
 	"Attendance": "hrms.custom.attendance_override.CustomAttendance",
     "Leave Allocation": "hrms.custom.leave_allocation_mass_leave.CustomLeaveAllocation",
     "Salary Slip": "hrms.custom.custom_salary_slip.CustomSalarySlip",
+    "Department": "hrms.custom.department_name.CustomDepartment",
 }
 
 # Document Events

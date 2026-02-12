@@ -20,6 +20,10 @@
   {
    "chart": "Rasio Manager vs Staff",
    "width": "Half"
+  },
+  {
+   "chart": "Tenaga Inti vs Pendukung",
+   "width": "Half"
   }
  ],
  "creation": "2026-02-12 11:09:47.445912",
@@ -29,7 +33,7 @@
  "idx": 0,
  "is_default": 0,
  "is_standard": 1,
- "modified": "2026-02-12 11:48:17.142393",
+ "modified": "2026-02-12 16:23:33.284957",
  "modified_by": "Administrator",
  "module": "HR",
  "name": "Workforce Overview",
