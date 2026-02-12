@@ -8,25 +8,25 @@ def execute(filters=None):
 	filters = filters or {}
 
 	data = frappe.db.sql(f"""
-		SELECT
-			branch,
-			COUNT(name) AS total_employees
-		FROM `tabEmployee`
-		WHERE status = 'Active'
-		GROUP BY branch
-		ORDER BY branch
+		select
+			designation,
+			count(name) as total_employees
+		from `tabEmployee`
+		where status = 'Active'
+		group by designation
+		order by designation
 	""", as_dict=True)
 
 	columns = [
-		{"label": "Branch", "fieldname": "branch", "fieldtype": "Data", "width": 180},
+		{"label": "Designation", "fieldname": "designation", "fieldtype": "Data", "width": 180},
 		{"label": "Total Employees", "fieldname": "total_employees", "fieldtype": "Int", "width": 150}
 	]
 
-	labels = [d["branch"] for d in data]
+	labels = [d["designation"] for d in data]
 	values = [d["total_employees"] for d in data]
 
 	chart = {
-		"data" : {
+		"data": {
 			"labels": labels,
 			"datasets": [
 				{
@@ -35,7 +35,7 @@ def execute(filters=None):
 				}
 			]
 		},
-		"type": "pie"
+		"type": "donut"
 	}
 
 	return columns, data, None, chart
