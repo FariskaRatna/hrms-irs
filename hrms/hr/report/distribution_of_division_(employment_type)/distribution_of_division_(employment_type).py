@@ -9,13 +9,13 @@ def execute(filters=None):
 
 	data = frappe.db.sql(f"""
 		SELECT
-			division,
+			department,
 			employment_type,
 			COUNT(name) AS total_employees
 		FROM `tabEmployee`
 		WHERE status = 'Active'
-		GROUP BY division, employment_type
-		ORDER BY division, employment_type
+		GROUP BY department, employment_type
+		ORDER BY department, employment_type
 	""", as_dict=True)
 
 	columns = [
@@ -24,7 +24,7 @@ def execute(filters=None):
 		{"label": "Total Employees", "fieldname": "total_employees", "fieldtype": "Int", "width": 150}
 	]
 
-	department = sorted(list({d["division"] for d in data}))
+	department = sorted(list({d["department"] for d in data}))
 	emp_types = sorted(list({d["employment_type"] for d in data}))
 
 	datasets = []
@@ -33,7 +33,7 @@ def execute(filters=None):
 			"name": et,
 			"values": [
 				next(
-					(d["total_employees"] for d in data if d["division"] == div and d["employment_type"] == et),
+					(d["total_employees"] for d in data if d["department"] == div and d["employment_type"] == et),
 					0
 				)
 				for div in department
@@ -50,4 +50,4 @@ def execute(filters=None):
 			"stacked": True
 		}
 	}
-	return columns, data
+	return columns, data, None, chart

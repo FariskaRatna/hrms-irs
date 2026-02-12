@@ -1,0 +1,25 @@
+{
+ "cards": [
+  {
+   "card": "Total Karyawan (Headcount)"
+  }
+ ],
+ "charts": [
+  {
+   "chart": "Komposisi Karyawan",
+   "width": "Half"
+  }
+ ],
+ "creation": "2026-02-12 11:09:47.445912",
+ "dashboard_name": "Workforce Overview",
+ "docstatus": 0,
+ "doctype": "Dashboard",
+ "idx": 0,
+ "is_default": 0,
+ "is_standard": 1,
+ "modified": "2026-02-12 11:13:06.182618",
+ "modified_by": "Administrator",
+ "module": "HR",
+ "name": "Workforce Overview",
+ "owner": "Administrator"
+}
