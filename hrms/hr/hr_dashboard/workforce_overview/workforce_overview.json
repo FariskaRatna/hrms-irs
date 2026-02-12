@@ -8,6 +8,14 @@
   {
    "chart": "Komposisi Karyawan",
    "width": "Half"
+  },
+  {
+   "chart": "Distribusi Branch",
+   "width": "Half"
+  },
+  {
+   "chart": "Distribusi Department",
+   "width": "Full"
   }
  ],
  "creation": "2026-02-12 11:09:47.445912",
@@ -17,7 +25,7 @@
  "idx": 0,
  "is_default": 0,
  "is_standard": 1,
- "modified": "2026-02-12 11:13:06.182618",
+ "modified": "2026-02-12 11:39:51.564109",
  "modified_by": "Administrator",
  "module": "HR",
  "name": "Workforce Overview",

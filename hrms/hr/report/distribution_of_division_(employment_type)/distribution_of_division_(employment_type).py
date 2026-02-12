@@ -46,8 +46,15 @@ def execute(filters=None):
 			"datasets": datasets
 		},
 		"type": "bar",
+		"colors": ["#F26076", "#4194f3", "#84ebf8", "#48bb74"], 
 		"barOptions": {
-			"stacked": True
+			"stacked": 1,
+			"spaceRatio": 0.5
+		},
+		"height": 280,
+		"axisOptions": {
+			"xAxisMode": "tick",
+			"xIsSeries": 0
 		}
 	}
 	return columns, data, None, chart
