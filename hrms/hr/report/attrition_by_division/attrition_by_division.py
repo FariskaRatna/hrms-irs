@@ -19,7 +19,7 @@ def execute(filters=None):
 
 	columns = [
 		{"label": "Department", "fieldname": "department", "fieldtype": "Data", "width": 180},
-		{"label": "Attrition", "fieldname": "attrition", "fieldtype": "Int", "width": 180},
+		{"label": "Attrition", "fieldname": "attrition", "fieldtype": "Int", "width": 150},
 		{"label": "Active Employees", "fieldname": "active", "fieldtype": "Int", "width": 150}
 	]
 
