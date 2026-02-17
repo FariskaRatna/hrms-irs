@@ -1,0 +1,44 @@
+{
+ "cards": [
+  {
+   "card": "Total Present (This Month)"
+  },
+  {
+   "card": "Total Absent (This Month)"
+  }
+ ],
+ "charts": [
+  {
+   "chart": "Absenteeism Rate (%)",
+   "width": "Half"
+  },
+  {
+   "chart": "Kehadiran Rata-Rata (%)",
+   "width": "Half"
+  },
+  {
+   "chart": "Rata-Rata Izin Pegawai (%)",
+   "width": "Half"
+  },
+  {
+   "chart": "Total Lembur Karyawan",
+   "width": "Half"
+  },
+  {
+   "chart": "Total Lembur per Department",
+   "width": "Full"
+  }
+ ],
+ "creation": "2026-02-17 22:17:11.316801",
+ "dashboard_name": "Attendance, Leave, and Discipline",
+ "docstatus": 0,
+ "doctype": "Dashboard",
+ "idx": 0,
+ "is_default": 0,
+ "is_standard": 1,
+ "modified": "2026-02-17 22:33:44.655349",
+ "modified_by": "Administrator",
+ "module": "HR",
+ "name": "Attendance, Leave, and Discipline",
+ "owner": "Administrator"
+}
