@@ -9,11 +9,11 @@ def execute(filters=None):
 
 	data = frappe.db.sql("""
 		SELECT
-			YEAR(a.attendance_date) AS year,
-			MONTH(a.attendance_date) AS month,
-			COUNT(*) AS absent_days
-		FROM `tabAttendance` a
-		WHERE a.status = 'Absent'
+			YEAR(attendance_date) AS year,
+			MONTH(attendance_date) AS month,
+			COUNT(*) AS present_days
+		FROM `tabAttendance`
+		WHERE status = 'Present'
 		GROUP BY year, month
 		ORDER BY year, month
 	""", as_dict=True)
@@ -23,33 +23,35 @@ def execute(filters=None):
 	for d in data:
 		days_in_month = calendar.monthrange(d.year, d.month)[1]
 		working_days = days_in_month * 0.7
-		total_employees = frappe.db.count("Employee", {"status": "Active"})
 
+		total_employees = frappe.db.count("Employee", {"status": "Active"})
 		total_workdays = total_employees * working_days
 
-		absent_rate = round((d.absent_days / total_workdays) * 100, 2)
+		present_days = d.present_days or 0 
+
+		attendance_rate = round((present_days / total_workdays) * 100, 2) if total_workdays else 0
 
 		result.append({
 			"period": f"{d.year}-{str(d.month).zfill(2)}",
-			"absent_days": d.absent_days,
-			"absenteeism_rate": absent_rate
+			"present_days": present_days,
+			"attendance_rate": attendance_rate
 		})
 
 	columns = [
 		{"label": "Period", "fieldname": "period", "fieldtype": "Data", "width": 120},
-		{"label": "Absent Days", "fieldname": "absent_days", "fieldtype": "Int", "width": 140},
-		{"label": "Absenteeism Rate (%)", "fieldname": "absenteeism_rate", "fieldtype": "Float", "width": 160},
+		{"label": "Present Days", "fieldname": "present_days", "fieldtype": "Int", "width": 140},
+		{"label": "Attendance Rate (%)", "fieldname": "attendance_rate", "fieldtype": "Float", "width": 170},
 	]
 
 	labels = [r["period"] for r in result]
-	rates = [r["absenteeism_rate"] for r in result]
+	rates = [r["attendance_rate"] for r in result]
 
 	chart = {
 		"data": {
 			"labels": labels,
 			"datasets": [
 				{
-					"name": "Absenteeism Rate (%)",
+					"name": "Attendance Rate (%)",
 					"values": rates
 				}
 			]
@@ -58,4 +60,3 @@ def execute(filters=None):
 	}
 
 	return columns, result, None, chart
-
