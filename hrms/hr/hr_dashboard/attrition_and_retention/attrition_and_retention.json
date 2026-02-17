@@ -1,0 +1,33 @@
+{
+ "cards": [],
+ "charts": [
+  {
+   "chart": "Turnover Rate (%)",
+   "width": "Full"
+  },
+  {
+   "chart": "Attrition dari Divisi",
+   "width": "Full"
+  },
+  {
+   "chart": "Attrition dari Type",
+   "width": "Full"
+  },
+  {
+   "chart": "Attrition dari Masa Kerja",
+   "width": "Full"
+  }
+ ],
+ "creation": "2026-02-17 21:16:58.467121",
+ "dashboard_name": "Attrition and Retention",
+ "docstatus": 0,
+ "doctype": "Dashboard",
+ "idx": 0,
+ "is_default": 0,
+ "is_standard": 1,
+ "modified": "2026-02-17 21:22:17.158930",
+ "modified_by": "Administrator",
+ "module": "HR",
+ "name": "Attrition and Retention",
+ "owner": "Administrator"
+}
