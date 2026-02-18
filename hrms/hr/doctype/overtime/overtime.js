@@ -199,6 +199,20 @@ frappe.ui.form.on("Overtime", {
             
             if (!$controlValue.length) return;
 
+            if (url) {
+				const filename = url.split("/").pop();
+
+				$wrapper.find('a').each(function() {
+					const $link = $(this);
+					const text = $link.text().trim();
+
+					if (text.includes('/') || text.includes('private') || text.includes('files')) {
+						$link.text(filename);
+						$link.attr('title', filename);
+					}
+				});
+			}
+
             $controlValue.empty();
             
             if (!url) {

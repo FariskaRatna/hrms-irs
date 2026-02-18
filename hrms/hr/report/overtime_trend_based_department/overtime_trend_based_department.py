@@ -13,6 +13,7 @@ def execute(filters=None):
 			department,
 			SUM(total_hours) AS total_hours
 		FROM `tabOvertime Slip`
+		WHERE department IS NOT NULL
 		GROUP BY
 			DATE_FORMAT(from_date, '%Y-%m'),
 			department
