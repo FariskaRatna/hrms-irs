@@ -14,6 +14,8 @@ def execute(filters=None):
 			COUNT(name) AS total_employees
 		FROM `tabEmployee`
 		WHERE status = 'Active'
+			AND department IS NOT NULL
+			AND employment_type IS NOT NULL
 		GROUP BY department, employment_type
 		ORDER BY department, employment_type
 	""", as_dict=True)

@@ -28,8 +28,8 @@ def execute(filters=None):
 	""", as_dict=True)
 
 
-	total_core = core[0]["total_core"] if core else 0
-	total_support = support[0]["total_support"] if support else 0
+	total_core = sum(d["total_core"] for d in core) if core else 0
+	total_support = sum(d["total_support"] for d in support) if support else 0
 
 	columns = [
 		{"label": "Team", "fieldname": "team", "fieldtype": "Data", 'width': 200},
