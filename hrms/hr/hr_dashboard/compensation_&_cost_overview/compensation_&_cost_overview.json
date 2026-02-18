@@ -1,0 +1,25 @@
+{
+ "cards": [
+  {},
+  {
+   "card": "Total Cost HR"
+  }
+ ],
+ "charts": [
+  {
+   "width": "Half"
+  }
+ ],
+ "creation": "2026-02-18 14:32:31.403661",
+ "dashboard_name": "Compensation & Cost Overview",
+ "docstatus": 0,
+ "doctype": "Dashboard",
+ "idx": 0,
+ "is_default": 0,
+ "is_standard": 1,
+ "modified": "2026-02-18 14:33:09.751607",
+ "modified_by": "Administrator",
+ "module": "HR",
+ "name": "Compensation & Cost Overview",
+ "owner": "Administrator"
+}

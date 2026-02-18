@@ -3,30 +3,30 @@
 
 frappe.ui.form.on("Overtime Slip", {
 	refresh(frm) {
-        if (!frm.is_new() && frm.doc.docstatus === 0) {
-            frm.page.set_primary_action(__("Submit"), function () {
-                frappe.confirm(
-                    __("Permanently submit Overtime Slip {0} for {1}?").format(frm.doc.name, frm.doc.employee_name || frm.doc.employee),
-                    function () {
-                        frappe.call({
-                            method: "frappe.client.submit",
-                            args: {
-                                doc: frm.doc
-                            },
-                            callback: function (r) {
-                                if (!r.exc) {
-                                    frappe.show_alert({ message: __("Overtime Slip submitted"), indicator: "green" });
-                                    frm.reload_doc();
-                                }
-                            }
-                        });
-                    },
-                    function () {
-                        frappe.show_alert({ message: __("Overtime Slip cancelled"), indicator: "red" });
-                    }
-                );
-            });
-        }
+        // if (!frm.is_new() && frm.doc.docstatus === 0) {
+        //     frm.page.set_primary_action(__("Submit"), function () {
+        //         frappe.confirm(
+        //             __("Permanently submit Overtime Slip {0} for {1}?").format(frm.doc.name, frm.doc.employee_name || frm.doc.employee),
+        //             function () {
+        //                 frappe.call({
+        //                     method: "frappe.client.submit",
+        //                     args: {
+        //                         doc: frm.doc
+        //                     },
+        //                     callback: function (r) {
+        //                         if (!r.exc) {
+        //                             frappe.show_alert({ message: __("Overtime Slip submitted"), indicator: "green" });
+        //                             frm.reload_doc();
+        //                         }
+        //                     }
+        //                 });
+        //             },
+        //             function () {
+        //                 frappe.show_alert({ message: __("Overtime Slip cancelled"), indicator: "red" });
+        //             }
+        //         );
+        //     });
+        // }
 
         setTimeout(function() {
 		    let save_button = frm.page.wrapper.find('.primary-action');
