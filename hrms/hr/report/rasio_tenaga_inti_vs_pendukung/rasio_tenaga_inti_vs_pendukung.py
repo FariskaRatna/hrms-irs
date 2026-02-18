@@ -22,7 +22,7 @@ def execute(filters=None):
 			department as support_department,
 			count(name) as total_support
 		from `tabEmployee`
-		where status = 'Active' and department in ('Human Resource and General Affair', 'Finance and Tax')
+		where status = 'Active' and department in ('Human Resource and General Affair', 'Finance, Accounting, and Tax')
 		group by department
 		order by department
 	""", as_dict=True)
